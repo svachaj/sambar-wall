@@ -1,0 +1,19 @@
+name: Deploy Static Content
+
+on:
+  push:
+    branches:
+      - main # Change this to the branch you want to deploy
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Deploy Static Content
+      run: |
+        # Add your deployment script or commands here
+        # For example, if you just need to copy files to a destination
+        cp -r ./index.html C:\inetpub\wwwroot\sambar-registrace
