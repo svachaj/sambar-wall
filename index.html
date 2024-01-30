@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    />
+    <title>Climbing Wall Courses</title>
+  </head>
+  <body class="bg-gray-100 p-4">
+    <div class="mx-auto max-w-7xl">
+      <!-- Course Cards -->
+      <div
+        id="courseContainer"
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+      >
+        <!-- Courses will be dynamically inserted here -->
+      </div>
+
+      <script>
+        // Creating JSON data
+        var YOUR_JSON_DATA = [
+          {
+            typeName: "Přespání na stěně",
+            typeDescription:
+              "Zveme děti na večer a noc plnou lezeckého dobrodružství. Chybět nebude lezení s čelovkami, plno lezeckých her a přespání přímo na stěně. Přespání je vhodné i pro úplné lezecké začátečníky. Cena zahrnuje večeři a snídani. Přihlašování prosím provádějte na POČÍTAČI - u některých telefonů přihláška nelze odeslat. Postup přihlášení naleznete na www.stenakladno.cz, případně nás kontaktuje na e-mailu kurzy@stenakladno.cz",
+            days: [
+              {
+                day: "9.2. - 10.2.",
+                courses: [
+                  {
+                    id: 284,
+                    capacity: 10,
+                    ageGroup: "5-15 let",
+                    price: 800.0,
+                    time: "18:00 - 09:00",
+                    participantsCount: 5,
+                    durationMin: 900,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            typeName:
+              "Pololetní kroužky lezení - Lezení na laně DRUHÉ pololetí rok 2023 - 2024",
+            typeDescription:
+              "Kurzy lezení jsou ideální pro všechny děti, které rády někam lezou, šplhají a houpají se. V našich kurzech se děti naučí základům lezení na laně a vyzkouší si i bouldering. V pololetních kroužcích se děti učí celé řadě lezeckých dovedností, včetně obléknutí úvazku, navázání se, základům jištění a u starších a šikovnějších dětí i lezení na prvním.",
+            days: [
+              {
+                day: "Pondělí",
+                courses: [
+                  {
+                    id: 209,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 4800.0,
+                    time: "13:30 - 14:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 219,
+                    capacity: 5,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "14:00 - 15:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 258,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "14:00 - 15:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 207,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "14:30 - 15:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 256,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "15:00 - 16:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 93,
+                    capacity: 5,
+                    ageGroup: "5-8 let * ",
+                    price: 5600.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 181,
+                    capacity: 5,
+                    ageGroup: "8-18 let ",
+                    price: 5600.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 107,
+                    capacity: 5,
+                    ageGroup: "9-18 let",
+                    price: 5600.0,
+                    time: "17:00 - 18:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Úterý",
+                courses: [
+                  {
+                    id: 260,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "14:00 - 15:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 266,
+                    capacity: 5,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "14:00 - 15:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 195,
+                    capacity: 6,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "15:00 - 16:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 197,
+                    capacity: 5,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 190,
+                    capacity: 9,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "16:00 - 17:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 127,
+                    capacity: 5,
+                    ageGroup: "9-18 let",
+                    price: 5600.0,
+                    time: "17:30 - 19:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Středa",
+                courses: [
+                  {
+                    id: 97,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 4800.0,
+                    time: "13:30 - 14:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 102,
+                    capacity: 5,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "14:30 - 16:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 103,
+                    capacity: 6,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "14:30 - 15:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 278,
+                    capacity: 5,
+                    ageGroup: "7-15 let",
+                    price: 5600.0,
+                    time: "15:00 - 16:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 94,
+                    capacity: 10,
+                    ageGroup: "5-8 let * ",
+                    price: 5600.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 10,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 279,
+                    capacity: 9,
+                    ageGroup: "9-18 let ",
+                    price: 5600.0,
+                    time: "16:30 - 18:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 8,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 196,
+                    capacity: 3,
+                    ageGroup: "9-18 let",
+                    price: 5600.0,
+                    time: "18:00 - 19:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Čtvrtek",
+                courses: [
+                  {
+                    id: 206,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 4800.0,
+                    time: "13:30 - 14:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 254,
+                    capacity: 5,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "14:30 - 16:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 4,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 255,
+                    capacity: 10,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "16:00 - 17:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 9,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 265,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 5600.0,
+                    time: "16:00 - 17:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 101,
+                    capacity: 3,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "17:00 - 18:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 185,
+                    capacity: 5,
+                    ageGroup: "9-18 let",
+                    price: 5600.0,
+                    time: "17:30 - 19:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 104,
+                    capacity: 3,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "18:00 - 19:00",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Pátek",
+                courses: [
+                  {
+                    id: 186,
+                    capacity: 5,
+                    ageGroup: "6-18 let ",
+                    price: 4800.0,
+                    time: "13:00 - 14:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 4,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 110,
+                    capacity: 5,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "15:00 - 16:30",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 111,
+                    capacity: 3,
+                    ageGroup: "6-18 let ",
+                    price: 5600.0,
+                    time: "16:30 - 17:30",
+                    participantsCount: 3,
+                    durationMin: 60,
+                    applicationFormsCount: 3,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 125,
+                    capacity: 5,
+                    ageGroup: "7-18 let",
+                    price: 5600.0,
+                    time: "17:30 - 19:00",
+                    participantsCount: 5,
+                    durationMin: 90,
+                    applicationFormsCount: 5,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            typeName:
+              "Pololetní kroužky lezení - Bouldering - DRUHÉ pololetí rok 2023 - 2024",
+            typeDescription:
+              "Pro příznivce lezení po nižších stěnkách je náš boulderingový kroužek, vhodný nejen pro děti, které se bojí výšek, ale také pro ty, které preferují více herní náplň kroužku. Kroužek je vhodný převážně pro předškolní děti.",
+            days: [
+              {
+                day: "Pondělí",
+                courses: [
+                  {
+                    id: 218,
+                    capacity: 8,
+                    ageGroup: "9-18 let",
+                    price: 4200.0,
+                    time: "16:00 - 17:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 8,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 188,
+                    capacity: 8,
+                    ageGroup: "4-8 let",
+                    price: 4200.0,
+                    time: "17:00 - 18:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 189,
+                    capacity: 8,
+                    ageGroup: "9-18 let ",
+                    price: 4200.0,
+                    time: "18:00 - 19:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 6,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Úterý",
+                courses: [
+                  {
+                    id: 280,
+                    capacity: 9,
+                    ageGroup: "9-18 let",
+                    price: 4200.0,
+                    time: "17:30 - 18:30",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 8,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Středa",
+                courses: [
+                  {
+                    id: 226,
+                    capacity: 8,
+                    ageGroup: "4-8 let",
+                    price: 4200.0,
+                    time: "16:00 - 17:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Čtvrtek",
+                courses: [
+                  {
+                    id: 272,
+                    capacity: 8,
+                    ageGroup: "4-8 let",
+                    price: 4200.0,
+                    time: "16:00 - 17:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            typeName:
+              "Pololetní kroužky lezení pro pokročilé 12 - 18 let  - DRUHÉ pololetí 2023 - 2024",
+            typeDescription:
+              "Přihlašování prosím provádějte na POČÍTAČI - u některých telefonů nejde vyplnit políčko půjčovny). Kroužek lano - na 120 minut / boulder na 60 minut je určen pouze pro pokročilé děti ve věku 12-18 let (podmínky naleznete na www.stenakladno.cz). *Sportovní bouldering na 90 minut je pouze v kombinaci s tréninkem lezení na laně 120 minut. Nelze přihlásit jako samostatný kurz. Kurz je určen pouze pro pokročilé děti ve věku 12-18 (dítě leze minimálně 3 roky) ",
+            days: [
+              {
+                day: "Pondělí lano ",
+                courses: [
+                  {
+                    id: 95,
+                    capacity: 7,
+                    ageGroup: "12-18 let ",
+                    price: 5600.0,
+                    time: "17:00 - 19:00",
+                    participantsCount: 8,
+                    durationMin: 120,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Čtvrtek bould.",
+                courses: [
+                  {
+                    id: 257,
+                    capacity: 11,
+                    ageGroup: "12-18 let * ",
+                    price: 4200.0,
+                    time: "17:00 - 18:30",
+                    participantsCount: 8,
+                    durationMin: 90,
+                    applicationFormsCount: 11,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Úterý lano ",
+                courses: [
+                  {
+                    id: 113,
+                    capacity: 8,
+                    ageGroup: "12-18 let ",
+                    price: 5600.0,
+                    time: "15:30 - 17:30",
+                    participantsCount: 8,
+                    durationMin: 120,
+                    applicationFormsCount: 8,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Čtvrtek lano ",
+                courses: [
+                  {
+                    id: 123,
+                    capacity: 7,
+                    ageGroup: "12-18 let ",
+                    price: 5600.0,
+                    time: "17:00 - 19:00",
+                    participantsCount: 8,
+                    durationMin: 120,
+                    applicationFormsCount: 7,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Středa boulder ",
+                courses: [
+                  {
+                    id: 99,
+                    capacity: 7,
+                    ageGroup: "12-18 let ",
+                    price: 4200.0,
+                    time: "17:00 - 18:00",
+                    participantsCount: 8,
+                    durationMin: 60,
+                    applicationFormsCount: 6,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Středa lano ",
+                courses: [
+                  {
+                    id: 120,
+                    capacity: 8,
+                    ageGroup: "12-18 let ",
+                    price: 5600.0,
+                    time: "17:00 - 19:00",
+                    participantsCount: 8,
+                    durationMin: 120,
+                    applicationFormsCount: 8,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            typeName:
+              "Pololetní - Individuální kurzy lezení - PŘIHLÁŠENÍ POUZE PO PŘEDCHOZÍ DOMLUVĚ ",
+            typeDescription:
+              "Nejedná se o kurzy vypsané pro veřejnost. Jedná se o předem sjednané individuální hodiny kroužků lezení. Proto prosíme na tyto kurzy se nepřihlašujte, jedná se o rezervovaná místa. ",
+            days: [
+              {
+                day: "Pondělí",
+                courses: [
+                  {
+                    id: 282,
+                    capacity: 2,
+                    ageGroup: "5-18 let",
+                    price: 7100.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 2,
+                    durationMin: 90,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Úterý",
+                courses: [
+                  {
+                    id: 283,
+                    capacity: 2,
+                    ageGroup: "5-18 let",
+                    price: 6900.0,
+                    time: "16:00 - 17:00",
+                    participantsCount: 2,
+                    durationMin: 60,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 275,
+                    capacity: 1,
+                    ageGroup: "5-18 let",
+                    price: 9000.0,
+                    time: "17:00 - 18:00",
+                    participantsCount: 1,
+                    durationMin: 60,
+                    applicationFormsCount: 1,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 276,
+                    capacity: 2,
+                    ageGroup: "5-18 let",
+                    price: 6900.0,
+                    time: "18:00 - 19:00",
+                    participantsCount: 2,
+                    durationMin: 60,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+              {
+                day: "Pátek",
+                courses: [
+                  {
+                    id: 277,
+                    capacity: 4,
+                    ageGroup: "5-18 let",
+                    price: 6300.0,
+                    time: "15:30 - 17:00",
+                    participantsCount: 4,
+                    durationMin: 90,
+                    applicationFormsCount: 4,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                  {
+                    id: 281,
+                    capacity: 3,
+                    ageGroup: "5-18 let",
+                    price: 6900.0,
+                    time: "17:00 - 18:30",
+                    participantsCount: 3,
+                    durationMin: 90,
+                    applicationFormsCount: 2,
+                    applicationFormsDescription: null,
+                    participants: null,
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        // Rendering courses dynamically
+        var courseContainer = document.getElementById("courseContainer");
+
+        YOUR_JSON_DATA.forEach((course) => {
+          var courseCard = document.createElement("div");
+          courseCard.className = "bg-white rounded-lg p-4 shadow-md mb-4";
+          courseCard.innerHTML = `
+          <h2 class="text-xl font-semibold mb-2">${course.typeName}</h2>
+          <p class="text-gray-600 mb-4">${course.typeDescription}</p>
+          <hr class="my-4 border-t border-gray-300"></hr>`;
+
+          course.days.forEach((day) => {
+            var dayContainer = document.createElement("div");
+            dayContainer.className = "mb-2";
+            dayContainer.innerHTML = `
+            <strong>Day:</strong> ${day.day}<br>
+            <strong>Time:</strong> ${day.courses[0].time}<br>
+            <strong>Age Group:</strong> ${day.courses[0].ageGroup}<br>
+            <strong>Price:</strong> ${day.courses[0].price.toFixed(2)}&nbsp;Kč<br>
+            <strong>Capacity:</strong> ${day.courses[0].capacity}<br>
+            `;
+            // Add more details as needed
+
+            courseCard.appendChild(dayContainer);
+            // Add separator between course cards
+            // not on the last one
+            if (course.days.indexOf(day) < course.days.length - 1) {
+              var separator = document.createElement("hr");
+              separator.className = "my-4 border-t border-gray-300";
+              courseCard.appendChild(separator);
+            }
+          });
+
+          courseContainer.appendChild(courseCard);
+        });
+      </script>
+    </div>
+  </body>
+</html>
