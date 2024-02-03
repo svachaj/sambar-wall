@@ -14,6 +14,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -33,8 +34,14 @@ func main() {
 	// Echo Logging
 	e.Use(middlewares.RequestLoggerWithConfig())
 
+	// Recover from panics
+	e.Use(middleware.Recover())
+
 	// static files
-	e.Static("/", "static")
+	e.Static("/static", "static")
+
+	// Initialize modules and map routes
+	InitializeModulesAndMapRoutes(e)
 
 	// Start server
 	go func() {

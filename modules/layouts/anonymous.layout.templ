@@ -1,0 +1,27 @@
+package layouts
+
+templ AnonymousLayout() {
+	<!DOCTYPE html>
+	<html lang="en" data-theme="dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			// favicon
+			<link rel="icon" href="static/assets/favicon.ico" type="image/x-icon"/>
+			<meta
+				name="description"
+				content="Sambar Lezecká Stěna Kladno - Příhlašování na kroužky a souhlas s provozním řádem stěny"
+			/>
+			<meta name="google" content="notranslate"/>
+			<title>Stěna Kladno - Kroužky</title>
+			<script src="static/js/htmx.1.9.10.min.js"></script>
+			<link href="static/css/styles.css" rel="stylesheet"/>
+		</head>
+		<body hx-boost="true">
+			<main class="pt-40">
+				{ children... }
+			</main>
+		</body>
+	</html>
+}
