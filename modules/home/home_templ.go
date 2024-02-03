@@ -25,7 +25,7 @@ func HomeIndex() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center\"><h1 class=\"text-5xl font-bold\">Lezecká stěna Kladno - Kroužky</h1><p class=\"text-2xl font-thin\">Tady bude seznam kroužků :)</p></section>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center\"><h1 class=\"text-5xl font-bold\">Lezecká stěna Kladno - Kroužky</h1><p class=\"text-2xl font-thin\">Tady bude seznam kroužků</p></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
