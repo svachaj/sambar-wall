@@ -16,8 +16,8 @@ func LoadConfiguraion() (*Config, error) {
 	config := Config{}
 
 	config.JwtSecret = os.Getenv("APP_JWT_SECRET")
-	// config.Port = os.Getenv("APP_PORT")
-	// config.SaltRounds = parseIntWithDefaultValue(os.Getenv("APP_BCRYPT_SALT_ROUNDS"), 12)
+	config.Port = os.Getenv("APP_PORT")
+	config.SaltRounds = parseIntWithDefaultValue(os.Getenv("APP_BCRYPT_SALT_ROUNDS"), 12)
 
 	return &config, nil
 }
