@@ -16,4 +16,4 @@ jobs:
       run: |
         # Add your deployment script or commands here
         # For example, if you just need to copy files to a destination
-        cp -r ./index.html C:\inetpub\wwwroot\sambar-registrace
+        cp -r ./static/index.html C:\inetpub\wwwroot\sambar-registrace
