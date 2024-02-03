@@ -19,7 +19,7 @@ import (
 func main() {
 	// init logger
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	log.Info().Msg("Sambar App Starting...")
+	log.Info().Msg("SAMBAR APP Starting...")
 
 	// configuration settings
 	// application enviroment varibles described in example.env file
@@ -39,7 +39,7 @@ func main() {
 	// Start server
 	go func() {
 		if err := e.Start(":" + settings.Port); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("Shutting down the server: ELI - PANDA - API Gateway: ", err)
+			e.Logger.Fatal("Shutting down the server: SAMABR APP: ", err)
 		}
 	}()
 
