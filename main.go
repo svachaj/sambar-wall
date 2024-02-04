@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,10 +18,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+const (
+	APP_NAME = "SAMBAR APP - COURSES AND REGISTRATION SYSTEM"
+)
+
 func main() {
 	// init logger
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	log.Info().Msg("SAMBAR APP Starting...")
+	log.Info().Msg(fmt.Sprintf("Starting %s", APP_NAME))
 
 	// configuration settings
 	// application enviroment varibles described in example.env file
@@ -28,7 +33,7 @@ func main() {
 	settings, err := config.LoadConfiguraion()
 	utils.PanicOnError(err)
 
-	// Echo instance
+	// Echo - http framewrok instance
 	e := echo.New()
 
 	// Echo Logging
@@ -43,10 +48,13 @@ func main() {
 	// Initialize modules and map routes
 	InitializeModulesAndMapRoutes(e)
 
+	// Custom HTTP Error Handler to serve error pages
+	e.HTTPErrorHandler = middlewares.CustomHTTPErrorHandler
+
 	// Start server
 	go func() {
 		if err := e.Start(":" + settings.Port); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("Shutting down the server: SAMABR APP: ", err)
+			e.Logger.Fatal("Shutting down the server: ", err)
 		}
 	}()
 

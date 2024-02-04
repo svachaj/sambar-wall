@@ -9,3 +9,9 @@ func HTML(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
+
+func HTMLWithStatus(c echo.Context, statusCode int, cmp templ.Component) error {
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	c.Response().Writer.WriteHeader(statusCode)
+	return cmp.Render(c.Request().Context(), c.Response().Writer)
+}

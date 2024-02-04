@@ -1,0 +1,62 @@
+package layouts
+
+templ BaseLayout(isAuthenticated bool) {
+	<!DOCTYPE html>
+	<html lang="en" data-theme="dark" class="dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			// favicon
+			<link rel="icon" href="static/assets/favicon.ico" type="image/x-icon"/>
+			<meta
+				name="description"
+				content="Sambar Lezecká Stěna Kladno - Příhlašování na kroužky a souhlas s provozním řádem stěny"
+			/>
+			<meta name="google" content="notranslate"/>
+			<title>Stěna Kladno - Kroužky</title>
+			<script src="static/js/htmx.1.9.10.min.js"></script>
+			<link href="static/css/styles.css" rel="stylesheet"/>
+		</head>
+		<body hx-boost="true" class="dark:bg-gray-800">
+			if isAuthenticated {
+				@AuthenticatedLayout() {
+					{ children... }
+				}
+			} else {
+				@AnonymousLayout() {
+					{ children... }
+				}
+			}
+		</body>
+	</html>
+}
+
+templ AnonymousLayout() {
+	<header class="">
+		<nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+			<div class="flex lg:flex-1">
+				<a href="#" class="-m-1.5 p-1.5">
+					<span class="sr-only">Your Company</span>
+					<img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt=""/>
+				</a>
+			</div>
+			<div class="hidden lg:flex lg:gap-x-12">
+				<a href="#" class="text-sm font-semibold leading-6 text-white">Product</a>
+				<a href="#" class="text-sm font-semibold leading-6 text-white">Features</a>
+				<a href="#" class="text-sm font-semibold leading-6 text-white">Marketplace</a>
+				<a href="#" class="text-sm font-semibold leading-6 text-white">Company</a>
+			</div>
+			<div class="hidden lg:flex lg:flex-1 lg:justify-end">
+				<a href="#" class="text-sm font-semibold leading-6 text-white">Přihlášení  <span aria-hidden="true">&rarr;</span></a>
+			</div>
+		</nav>
+	</header>
+	<main>
+		{ children... }
+	</main>
+}
+
+templ AuthenticatedLayout() {
+	{ children... }
+}
