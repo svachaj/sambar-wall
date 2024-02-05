@@ -92,7 +92,7 @@ func AnonymousLayout() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"\"><nav class=\"flex items-center justify-between p-6 lg:px-8\" aria-label=\"Global\"><div class=\"flex lg:flex-1\"><a href=\"/\" class=\"-m-1.5 p-1.5\"><span class=\"sr-only\">Your Company</span> <img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></a></div><div class=\"hidden lg:flex lg:gap-x-12\"><a href=\"#\" class=\"text-sm font-semibold leading-6 text-white\">Moje přihlášky</a> <a href=\"#\" class=\"text-sm font-semibold leading-6 text-white\">Účet</a></div><div class=\"hidden lg:flex lg:flex-1 lg:justify-end\"><a href=\"#\" class=\"text-sm font-semibold leading-6 text-white\">Přihlášení  <span aria-hidden=\"true\">&rarr;</span></a></div></nav></header><main>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"\"><nav class=\"flex items-center justify-between p-6 lg:px-8\" aria-label=\"Global\"><div class=\"flex lg:flex-1\"><a href=\"/\" class=\"-m-1.5 p-1.5\"><span class=\"sr-only\">Your Company</span> <img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></a></div><div class=\"hidden lg:flex lg:flex-1 lg:justify-end\"><a href=\"#\" class=\"text-sm font-semibold leading-6 text-white\">Přihlášení  <span aria-hidden=\"true\">&rarr;</span></a></div></nav></header><main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
