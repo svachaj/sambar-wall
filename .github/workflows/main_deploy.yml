@@ -29,8 +29,8 @@ jobs:
         run: |
           # Add your deployment script or commands here
           # For example, if you just need to copy files to a destination
-          cp -r static C:\inetpub\wwwroot\sambar-registrace
-          cp tmp/sambar-wall-web-app.exe C:\inetpub\wwwroot\sambar-registrace
+          cp -rf static C:\inetpub\wwwroot\sambar-registrace
+          cp -f tmp/sambar-wall-web-app.exe C:\inetpub\wwwroot\sambar-registrace
 
       - name: Start Web App Service
         run: |
