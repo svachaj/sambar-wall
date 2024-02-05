@@ -6,6 +6,8 @@
 
 ### [TEMPL](https://templ.guide/) - Template Engine
 
+To have the best templ experience, you should install VSCode extension `templ-vscode`.
+
 `go install github.com/a-h/templ/cmd/templ@latest`
 
 ### [Tailwindcss](https://tailwindcss.com/) - CSS Framework
