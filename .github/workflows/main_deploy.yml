@@ -12,9 +12,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # - name: Stop Web App Service
-      #   run: |
-      #     Stop-Service -Name "sambar-wall-web-app"
+      - name: Stop Web App Service
+        run: |
+          Stop-Service -Name "sambar-wall-web-app"
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -31,3 +31,7 @@ jobs:
           # For example, if you just need to copy files to a destination
           cp -r static C:\inetpub\wwwroot\sambar-registrace
           cp tmp/sambar-wall-web-app.exe C:\inetpub\wwwroot\sambar-registrace
+
+      - name: Start Web App Service
+        run: |
+          Start-Service -Name "sambar-wall-web-app"
