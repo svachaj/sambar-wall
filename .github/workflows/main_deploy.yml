@@ -29,7 +29,7 @@ jobs:
         run: |
           # Add your deployment script or commands here
           # For example, if you just need to copy files to a destination
-          Copy-Item -Path "static\*" -Destination "C:\inetpub\wwwroot\sambar-registrace" -Force
+          Copy-Item -Path "static\*" -Destination "C:\inetpub\wwwroot\sambar-registrace\static" -Force
           Copy-Item -Path "tmp/sambar-wall-web-app.exe" -Destination "C:\inetpub\wwwroot\sambar-registrace" -Force
 
       - name: Start Web App Service
