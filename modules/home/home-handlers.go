@@ -2,6 +2,7 @@ package home
 
 import (
 	"github.com/labstack/echo/v4"
+	homeTemplates "github.com/svachaj/sambar-wall/modules/home/templates"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -17,8 +18,8 @@ func NewHomeHandlers() IHomeHandlers {
 }
 
 func (h *HomeHandlers) Home(c echo.Context) error {
-	homeIndex := HomeIndex()
-	homeComponent := Home(homeIndex)
+	homeIndex := homeTemplates.HomeIndex()
+	homeComponent := homeTemplates.Home(homeIndex)
 
 	return utils.HTML(c, homeComponent)
 }
