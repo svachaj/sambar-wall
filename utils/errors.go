@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"io"
+
+	"github.com/rs/zerolog/log"
 )
 
 // DeferredClose handles errors that happen with deferred calls
@@ -24,6 +26,6 @@ func DeferredClose(closer io.Closer, err error) error {
 // Note: use sparingly, designed for use within the main package
 func PanicOnError(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatal().Err(err).Msg("")
 	}
 }

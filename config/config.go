@@ -8,32 +8,45 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-/**
- * ReadConfig reads the application settings from enviroment varibales - its possible to use .env file
- */
-
+// Loads the application configuration from the environment variables.
 func LoadConfiguraion() (*Config, error) {
 	config := Config{}
 
-	config.JwtSecret = os.Getenv("APP_JWT_SECRET")
-	config.Port = os.Getenv("APP_PORT")
-	config.SaltRounds = parseIntWithDefaultValue(os.Getenv("APP_BCRYPT_SALT_ROUNDS"), 12)
+	config.AppSecret = os.Getenv("APP_SECRET")
+	config.AppPort = parseIntWithDefaultValue(os.Getenv("APP_PORT"), 5500)
+
+	// we assume that the database is MS SQL Server to backward compatibility
+	// if we want to support other databases, we can simply change the database driver and connection string
+	config.DbHost = os.Getenv("DB_HOST")
+	config.DbPort = parseIntWithDefaultValue(os.Getenv("DB_PORT"), 1433)
+	config.DbUser = os.Getenv("DB_USER")
+	config.DbPassword = os.Getenv("DB_PASSWORD")
+	config.DbName = os.Getenv("DB_NAME")
 
 	return &config, nil
 }
 
-func parseIntWithDefaultValue(inputString string, defaultValue int32) int {
-	result, err := strconv.ParseInt(inputString, 10, 32)
+func parseIntWithDefaultValue(inputString string, defaultValue int) (result int) {
+	pint, err := strconv.ParseInt(inputString, 10, 32)
 
 	if err != nil {
-		result = int64(defaultValue)
+		result = defaultValue
+	} else {
+		result = int(pint)
 	}
 
-	return int(result)
+	return result
 }
 
+// Holds the application settings.
 type Config struct {
-	Port       string
-	JwtSecret  string
-	SaltRounds int
+	AppPort   int
+	AppSecret string
+
+	// Database
+	DbHost     string
+	DbPort     int
+	DbUser     string
+	DbPassword string
+	DbName     string
 }

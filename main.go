@@ -46,14 +46,17 @@ func main() {
 	e.Static("/static", "static")
 
 	// Initialize modules and map routes
-	InitializeModulesAndMapRoutes(e)
+	err = InitializeModulesAndMapRoutes(e, settings)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error initializing modules and mapping routes.")
+	}
 
 	// Custom HTTP Error Handler to serve error pages
 	e.HTTPErrorHandler = middlewares.CustomHTTPErrorHandler
 
 	// Start server
 	go func() {
-		if err := e.Start(":" + settings.Port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf(":%d", settings.AppPort)); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("Shutting down the server: ", err)
 		}
 	}()

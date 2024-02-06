@@ -1,0 +1,37 @@
+package db
+
+import (
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
+	"github.com/svachaj/sambar-wall/config"
+
+	_ "github.com/denisenkom/go-mssqldb"
+)
+
+func Initialize(settings *config.Config) (*sqlx.DB, error) {
+
+	var db *sqlx.DB
+
+	// Construct connection string
+	connString := fmt.Sprintf("server=%s;port=%d;user id=%s;password=%s;database=%s;",
+		settings.DbHost, settings.DbPort, settings.DbUser, settings.DbPassword, settings.DbName)
+	db, err := sqlx.Open("sqlserver", connString)
+
+	if err != nil {
+		log.Err(err).Msg("Error initializing database.")
+		return nil, err
+	}
+
+	// test the connection
+	err = db.Ping()
+
+	if err != nil {
+		log.Err(err).Msg("Error pinging the database.")
+		return nil, err
+	}
+
+	log.Info().Msg("Database Initialized Successfully.")
+	return db, nil
+}
