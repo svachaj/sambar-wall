@@ -8,4 +8,6 @@ func MapSecurityRoutes(e *echo.Echo, h ISecurityHandlers) {
 
 	e.GET("/login/modal", h.LoginModal)
 
+	e.POST("/sign-in", h.SignIn)
+
 }

@@ -36,6 +36,8 @@ func main() {
 	// Echo - http framewrok instance
 	e := echo.New()
 
+	e.Use(middlewares.InitSessionMiddleware(settings))
+
 	// Echo Logging
 	e.Use(middlewares.RequestLoggerWithConfig())
 
