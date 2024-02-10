@@ -1,11 +1,10 @@
 package security
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	loginTemplates "github.com/svachaj/sambar-wall/modules/security/templates"
+	models "github.com/svachaj/sambar-wall/modules/security/types"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -24,42 +23,41 @@ func NewSecurityHandlers(db *sqlx.DB) ISecurityHandlers {
 
 func (h *SecurityHandlers) LoginModal(c echo.Context) error {
 
-	authSession, _ := session.Get("auth", c)
-
-	signInCounts := 0
-
-	if authSession.Values["numberOfSignIns"] != nil {
-		signInCounts = authSession.Values["numberOfSignIns"].(int)
-	}
-
-	loginModal := loginTemplates.LoginModal(signInCounts)
+	loginModel := models.LoginFormModel{}
+	loginModal := loginTemplates.LoginModal(loginModel)
 
 	return utils.HTML(c, loginModal)
 }
 
 func (h *SecurityHandlers) SignIn(c echo.Context) error {
 
-	authSession, _ := session.Get("auth", c)
-	authSession.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   30,
-		HttpOnly: true,
-	}
+	// get user from db
+	// check if user exists
+	// if user exists, check if password is correct
+	// if password is correct, set session and redirect to home
+	// if password is incorrect, show error message
+	// if user does not exist, show error message
+	// username := c.FormValue("username")
+	// password := c.FormValue("password")
 
-	signInCounts := 0
-	signIns := authSession.Values["numberOfSignIns"]
+	// var user types.User
+	// err := h.db.Get(&user, "SELECT id, passwordhash, username FROM t_system_user tsu WHERE tsu.username = $1 or tsu.email = $1", username)
 
-	if signIns == nil {
-		signInCounts = 1
-	} else {
-		signInCounts = signIns.(int) + 1
-	}
+	// if err != nil {
+	// 	return utils.HTMLWithStatus(c, loginTemplates.LoginError("Uživatel neexistuje"), 401)
+	// }
 
-	authSession.Values["numberOfSignIns"] = signInCounts
+	// authSession, _ := session.Get("auth", c)
+	// authSession.Options = &sessions.Options{
+	// 	Path:     "/",
+	// 	MaxAge:   30, // 30 seconds
+	// 	HttpOnly: true,
+	// }
 
-	authSession.Save(c.Request(), c.Response())
+	//authSession.Save(c.Request(), c.Response())
 
-	loginForm := loginTemplates.SignInsInfo(signInCounts)
+	loginModel := models.LoginFormModel{}
+	loginForm := loginTemplates.LoginForm(loginModel)
 
 	return utils.HTML(c, loginForm)
 }
