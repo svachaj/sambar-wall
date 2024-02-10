@@ -2,11 +2,13 @@ package home
 
 import (
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/utils"
 
+	"github.com/svachaj/sambar-wall/modules/constants"
 	homeTemplates "github.com/svachaj/sambar-wall/modules/home/templates"
 )
 
@@ -34,8 +36,14 @@ func (h *HomeHandlers) Home(c echo.Context) error {
 		courses = append(courses, types.Course{Name: "Chyba při načítání kurzů"})
 	}
 
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+
+	if authSession != nil {
+
+	}
+
 	homeComponent := homeTemplates.HomeComponent(courses)
-	homePage := homeTemplates.HomePage(homeComponent)
+	homePage := homeTemplates.HomePage(homeComponent, false)
 
 	return utils.HTML(c, homePage)
 }

@@ -17,10 +17,8 @@ templ HomeComponent(courses []types.Course) {
 	</section>
 }
 
-templ HomePage(
-        cmp templ.Component,
-    ) {
-	@layouts.BaseLayout(false) {
+templ HomePage(cmp templ.Component, isAuthenticated bool) {
+	@layouts.BaseLayout(isAuthenticated) {
 		@cmp
 	}
 }

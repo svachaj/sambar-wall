@@ -2,10 +2,10 @@ package security
 
 import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
-	models "github.com/svachaj/sambar-wall/modules/security/types"
+	types "github.com/svachaj/sambar-wall/modules/security/types"
 )
 
-templ LoginForm(model models.LoginFormModel) {
+templ LoginForm(model types.LoginFormResponse) {
 	<div class="flex min-h-full flex-col justify-center px-6 py-8" id="login-form">
 		<div class="mx-auto w-full max-w-sm">
 			<div class="text-center w-full flex justify-center">
@@ -14,27 +14,34 @@ templ LoginForm(model models.LoginFormModel) {
 			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Přihlášení</h2>
 		</div>
 		<div class="mt-10 mx-auto w-full max-w-sm">
-			<form class="space-y-6" hx-post="/sign-in" hx-swap="delete" hx-target="closest .modal-dialog">
+			<form class="space-y-6" hx-post="/sign-in" hx-target="#login-form" hx-swap="outerHTML">
 				<div>
-					<label for="email" class="block text-sm font-medium leading-6 text-white">Uživatelské jméno / email</label>
+					<label for="email" class="block text-sm font-medium leading-6 text-white">{ model.UserName.Label }</label>
 					<div class="mt-2">
-						if model.UserName.IsValid {
-							<input id="email" name="email" value={ model.UserName.Value } type="text" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
+						if len(model.UserName.Errors) == 0 {
+							<input id="email" name="username" tabindex="1" required value={ model.UserName.Value } type="text" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
+							<span class="text-accent-500 italic text-sx">&nbsp;</span>
 						} else {
-							<input id="email" name="email" type="text" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
+							<input id="email" name="username" tabindex="1" required type="text" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
+							<span class="text-accent-500 italic text-xs animate-input-error">{ model.UserName.Errors[0] }</span>
 						}
 					</div>
 				</div>
 				<div>
 					<div class="flex items-center justify-between">
-						<label for="password" class="block text-sm font-medium leading-6 text-white">Heslo</label>
+						<label for="password" class="block text-sm font-medium leading-6 text-white">{ model.Password.Label }</label>
 						<div class="text-sm">
 							<a href="#" class="font-semibold text-primary-600 hover:text-primary-400 hover:underline">Zapomenuté heslo?</a>
 						</div>
 					</div>
-					<div class="mt-2">
-						<input id="password" name="password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
+					<div class="mt-1">
+						<input id="password" required placeholder={ model.Password.Label } tabindex="2" name="password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"/>
 					</div>
+				</div>
+				<div class="flex flex-col space-y-2 justify-center items-center">
+					for _, err := range model.Errors {
+						<span class="text-accent-600 italic text-sm animate-input-error">{ err }</span>
+					}
 				</div>
 				<div>
 					<button type="submit" class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-neutral-100 hover:text-neutral-200 shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-500">Přihlásit se</button>
@@ -44,7 +51,7 @@ templ LoginForm(model models.LoginFormModel) {
 	</div>
 }
 
-templ LoginModal(model models.LoginFormModel) {
+templ LoginModal(model types.LoginFormResponse) {
 	@layouts.ModalLayout() {
 		@LoginForm(model)
 	}

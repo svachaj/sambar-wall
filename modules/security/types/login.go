@@ -1,16 +1,18 @@
 package types
 
-type LoginFormModel struct {
-	UserName FormField[string] `json:"username"`
-	Password FormField[string] `json:"password"`
+import (
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
+)
+
+type LoginFormResponse struct {
+	baseTypes.BaseModel
+	UserName baseTypes.FormField[string] `json:"username"`
+	Password baseTypes.FormField[string] `json:"password"`
 }
 
-type FormField[V FormValue] struct {
-	Value   V        `json:"value"`
-	IsValid bool     `json:"isValid"`
-	Errors  []string `json:"errors"`
+var LoginFormInitModel LoginFormResponse = LoginFormResponse{
+	UserName: baseTypes.FormField[string]{Label: "Uživatelské jméno"},
+	Password: baseTypes.FormField[string]{Label: "Heslo"},
 }
 
-type FormValue interface {
-	string | float64
-}
+const ERROR_LOGIN = "Chybné uživatelské jméno nebo heslo"

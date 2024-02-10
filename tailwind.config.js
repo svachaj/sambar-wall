@@ -14,6 +14,7 @@ module.exports = {
       },
       animation: {
         "open-modal": "openModal 1s",
+        "input-error": "openModal 0.5s",
       },
       keyframes: {
         openModal: {

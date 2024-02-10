@@ -12,3 +12,8 @@
 # temporary files in tmp folder
 tmp/*
 
+__debug*
+
+
+sambar-wall
+static/test.html
