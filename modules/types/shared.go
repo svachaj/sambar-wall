@@ -12,4 +12,5 @@ type FormValue interface {
 
 type BaseModel struct {
 	Errors []string `json:"errors"`
+	WasOk  bool     `json:"wasOk"`
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	db "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/constants"
+	"github.com/svachaj/sambar-wall/modules/home"
 	loginTemplates "github.com/svachaj/sambar-wall/modules/security/templates"
 	types "github.com/svachaj/sambar-wall/modules/security/types"
 	"github.com/svachaj/sambar-wall/utils"
@@ -17,6 +18,7 @@ import (
 type ISecurityHandlers interface {
 	LoginModal(c echo.Context) error
 	SignIn(c echo.Context) error
+	SignOut(c echo.Context) error
 }
 
 type SecurityHandlers struct {
@@ -60,7 +62,7 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 			authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
 			authSession.Options = &sessions.Options{
 				Path:     "/",
-				MaxAge:   30, // 30 seconds
+				MaxAge:   3600, // 3600 seconds
 				HttpOnly: true,
 			}
 
@@ -68,11 +70,29 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 
 			authSession.Save(c.Request(), c.Response())
 
-			return c.Redirect(200, "/")
+			loginModel.WasOk = true
+
+			return utils.HTML(c, home.HomePage(h.db, c))
 		}
 	}
 
 	loginForm := loginTemplates.LoginForm(loginModel)
+	// there was an error, so we want to retarget to the login form again
+	c.Response().Header().Set("HX-Retarget", "#login-form")
 
 	return utils.HTML(c, loginForm)
+}
+
+func (h *SecurityHandlers) SignOut(c echo.Context) error {
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	authSession.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   -1, // delete cookie
+		HttpOnly: true,
+	}
+
+	authSession.Save(c.Request(), c.Response())
+
+	return utils.HTML(c, home.HomePage(h.db, c))
 }

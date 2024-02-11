@@ -10,4 +10,6 @@ func MapSecurityRoutes(e *echo.Echo, h ISecurityHandlers) {
 
 	e.POST("/sign-in", h.SignIn)
 
+	e.GET("/sign-out", h.SignOut)
+
 }
