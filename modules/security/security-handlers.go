@@ -1,6 +1,8 @@
 package security
 
 import (
+	"fmt"
+
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo-contrib/session"
@@ -46,7 +48,9 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 	password := c.FormValue("password")
 
 	var user db.User
-	err := h.db.Get(&user, "SELECT id, passwordhash, username FROM t_system_user tsu WHERE tsu.username = @p1 or tsu.email = @p1", username)
+	query := fmt.Sprintf("SELECT id, passwordhash, username FROM t_system_user tsu WHERE tsu.username = '%[1]s' or tsu.email = '%[1]s' ", username)
+	log.Info().Msg(query)
+	err := h.db.Get(&user, query)
 
 	if err != nil {
 		loginModel.Errors = append(loginModel.Errors, types.ERROR_LOGIN)
