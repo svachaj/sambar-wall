@@ -14,7 +14,7 @@ templ LoginForm(model types.LoginFormResponse) {
 			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Přihlášení</h2>
 		</div>
 		<div class="mt-10 mx-auto w-full max-w-sm">
-			<form class="space-y-6" hx-post="/sign-in" hx-target="body" hx-swap="outerHTML">
+			<form class="space-y-6" hx-post="/sign-in" hx-target="body" hx-swap="outerHTML" hx-push-url="/">
 				<div>
 					<label for="email" class="block text-sm font-medium leading-6 text-white">{ model.UserName.Label }</label>
 					<div class="mt-2">

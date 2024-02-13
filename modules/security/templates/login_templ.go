@@ -28,7 +28,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex min-h-full flex-col justify-center px-6 py-8\" id=\"login-form\"><div class=\"mx-auto w-full max-w-sm\"><div class=\"text-center w-full flex justify-center\"><img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></div><h2 class=\"mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white\">Přihlášení</h2></div><div class=\"mt-10 mx-auto w-full max-w-sm\"><form class=\"space-y-6\" hx-post=\"/sign-in\" hx-target=\"body\" hx-swap=\"outerHTML\"><div><label for=\"email\" class=\"block text-sm font-medium leading-6 text-white\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex min-h-full flex-col justify-center px-6 py-8\" id=\"login-form\"><div class=\"mx-auto w-full max-w-sm\"><div class=\"text-center w-full flex justify-center\"><img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></div><h2 class=\"mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white\">Přihlášení</h2></div><div class=\"mt-10 mx-auto w-full max-w-sm\"><form class=\"space-y-6\" hx-post=\"/sign-in\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-push-url=\"/\"><div><label for=\"email\" class=\"block text-sm font-medium leading-6 text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
