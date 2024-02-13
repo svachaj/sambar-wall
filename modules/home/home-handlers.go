@@ -26,12 +26,14 @@ func NewHomeHandlers(db *sqlx.DB) IHomeHandlers {
 
 func (h *HomeHandlers) Home(c echo.Context) error {
 
-	homePage := HomePage(h.db, c)
+	isAuthenticated, _ := middlewares.IsAuthenticated(&c)
+
+	homePage := HomePage(h.db, isAuthenticated)
 
 	return utils.HTML(c, homePage)
 }
 
-func HomePage(db *sqlx.DB, c echo.Context) templ.Component {
+func HomePage(db *sqlx.DB, isAuthenticated bool) templ.Component {
 	courses := []types.Course{}
 	err := db.Select(&courses, `SELECT tc.id as id, tct.Name1 as name , tc.ValidFrom as valid_from, tc.ValidTo as valid_to FROM t_course tc
 	inner join t_course_type tct on tc.ID_typeOfCourse = tct.ID
@@ -42,9 +44,8 @@ func HomePage(db *sqlx.DB, c echo.Context) templ.Component {
 		courses = append(courses, types.Course{Name: "Chyba při načítání kurzů"})
 	}
 
-	isAuthenticated, _ := middlewares.IsAuthenticated(&c)
-
 	homeComponent := homeTemplates.HomeComponent(courses)
 	homePage := homeTemplates.HomePage(homeComponent, isAuthenticated)
+
 	return homePage
 }

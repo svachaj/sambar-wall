@@ -76,7 +76,7 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 
 			loginModel.WasOk = true
 
-			return utils.HTML(c, home.HomePage(h.db, c))
+			return utils.HTML(c, home.HomePage(h.db, true))
 		}
 	}
 
@@ -98,5 +98,5 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 
 	authSession.Save(c.Request(), c.Response())
 
-	return utils.HTML(c, home.HomePage(h.db, c))
+	return utils.HTML(c, home.HomePage(h.db, false))
 }
