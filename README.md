@@ -10,6 +10,8 @@ To have the best templ experience, you should install VSCode extension `templ-vs
 
 `go install github.com/a-h/templ/cmd/templ@latest`
 
+Than follow this link how to setup IDE [IDE Support](https://templ.guide/commands-and-tools/ide-support)
+
 ### [Tailwindcss](https://tailwindcss.com/) - CSS Framework
 
 With no need to install npm, you can use the standalone CLI to compile your Tailwind CSS files.
