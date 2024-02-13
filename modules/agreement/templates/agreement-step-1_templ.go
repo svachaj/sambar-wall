@@ -27,7 +27,7 @@ func Step1() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center px-2\"><h1 class=\"text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5\">Souhlas s provzním řádem stěny</h1><p class=\"text-lg text-neutral-600 dark:text-neutral-400\">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p><a href=\"/static/files/provozni-rad-2024-02-01.pdf\" target=\"blank\" hx-boost=\"false\" class=\"font-semibold text-primary-600 hover:text-primary-400 hover:underline\">Zobrazit provozní řád</a></section>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center px-2\"><h1 class=\"text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5\">Souhlas s provzním řádem stěny</h1><p class=\"text-lg text-neutral-600 dark:text-neutral-400\">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p><div class=\"flex flex-col items-center\"><input type=\"email\" class=\"w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg\" placeholder=\"Nejprve zadejte váš email, prosím\"> <button class=\"bg-primary-600 text-white rounded-md px-4 py-2 mt-2 hover:bg-primary-400\">Pokračovat</button></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
