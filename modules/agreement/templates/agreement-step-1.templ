@@ -1,0 +1,19 @@
+package agreementTemplates
+
+import (
+	"github.com/svachaj/sambar-wall/modules/layouts"
+)
+
+templ Step1() {
+	<section class="mx-auto w-fit flex flex-col gap-8 text-center px-2">
+		<h1 class="text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5">Souhlas s provzním řádem stěny</h1>
+		<p class="text-lg text-neutral-600 dark:text-neutral-400">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p>
+		<a href="/static/files/provozni-rad-2024-02-01.pdf" target="blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 hover:underline">Zobrazit provozní řád</a>
+	</section>
+}
+
+templ Step1Page() {
+	@layouts.BaseLayout(false) {
+		@Step1()
+	}
+}

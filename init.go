@@ -5,6 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/config"
 	"github.com/svachaj/sambar-wall/db"
+	"github.com/svachaj/sambar-wall/modules/agreement"
 	"github.com/svachaj/sambar-wall/modules/home"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	"github.com/svachaj/sambar-wall/modules/security"
@@ -29,6 +30,10 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	errorsHandlers := httperrors.NewErrorsHandler()
 	httperrors.MapErrorsRoutes(e, errorsHandlers)
 	log.Info().Msg("Module Errors Initialized and Routes Mapped Successfully.")
+
+	agreementHandlers := agreement.NewAgreementHandlers(db)
+	agreement.MapAgreementRoutes(e, agreementHandlers)
+	log.Info().Msg("Module Agreement Initialized and Routes Mapped Successfully.")
 
 	return nil
 
