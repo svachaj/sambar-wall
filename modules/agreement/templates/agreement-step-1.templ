@@ -2,6 +2,7 @@ package agreementTemplates
 
 import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/modules/constants"
 )
 
 templ Step1() {
@@ -9,10 +10,10 @@ templ Step1() {
 		<h1 class="text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5">Souhlas s provzním řádem stěny</h1>
 		<p class="text-lg text-neutral-600 dark:text-neutral-400">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p>
 		// <a href="/static/files/provozni-rad-2024-02-01.pdf" target="blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 hover:underline">Zobrazit provozní řád</a>
-		<div class="flex flex-col items-center">
-			<input type="email" class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Nejprve zadejte váš email, prosím"/>
+		<form class="flex flex-col items-center" hx-post={ constants.ROUTE_AGREEMENT_CHECK_EMAIL }>
+			<input type="email" id="email" name="email" required class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Nejprve zadejte váš email, prosím"/>
 			<button class="bg-primary-600 text-white rounded-md px-4 py-2 mt-2 hover:bg-primary-400">Pokračovat</button>
-		</div>
+		</form>
 		// <div>
 		// 	<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
 		// 	<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>
@@ -20,7 +21,7 @@ templ Step1() {
 	</section>
 }
 
-templ Step1Page() {
+templ AgreementPage() {
 	@layouts.BaseLayout(false) {
 		@Step1()
 	}

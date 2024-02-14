@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import (
+	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/layouts"
 )
 
@@ -27,7 +28,15 @@ func Step1() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center px-2\"><h1 class=\"text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5\">Souhlas s provzním řádem stěny</h1><p class=\"text-lg text-neutral-600 dark:text-neutral-400\">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p><div class=\"flex flex-col items-center\"><input type=\"email\" class=\"w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg\" placeholder=\"Nejprve zadejte váš email, prosím\"> <button class=\"bg-primary-600 text-white rounded-md px-4 py-2 mt-2 hover:bg-primary-400\">Pokračovat</button></div></section>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center px-2\"><h1 class=\"text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5\">Souhlas s provzním řádem stěny</h1><p class=\"text-lg text-neutral-600 dark:text-neutral-400\">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p><form class=\"flex flex-col items-center\" hx-post=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(constants.ROUTE_AGREEMENT_CHECK_EMAIL))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><input type=\"email\" id=\"email\" name=\"email\" required class=\"w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg\" placeholder=\"Nejprve zadejte váš email, prosím\"> <button class=\"bg-primary-600 text-white rounded-md px-4 py-2 mt-2 hover:bg-primary-400\">Pokračovat</button></form></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -38,7 +47,7 @@ func Step1() templ.Component {
 	})
 }
 
-func Step1Page() templ.Component {
+func AgreementPage() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
