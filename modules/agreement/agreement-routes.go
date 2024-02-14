@@ -11,4 +11,6 @@ func MapAgreementRoutes(e *echo.Echo, h IAgreementHandlers) {
 
 	e.POST(constants.ROUTE_AGREEMENT_CHECK_EMAIL, h.CheckEmail)
 
+	e.POST(constants.ROUTE_AGREEMENT_FINALIZE, h.Finalize)
+
 }

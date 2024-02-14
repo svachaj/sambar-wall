@@ -5,24 +5,45 @@ import (
 	"github.com/svachaj/sambar-wall/modules/constants"
 )
 
-templ Step1() {
-	<section class="mx-auto w-fit flex flex-col gap-8 text-center px-2">
-		<h1 class="text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5">Souhlas s provzním řádem stěny</h1>
-		<p class="text-lg text-neutral-600 dark:text-neutral-400">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p>
-		// <a href="/static/files/provozni-rad-2024-02-01.pdf" target="blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 hover:underline">Zobrazit provozní řád</a>
-		<form class="flex flex-col items-center" hx-post={ constants.ROUTE_AGREEMENT_CHECK_EMAIL }>
-			<input type="email" id="email" name="email" required class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Nejprve zadejte váš email, prosím"/>
-			<button class="bg-primary-600 text-white rounded-md px-4 py-2 mt-2 hover:bg-primary-400">Pokračovat</button>
-		</form>
-		// <div>
-		// 	<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
-		// 	<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>
-		// </div>
-	</section>
+templ Step1Form(toast templ.Component) {
+	<form class="flex flex-col items-center animate-show-smooth-1s" hx-post={ constants.ROUTE_AGREEMENT_CHECK_EMAIL } hx-swap="outerHTML">
+		<input type="email" id="email" name="email" required class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Nejprve zadejte váš email, prosím"/>
+		<button class="bg-primary-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-primary-400">Pokračovat</button>
+	</form>
+	if toast != nil {
+		@toast
+	}
+}
+
+templ Step2Form(email string, toast templ.Component) {
+	<form class="flex flex-col items-center animate-show-smooth-1s" hx-post={ constants.ROUTE_AGREEMENT_FINALIZE } hx-swap="outerHTML">
+		<input type="email" id="email" name="email" value={ email } disabled class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg"/>
+		<input type="text" id="firstName" name="firstName" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Jméno"/>
+		<input type="text" id="lastName" name="lastName" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Příjmení"/>
+		<input type="date" id="birthDate" name="birthDate" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Datum narození"/>
+		<input type="text" id="confirmationCode" name="confirmationCode" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Ověřovací kód z emailu"/>
+		<div class="w-full mt-2">
+			<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
+			<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>
+		</div>
+		<button class="bg-primary-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-primary-400">Dokončit </button>
+	</form>
+	if toast != nil {
+		@toast
+	}
 }
 
 templ AgreementPage() {
 	@layouts.BaseLayout(false) {
-		@Step1()
+		<section class="mx-auto w-fit flex flex-col gap-8 text-center px-2">
+			<h1 class="text-3xl font-bold text-neutral-800 dark:text-neutral-200 mt-5">Souhlas s provzním řádem stěny</h1>
+			<p class="text-lg text-neutral-600 dark:text-neutral-400">Před tím, než začnete stěnu používat, musíte souhlasit s provozním řádem stěny.</p>
+			// <a href="/static/files/provozni-rad-2024-02-01.pdf" target="blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 hover:underline">Zobrazit provozní řád</a>
+			@Step1Form(nil)
+			// <div>
+			// 	<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
+			// 	<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>
+			// </div>
+		</section>
 	}
 }

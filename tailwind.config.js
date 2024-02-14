@@ -13,11 +13,11 @@ module.exports = {
         neutral: colors.gray,
       },
       animation: {
-        "open-modal": "openModal 1s",
-        "input-error": "openModal 0.5s",
+        "show-smooth-1s": "showSmooth 1s",
+        "show-smooth-1/2s": "showSmooth 0.5s",
       },
       keyframes: {
-        openModal: {
+        showSmooth: {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
         },

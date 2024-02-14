@@ -2,10 +2,10 @@ package layouts
 
 templ ModalLayout() {
 	<div class="relative z-20 modal-dialog" aria-labelledby="modal-title" role="dialog" aria-modal="true" @keyup.escape.window="removeModalDialog()">
-		<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity animate-open-modal"></div>
+		<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity animate-show-smooth-1s"></div>
 		<div class="fixed inset-0 z-20 w-screen overflow-y-auto">
 			<div class="flex min-h-full items-center justify-center p-4 text-center ">
-				<div @click.outside="removeModalDialog()" class="relative transform overflow-hidden rounded-lg bg-neutral-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-sm  animate-open-modal">
+				<div @click.outside="removeModalDialog()" class="relative transform overflow-hidden rounded-lg bg-neutral-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-sm  animate-show-smooth-1s">
 					<button @click="removeModalDialog()" type="button" class="text-primary-600 hover:text-primary-400 fixed right-0 top-0">
 						<span class="sr-only">Close</span>
 						<svg class="absolute top-0 right-0 w-6 h-6 m-4 " fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
