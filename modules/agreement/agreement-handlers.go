@@ -12,6 +12,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 
 	agreementTemplates "github.com/svachaj/sambar-wall/modules/agreement/templates"
+	"github.com/svachaj/sambar-wall/modules/agreement/types"
 	toasts "github.com/svachaj/sambar-wall/modules/toasts"
 )
 
@@ -58,7 +59,9 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 		return utils.HTML(c, step1WithToast)
 	}
 
-	step2 := agreementTemplates.Step2Form(email, toasts.InfoToast(fmt.Sprintf("Na email %v byl odeslán ověřovací kód.", email)))
+	agreementForm := types.AgreementFormInitModel
+	agreementForm.Email.Value = email
+	step2 := agreementTemplates.Step2Form(agreementForm, toasts.InfoToast(fmt.Sprintf("Na email %v byl odeslán ověřovací kód.", email)))
 	return utils.HTML(c, step2)
 }
 

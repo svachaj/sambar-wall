@@ -1,0 +1,11 @@
+package components
+
+import (
+	"github.com/svachaj/sambar-wall/modules/types"
+)
+
+templ FormField[V types.FormValue](field types.FormField[V]) {
+	if field.FieldType == "text" || field.FieldType == "email" || field.FieldType == "number" || field.FieldType == "date" {
+		<input type={ field.FieldType } id={ field.ID } name={ field.ID } class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 text-lg p-2 sm:leading-6" placeholder={ field.Label }/>
+	}
+}

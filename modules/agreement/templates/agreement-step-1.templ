@@ -3,6 +3,8 @@ package agreementTemplates
 import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/modules/constants"
+	"github.com/svachaj/sambar-wall/modules/agreement/types"
+	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 )
 
 templ Step1Form(toast templ.Component) {
@@ -15,11 +17,11 @@ templ Step1Form(toast templ.Component) {
 	}
 }
 
-templ Step2Form(email string, toast templ.Component) {
+templ Step2Form(agreementForm types.AgreementForm, toast templ.Component) {
 	<form class="flex flex-col items-center animate-show-smooth-1s" hx-post={ constants.ROUTE_AGREEMENT_FINALIZE } hx-swap="outerHTML">
-		<input type="email" id="email" name="email" value={ email } disabled class="w-full sm:w-2/3 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg"/>
-		<input type="text" id="firstName" name="firstName" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Jméno"/>
-		<input type="text" id="lastName" name="lastName" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Příjmení"/>
+		@formComponents.FormField(agreementForm.Email)
+		@formComponents.FormField(agreementForm.FirstName)
+		@formComponents.FormField(agreementForm.LastName)
 		<input type="date" id="birthDate" name="birthDate" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Datum narození"/>
 		<input type="text" id="confirmationCode" name="confirmationCode" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Ověřovací kód z emailu"/>
 		<div class="w-full mt-2">
