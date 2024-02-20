@@ -1,12 +1,12 @@
 package types
 
-type FormField[V FormValue] struct {
-	ID        string   `json:"id"`
-	Label     string   `json:"label"`
-	Value     V        `json:"value"`
-	Errors    []string `json:"errors"`
-	FieldType string   `json:"inputType"` // text | number | date | boolean | email | password
-	Required  string
+type FormField struct {
+	ID         string   `json:"id"`
+	Label      string   `json:"label"`
+	Value      string   `json:"value"`
+	Errors     []string `json:"errors"`
+	FieldType  string   `json:"inputType"` // text | number | date | boolean | email | password
+	Validation string
 }
 
 type FormValue interface {

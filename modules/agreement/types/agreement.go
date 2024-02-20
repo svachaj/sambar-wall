@@ -6,15 +6,19 @@ import (
 
 type AgreementForm struct {
 	baseTypes.BaseModel
-	FirstName baseTypes.FormField[string] `json:"firstName"`
-	LastName  baseTypes.FormField[string] `json:"lastName"`
-	Email     baseTypes.FormField[string] `json:"email"`
+	FirstName        baseTypes.FormField `json:"firstName"`
+	LastName         baseTypes.FormField `json:"lastName"`
+	Email            baseTypes.FormField `json:"email"`
+	BirthDate        baseTypes.FormField `json:"birthDate"`
+	ConfirmationCode baseTypes.FormField `json:"confirmationCode"`
 }
 
 var AgreementFormInitModel AgreementForm = AgreementForm{
-	FirstName: baseTypes.FormField[string]{Label: "Jméno", FieldType: "text", Required: "false"},
-	LastName:  baseTypes.FormField[string]{Label: "Příjmení", FieldType: "text", Required: "required"},
-	Email:     baseTypes.FormField[string]{Label: "Email", FieldType: "email", Required: "required"},
+	FirstName:        baseTypes.FormField{ID: "firstName", Label: "Jméno", FieldType: "text"},
+	LastName:         baseTypes.FormField{ID: "lastName", Label: "Příjmení", FieldType: "text", Validation: "required"},
+	Email:            baseTypes.FormField{ID: "email", Label: "Email", FieldType: "email", Validation: "required"},
+	BirthDate:        baseTypes.FormField{ID: "birthDate", Label: "Datum narození", FieldType: "date", Validation: "required"},
+	ConfirmationCode: baseTypes.FormField{ID: "confirmationCode", Label: "Kód z emailu", FieldType: "text", Validation: "required"},
 }
 
 // const ERROR_LOGIN = "Chybné uživatelské jméno nebo heslo"

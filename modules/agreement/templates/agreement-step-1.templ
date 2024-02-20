@@ -18,12 +18,12 @@ templ Step1Form(toast templ.Component) {
 }
 
 templ Step2Form(agreementForm types.AgreementForm, toast templ.Component) {
-	<form class="flex flex-col items-center animate-show-smooth-1s" hx-post={ constants.ROUTE_AGREEMENT_FINALIZE } hx-swap="outerHTML">
+	<form class="rounded-lg bg-neutral-800 shadow-lg p-6 flex flex-col items-center animate-show-smooth-1s" hx-post={ constants.ROUTE_AGREEMENT_FINALIZE } hx-swap="outerHTML">
 		@formComponents.FormField(agreementForm.Email)
 		@formComponents.FormField(agreementForm.FirstName)
 		@formComponents.FormField(agreementForm.LastName)
-		<input type="date" id="birthDate" name="birthDate" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Datum narození"/>
-		<input type="text" id="confirmationCode" name="confirmationCode" required class="w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg" placeholder="Ověřovací kód z emailu"/>
+		@formComponents.FormField(agreementForm.BirthDate)
+		@formComponents.FormField(agreementForm.ConfirmationCode)
 		<div class="w-full mt-2">
 			<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
 			<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>

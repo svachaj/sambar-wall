@@ -68,7 +68,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col items-center animate-show-smooth-1s\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"rounded-lg bg-neutral-800 shadow-lg p-6 flex flex-col items-center animate-show-smooth-1s\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -92,7 +92,15 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"date\" id=\"birthDate\" name=\"birthDate\" required class=\"w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg\" placeholder=\"Datum narození\"> <input type=\"text\" id=\"confirmationCode\" name=\"confirmationCode\" required class=\"w-full sm:w-2/3 mt-2 border-2 border-neutral-300 dark:border-neutral-700 rounded-md p-2 text-lg\" placeholder=\"Ověřovací kód z emailu\"><div class=\"w-full mt-2\"><input type=\"checkbox\" id=\"agree\" class=\"form-checkbox h-5 w-5 text-primary-600\"> <label for=\"agree\" class=\"ml-2 text-lg text-neutral-600 dark:text-neutral-400\">Souhlasím s provozním řádem stěny</label></div><button class=\"bg-primary-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-primary-400\">Dokončit </button></form>")
+		templ_7745c5c3_Err = formComponents.FormField(agreementForm.BirthDate).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = formComponents.FormField(agreementForm.ConfirmationCode).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full mt-2\"><input type=\"checkbox\" id=\"agree\" class=\"form-checkbox h-5 w-5 text-primary-600\"> <label for=\"agree\" class=\"ml-2 text-lg text-neutral-600 dark:text-neutral-400\">Souhlasím s provozním řádem stěny</label></div><button class=\"bg-primary-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-primary-400\">Dokončit </button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
