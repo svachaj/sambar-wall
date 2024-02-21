@@ -1,7 +1,9 @@
 function removeElement(selector) {
-  var element = document.querySelector(selector);
+  var element = document.querySelectorAll(selector);
   if (element) {
-    element.remove();
+    element.forEach((el) => {
+      el.remove();
+    });
   }
 }
 

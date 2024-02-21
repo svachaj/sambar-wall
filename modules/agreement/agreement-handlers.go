@@ -49,19 +49,19 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
 	if err != nil {
 		log.Error().Msgf("CheckEmail error: %v", err)
-		step1WithToast := agreementTemplates.Step1Form(toasts.ErrorToast("Na serveru došlo k chybě. Zkuste akci opakovat, prosím."))
+		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
 
 	// if count > 0 then user is already registered
 	if count > 0 {
-		step1WithToast := agreementTemplates.Step1Form(toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
+		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
 		return utils.HTML(c, step1WithToast)
 	}
 
 	agreementForm := types.AgreementFormInitModel
 	agreementForm.Email.Value = email
-	step2 := agreementTemplates.Step2Form(agreementForm, toasts.InfoToast(fmt.Sprintf("Na email %v byl odeslán ověřovací kód.", email)))
+	step2 := agreementTemplates.Step2Form(agreementForm, toasts.InfoToast(fmt.Sprintf("Na zadaný email %v byl odeslán ověřovací kód.", email)))
 	return utils.HTML(c, step2)
 }
 
@@ -69,7 +69,7 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 
 	//email := c.FormValue("email")
 
-	step1WithToast := agreementTemplates.Step1Form(toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))
+	step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))
 	return utils.HTML(c, step1WithToast)
 
 }
