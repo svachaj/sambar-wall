@@ -28,14 +28,14 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex min-h-full flex-col justify-center px-6 py-8\" id=\"login-form\"><div class=\"mx-auto w-full max-w-sm\"><div class=\"text-center w-full flex justify-center\"><img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></div><h2 class=\"mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white\">Přihlášení</h2></div><div class=\"mt-10 mx-auto w-full max-w-sm\"><form class=\"space-y-6\" hx-post=\"/sign-in\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-push-url=\"/\"><div><label for=\"email\" class=\"block text-sm font-medium leading-6 text-white\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex min-h-full flex-col justify-center px-6 py-8\" id=\"login-form\"><div class=\"mx-auto w-full max-w-sm\"><div class=\"text-center w-full flex justify-center\"><img class=\"h-8 w-auto\" src=\"static/assets/logo.png\" alt=\"\"></div><h2 class=\"mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white\">Přihlášení</h2></div><div class=\"mt-10 mx-auto w-full max-w-sm\"><form class=\"space-y-6\" hx-post=\"/sign-in\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-push-url=\"/\"><div><label for=\"username\" class=\"block text-sm font-medium leading-6 text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(model.UserName.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 18, Col: 101}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 18, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -46,7 +46,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(model.UserName.Errors) == 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"email\" name=\"username\" tabindex=\"1\" required value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"username\" name=\"username\" tabindex=\"1\" required value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,7 +59,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"email\" name=\"username\" tabindex=\"1\" required type=\"text\" class=\"block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6\"> <span class=\"text-accent-500 italic text-xs animate-show-smooth-1/2s\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input id=\"username\" name=\"username\" tabindex=\"1\" required type=\"text\" class=\"block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6\"> <span class=\"text-accent-500 italic text-xs animate-show-smooth-1/2s\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
