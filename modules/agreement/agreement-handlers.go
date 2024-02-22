@@ -72,7 +72,11 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	if email != "" {
 		// send email with verification code
 		// generate verification code, random 4 digit number
-		code := rand.Int31n(10000)
+
+		code := rand.Intn(10000)
+		if code < 1000 {
+			code += 1000
+		}
 
 		err := h.emailService.SendEmail("Ověření emailu pro souhlas s provozním řádem", fmt.Sprintf("Ověřovací kód: %v", code), email)
 		if err != nil {
