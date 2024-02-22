@@ -23,6 +23,11 @@ func LoadConfiguraion() (*Config, error) {
 	config.DbPassword = os.Getenv("DB_PASSWORD")
 	config.DbName = os.Getenv("DB_NAME")
 
+	config.SmtpHost = os.Getenv("SMTP_HOST")
+	config.SmtpPort = parseIntWithDefaultValue(os.Getenv("SMTP_PORT"), 587)
+	config.SmtpUser = os.Getenv("SMTP_USER")
+	config.SmtpPassword = os.Getenv("SMTP_PASSWORD")
+
 	return &config, nil
 }
 
@@ -49,4 +54,10 @@ type Config struct {
 	DbUser     string
 	DbPassword string
 	DbName     string
+
+	// SMTP
+	SmtpHost     string
+	SmtpPort     int
+	SmtpUser     string
+	SmtpPassword string
 }

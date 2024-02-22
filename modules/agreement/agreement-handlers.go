@@ -23,11 +23,12 @@ type IAgreementHandlers interface {
 }
 
 type AgreementHandlers struct {
-	db *sqlx.DB
+	db           *sqlx.DB
+	emailService *utils.EmailService
 }
 
-func NewAgreementHandlers(db *sqlx.DB) IAgreementHandlers {
-	return &AgreementHandlers{db: db}
+func NewAgreementHandlers(db *sqlx.DB, emailService *utils.EmailService) IAgreementHandlers {
+	return &AgreementHandlers{db: db, emailService: emailService}
 }
 
 func (h *AgreementHandlers) AgreementStartPage(c echo.Context) error {
@@ -57,6 +58,16 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	if count > 0 {
 		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
 		return utils.HTML(c, step1WithToast)
+	}
+
+	if email != "" {
+		// send email with verification code
+		err := h.emailService.SendEmail("Ověření emailu pro souhlas s provozním řádem", "Ověřovací kód: 123456", email)
+		if err != nil {
+			log.Error().Msgf("CheckEmail error: %v", err)
+			step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+			return utils.HTML(c, step1WithToast)
+		}
 	}
 
 	agreementForm := types.AgreementFormInitModel

@@ -10,6 +10,7 @@ import (
 	"github.com/svachaj/sambar-wall/modules/home"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	"github.com/svachaj/sambar-wall/modules/security"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error {
@@ -19,6 +20,8 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	if err != nil {
 		return err
 	}
+
+	emailService := utils.NewEmailService(settings.SmtpHost, settings.SmtpPort, settings.SmtpUser, settings.SmtpPassword)
 
 	securityHandlers := security.NewSecurityHandlers(db)
 	security.MapSecurityRoutes(e, securityHandlers)
@@ -32,7 +35,7 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	httperrors.MapErrorsRoutes(e, errorsHandlers)
 	log.Info().Msg("Module Errors Initialized and Routes Mapped Successfully.")
 
-	agreementHandlers := agreement.NewAgreementHandlers(db)
+	agreementHandlers := agreement.NewAgreementHandlers(db, emailService)
 	agreement.MapAgreementRoutes(e, agreementHandlers)
 	log.Info().Msg("Module Agreement Initialized and Routes Mapped Successfully.")
 
