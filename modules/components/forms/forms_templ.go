@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-const formClass = "rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center animate-show-smooth-1s"
+const formClass = "rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center "
 
 func BaseForm(hxPost, hxSwap string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {

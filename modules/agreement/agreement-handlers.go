@@ -44,6 +44,14 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
 	email := c.FormValue("email")
 
+	// validate email
+	if email == "" {
+		model := types.AgreementFormStep1InitModel
+		model.Email.Errors = append(model.Email.Errors, "Email je povinný údaj.")
+		step1WithToast := agreementTemplates.Step1Form(model, nil)
+		return utils.HTML(c, step1WithToast)
+	}
+
 	var count int
 	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_wall_user WHERE isenabled = 'true' AND lower(email) = '%v'", strings.ToLower(email))
 	err := h.db.Get(&count, query)
