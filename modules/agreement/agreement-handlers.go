@@ -2,6 +2,7 @@ package agreement
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/a-h/templ"
@@ -70,7 +71,10 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
 	if email != "" {
 		// send email with verification code
-		err := h.emailService.SendEmail("Ověření emailu pro souhlas s provozním řádem", "Ověřovací kód: 123456", email)
+		// generate verification code, random 4 digit number
+		code := rand.Int31n(10000)
+
+		err := h.emailService.SendEmail("Ověření emailu pro souhlas s provozním řádem", fmt.Sprintf("Ověřovací kód: %v", code), email)
 		if err != nil {
 			log.Error().Msgf("CheckEmail error: %v", err)
 			step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
