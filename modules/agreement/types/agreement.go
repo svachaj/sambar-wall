@@ -27,7 +27,7 @@ type AgreementFormStep1 struct {
 }
 
 var AgreementFormStep1InitModel AgreementFormStep1 = AgreementFormStep1{
-	Email: baseTypes.FormField{ID: "email", Label: "Nejprve zadejte váš email, prosím", FieldType: "email", Validation: "required"},
+	Email: baseTypes.FormField{ID: "email", Label: "Nejprve zadejte svůj email, prosím", FieldType: "email", Validation: "required"},
 }
 
 // const ERROR_LOGIN = "Chybné uživatelské jméno nebo heslo"

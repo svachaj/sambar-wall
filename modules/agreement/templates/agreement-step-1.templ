@@ -9,7 +9,7 @@ import (
 
 templ Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_CHECK_EMAIL, "outerHTML") {
-		@formComponents.H1("Souhlas s provzním řádem stěny")
+		@formComponents.H1("Souhlas s provozním řádem stěny")
 		@formComponents.FormField(agreementForm.Email)
 		@formComponents.SubmitButton("Pokračovat")
 	}
@@ -20,7 +20,7 @@ templ Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) {
 
 templ Step2Form(agreementForm types.AgreementForm, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_FINALIZE, "outerHTML") {
-		@formComponents.H1("Souhlas s provzním řádem stěny")
+		@formComponents.H1("Souhlas s provozním řádem stěny")
 		@formComponents.InfoDiv("Na zadaný email byl odeslán ověřovací kód, který musíte zadat v tomto kroku pro dokončení souhlasu.")
 		@formComponents.FormField(agreementForm.Email)
 		@formComponents.FormField(agreementForm.FirstName)

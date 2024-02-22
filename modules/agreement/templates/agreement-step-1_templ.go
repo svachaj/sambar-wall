@@ -36,7 +36,7 @@ func Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) te
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = formComponents.H1("Souhlas s provzním řádem stěny").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.H1("Souhlas s provozním řádem stěny").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -97,7 +97,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = formComponents.H1("Souhlas s provzním řádem stěny").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.H1("Souhlas s provozním řádem stěny").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
