@@ -2,14 +2,10 @@ package agreement
 
 import (
 	"fmt"
-	"math/rand"
-	"strings"
 
 	"github.com/a-h/templ"
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/svachaj/sambar-wall/middlewares"
 	"github.com/svachaj/sambar-wall/utils"
 
 	agreementTemplates "github.com/svachaj/sambar-wall/modules/agreement/templates"
@@ -24,19 +20,16 @@ type IAgreementHandlers interface {
 }
 
 type AgreementHandlers struct {
-	db           *sqlx.DB
-	emailService *utils.EmailService
+	service IAgreementService
 }
 
-func NewAgreementHandlers(db *sqlx.DB, emailService *utils.EmailService) IAgreementHandlers {
-	return &AgreementHandlers{db: db, emailService: emailService}
+func NewAgreementHandlers(svc IAgreementService) IAgreementHandlers {
+	return &AgreementHandlers{service: svc}
 }
 
 func (h *AgreementHandlers) AgreementStartPage(c echo.Context) error {
 
-	isAuthenticated, _ := middlewares.IsAuthenticated(&c)
-
-	step1Page := Step1Page(h.db, isAuthenticated)
+	step1Page := Step1Page()
 
 	return utils.HTML(c, step1Page)
 }
@@ -53,37 +46,34 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 		return utils.HTML(c, step1WithToast)
 	}
 
-	var count int
-	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_wall_user WHERE isenabled = 'true' AND lower(email) = '%v'", strings.ToLower(email))
-	err := h.db.Get(&count, query)
-
+	// check if email exists
+	existEmail, err := h.service.EmailExists(email)
 	if err != nil {
 		log.Error().Msgf("CheckEmail error: %v", err)
 		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
 
-	// if count > 0 then user is already registered
-	if count > 0 {
+	if existEmail {
 		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
 		return utils.HTML(c, step1WithToast)
 	}
 
-	if email != "" {
-		// send email with verification code
-		// generate verification code, random 4 digit number
+	// generate and save verification code
+	code := h.service.GenerateVerificationCode()
+	err = h.service.SaveVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Save verification code error: %v", err)
+		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
+	}
 
-		code := rand.Intn(10000)
-		if code < 1000 {
-			code += 1000
-		}
-
-		err := h.emailService.SendEmail("Ověření emailu pro souhlas s provozním řádem", fmt.Sprintf("Ověřovací kód: %v", code), email)
-		if err != nil {
-			log.Error().Msgf("CheckEmail error: %v", err)
-			step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
-			return utils.HTML(c, step1WithToast)
-		}
+	// send verification code
+	err = h.service.SendVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Send verification code error: %v", err)
+		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
 	}
 
 	agreementForm := types.AgreementFormInitModel
@@ -101,7 +91,7 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 
 }
 
-func Step1Page(db *sqlx.DB, isAuthenticated bool) templ.Component {
+func Step1Page() templ.Component {
 	step1Page := agreementTemplates.AgreementPage()
 
 	return step1Page

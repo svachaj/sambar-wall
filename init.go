@@ -35,7 +35,8 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	httperrors.MapErrorsRoutes(e, errorsHandlers)
 	log.Info().Msg("Module Errors Initialized and Routes Mapped Successfully.")
 
-	agreementHandlers := agreement.NewAgreementHandlers(db, emailService)
+	agreementService := agreement.NewAgreementService(db, emailService)
+	agreementHandlers := agreement.NewAgreementHandlers(agreementService)
 	agreement.MapAgreementRoutes(e, agreementHandlers)
 	log.Info().Msg("Module Agreement Initialized and Routes Mapped Successfully.")
 

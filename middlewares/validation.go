@@ -28,7 +28,6 @@ func ValidateFormField(c echo.Context) error {
 		fieldType := c.Request().Header.Get("Field-Type")
 		fieldLabel, _ := url.QueryUnescape(c.Request().Header.Get("Field-Label"))
 
-		log.Info().Msgf("Field name: %v, Field value: %v, Field validation: %v, Field type: %v, Field label: %v", fieldName, fieldValue, fieldValidation, fieldType, fieldLabel)
 		formField := types.FormField{ID: fieldName, Label: fieldLabel, FieldType: fieldType, Value: fieldValue, Validation: fieldValidation}
 
 		if fieldValidation == "required" && fieldValue == "" {
