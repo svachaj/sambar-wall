@@ -11,29 +11,41 @@ templ FormField(field types.FormField) {
 	<div class="mt-2 w-full form-field">
 		if field.FieldType == "text" || field.FieldType == "email" || field.FieldType == "number" || field.FieldType == "date" {
 			<label class="w-full block text-left p-1 text-white text-sm" for={ field.ID }>{ field.Label }</label>
-			<input
-				hx-post="/validate-form-field"
-				hx-headers={ fmt.Sprintf(`{"Field-Validation": "%v", "Field-Type": "%v", "Field-Label": "%v"}`, "TODO", field.FieldType, url.QueryEscape(field.Label)) }
-				hx-trigger="change changed"
-				hx-target="closest .form-field"
-				hx-swap="outerHTML"
-				type={ field.FieldType }
-				id={ field.ID }
-				name={ field.ID }
-				value={ field.Value }
-				class={ utils.Classes("block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-lg text-base p-2"),
-				utils.ClassIf(len(field.Errors) > 0, "bg-red-700/10", "bg-white/5") }
-				placeholder={ field.Label }
-			/>
+			if field.Disabled {
+				<input
+					type={ field.FieldType }
+					disabled
+					value={ field.Value }
+					class={ utils.Classes("block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-lg text-base p-2"),
+				    utils.ClassIf(len(field.Errors) > 0, "bg-red-700/10", "bg-white/5") }
+					placeholder={ field.Label }
+				/>
+				<input type="hidden" name={ field.ID } id={ field.ID } value={ field.Value }/>
+			} else {
+				<input
+					hx-post="/validate-form-field"
+					hx-headers={ fmt.Sprintf(`{"Field-Validation": "%v", "Field-Type": "%v", "Field-Label": "%v"}`, "TODO", field.FieldType, url.QueryEscape(field.Label)) }
+					hx-trigger="change changed"
+					hx-target="closest .form-field"
+					hx-swap="outerHTML"
+					type={ field.FieldType }
+					id={ field.ID }
+					name={ field.ID }
+					value={ field.Value }
+					class={ utils.Classes("block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-lg text-base p-2"),
+				    utils.ClassIf(len(field.Errors) > 0, "bg-red-700/10", "bg-white/5") }
+					placeholder={ field.Label }
+				/>
+			}
 		}
 		if field.FieldType == "checkbox" {
-			<div class="w-full mt-2">
+			<div class="w-full mt-2 flex justify-start items-start">
 				if field.Value == "on" {
 					<input
 						id={ field.ID }
 						name={ field.ID }
 						type="checkbox"
-						class="form-checkbox h-5 w-5 text-primary-600"
+						class="form-checkbox h-5 w-5 text-primary-600 mt-1"
 						checked
 					/>
 				} else {
@@ -41,10 +53,16 @@ templ FormField(field types.FormField) {
 						id={ field.ID }
 						name={ field.ID }
 						type="checkbox"
-						class="form-checkbox h-5 w-5 text-primary-600"
+						class="form-checkbox h-5 w-5 text-primary-600 mt-1"
 					/>
 				}
-				<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">{ field.Label }</label>
+				<label for={ field.ID } class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">
+					if field.Link != "" {
+						<a href={ templ.SafeURL(field.Link) } target="_blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 underline">{ field.Label }</a>
+					} else {
+						{ field.Label }
+					}
+				</label>
 			</div>
 		}
 		if len(field.Errors) > 0 {

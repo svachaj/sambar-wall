@@ -46,7 +46,7 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 		return utils.HTML(c, step1)
 	}
 
-	email := step1Form.FormFields["email"].Value
+	email := step1Form.FormFields[models.AGREEMENT_FORM_EMAIL].Value
 
 	// check if email exists
 	existEmail, err := h.service.EmailExists(email)
@@ -79,9 +79,9 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	}
 
 	agreementForm := models.AgreementFormInitModel()
-	if val, ok := agreementForm.FormFields["email"]; ok {
+	if val, ok := agreementForm.FormFields[models.AGREEMENT_FORM_EMAIL]; ok {
 		val.Value = email
-		agreementForm.FormFields["email"] = val
+		agreementForm.FormFields[models.AGREEMENT_FORM_EMAIL] = val
 	}
 	step2 := agreementTemplates.Step2Form(agreementForm, toasts.InfoToast(fmt.Sprintf("Na zadaný email %v byl odeslán ověřovací kód.", email)))
 	return utils.HTML(c, step2)

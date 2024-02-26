@@ -4,15 +4,34 @@ import (
 	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
 
+const AGREEMENT_FORM_FIRST_NAME = "firstName"
+const AGREEMENT_FORM_LAST_NAME = "lastName"
+const AGREEMENT_FORM_EMAIL = "email"
+const AGREEMENT_FORM_BIRTH_DATE = "birthDate"
+const AGREEMENT_FORM_CONFIRMATION_CODE = "confirmationCode"
+const AGREEMENT_FORM_RULES_AGREEMENT = "rulesAgreement"
+const AGREEMENT_FORM_GDPR_AGREEMENT = "gdprAgreement"
+
 func AgreementFormInitModel() baseTypes.Form {
 	return baseTypes.Form{
 		FormFields: map[string]baseTypes.FormField{
-			"firstName":        {ID: "firstName", Label: "Jméno", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
-			"lastName":         {ID: "lastName", Label: "Příjmení", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
-			"email":            {ID: "email", Label: "Email", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},
-			"birthDate":        {ID: "birthDate", Label: "Datum narození", FieldType: "date", Validations: baseTypes.Validations(baseTypes.Required())},
-			"confirmationCode": {ID: "confirmationCode", Label: "Ověřovací kód z emailu", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
-			"rulesAgreement":   {ID: "rulesAgreement", Label: "Souhlasím s provozním řádem stěny", FieldType: "checkbox", Validations: baseTypes.Validations(baseTypes.RequiredMsg("Musíte souhlasit s provozním řádem stěny"))},
+			AGREEMENT_FORM_FIRST_NAME:        {ID: AGREEMENT_FORM_FIRST_NAME, Label: "Jméno", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
+			AGREEMENT_FORM_LAST_NAME:         {ID: AGREEMENT_FORM_LAST_NAME, Label: "Příjmení", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
+			AGREEMENT_FORM_EMAIL:             {ID: AGREEMENT_FORM_EMAIL, Label: "Email", Disabled: true, FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},
+			AGREEMENT_FORM_BIRTH_DATE:        {ID: AGREEMENT_FORM_BIRTH_DATE, Label: "Datum narození", FieldType: "date", Validations: baseTypes.Validations(baseTypes.Required())},
+			AGREEMENT_FORM_CONFIRMATION_CODE: {ID: AGREEMENT_FORM_CONFIRMATION_CODE, Label: "Ověřovací kód z emailu", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
+			AGREEMENT_FORM_RULES_AGREEMENT: {
+				ID:          AGREEMENT_FORM_RULES_AGREEMENT,
+				Label:       "Souhlasím s provozním řádem stěny",
+				FieldType:   "checkbox",
+				Link:        "/static/files/provozni-rad-2024-02-01.pdf",
+				Validations: baseTypes.Validations(baseTypes.RequiredMsg("Musíte souhlasit s provozním řádem stěny"))},
+			AGREEMENT_FORM_GDPR_AGREEMENT: {
+				ID:          AGREEMENT_FORM_GDPR_AGREEMENT,
+				Label:       "Souhlasím se zpracováním osobních údajů",
+				FieldType:   "checkbox",
+				Link:        "/static/files/gdpr.pdf",
+				Validations: baseTypes.Validations(baseTypes.RequiredMsg("Musíte souhlasit se zpracováním osobních údajů"))},
 		},
 	}
 }
@@ -20,7 +39,8 @@ func AgreementFormInitModel() baseTypes.Form {
 func AgreementFormStep1InitModel() baseTypes.Form {
 	return baseTypes.Form{
 		FormFields: map[string]baseTypes.FormField{
-			"email": {ID: "email",
+			AGREEMENT_FORM_EMAIL: {
+				ID:          AGREEMENT_FORM_EMAIL,
 				Label:       "Nejprve zadejte svůj email, prosím",
 				FieldType:   "text",
 				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},

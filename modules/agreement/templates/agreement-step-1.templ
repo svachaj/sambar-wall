@@ -11,7 +11,7 @@ import (
 templ Step1Form(agreementForm baseTypes.Form, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_CHECK_EMAIL, "outerHTML") {
 		@formComponents.H1("Souhlas s provozním řádem stěny")
-		@formComponents.FormField(agreementForm.FormFields["email"])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_EMAIL])
 		@formComponents.SubmitButton("Pokračovat")
 	}
 	if toast != nil {
@@ -23,12 +23,13 @@ templ Step2Form(agreementForm baseTypes.Form, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_FINALIZE, "outerHTML") {
 		@formComponents.H1("Souhlas s provozním řádem stěny")
 		@formComponents.InfoDiv("Na zadaný email byl odeslán ověřovací kód, který musíte zadat v tomto kroku pro dokončení souhlasu.")
-		@formComponents.FormField(agreementForm.FormFields["email"])
-		@formComponents.FormField(agreementForm.FormFields["firstName"])
-		@formComponents.FormField(agreementForm.FormFields["lastName"])
-		@formComponents.FormField(agreementForm.FormFields["birthDate"])
-		@formComponents.FormField(agreementForm.FormFields["confirmationCode"])
-		@formComponents.FormField(agreementForm.FormFields["rulesAgreement"])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_EMAIL])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_FIRST_NAME])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_LAST_NAME])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_BIRTH_DATE])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_CONFIRMATION_CODE])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_RULES_AGREEMENT])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_GDPR_AGREEMENT])
 		@formComponents.SubmitButton("Dokončit")
 	}
 	if toast != nil {

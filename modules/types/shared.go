@@ -9,6 +9,8 @@ type FormField struct {
 	Errors      []string `json:"errors"`
 	FieldType   string   `json:"inputType"` // text | number | date | boolean | email | password
 	Validations []ValidationRule
+	Link        string
+	Disabled    bool
 }
 type IForm interface {
 	ValidateFields(data map[string][]string) bool
