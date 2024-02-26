@@ -13,7 +13,7 @@ templ FormField(field types.FormField) {
 			<label class="w-full block text-left p-1 text-white text-sm" for={ field.ID }>{ field.Label }</label>
 			<input
 				hx-post="/validate-form-field"
-				hx-headers={ fmt.Sprintf(`{"Field-Validation": "%v", "Field-Type": "%v", "Field-Label": "%v"}`, field.Validation, field.FieldType, url.QueryEscape(field.Label)) }
+				hx-headers={ fmt.Sprintf(`{"Field-Validation": "%v", "Field-Type": "%v", "Field-Label": "%v"}`, "TODO", field.FieldType, url.QueryEscape(field.Label)) }
 				hx-trigger="change changed"
 				hx-target="closest .form-field"
 				hx-swap="outerHTML"

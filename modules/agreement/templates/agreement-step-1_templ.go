@@ -11,13 +11,14 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/svachaj/sambar-wall/modules/agreement/types"
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
 
-func Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) templ.Component {
+func Step1Form(agreementForm baseTypes.Form, toast templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -44,7 +45,7 @@ func Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) te
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.Email).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["email"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +79,7 @@ func Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) te
 	})
 }
 
-func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.Component {
+func Step2Form(agreementForm baseTypes.Form, toast templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -113,7 +114,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.Email).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["email"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -121,7 +122,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FirstName).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["firstName"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -129,7 +130,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.LastName).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["lastName"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -137,7 +138,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.BirthDate).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["birthDate"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -145,7 +146,7 @@ func Step2Form(agreementForm types.AgreementForm, toast templ.Component) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = formComponents.FormField(agreementForm.ConfirmationCode).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["confirmationCode"]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -202,7 +203,7 @@ func AgreementPage() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Step1Form(types.AgreementFormStep1InitModel, nil).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Step1Form(models.AgreementFormStep1InitModel(), nil).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

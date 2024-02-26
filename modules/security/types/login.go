@@ -5,7 +5,7 @@ import (
 )
 
 type LoginFormResponse struct {
-	baseTypes.BaseModel
+	baseTypes.Form
 	UserName baseTypes.FormField `json:"username"`
 	Password baseTypes.FormField `json:"password"`
 }

@@ -1,16 +1,17 @@
 package agreementTemplates
 
 import (
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/modules/constants"
-	"github.com/svachaj/sambar-wall/modules/agreement/types"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 )
 
-templ Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) {
+templ Step1Form(agreementForm baseTypes.Form, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_CHECK_EMAIL, "outerHTML") {
 		@formComponents.H1("Souhlas s provozním řádem stěny")
-		@formComponents.FormField(agreementForm.Email)
+		@formComponents.FormField(agreementForm.FormFields["email"])
 		@formComponents.SubmitButton("Pokračovat")
 	}
 	if toast != nil {
@@ -18,15 +19,15 @@ templ Step1Form(agreementForm types.AgreementFormStep1, toast templ.Component) {
 	}
 }
 
-templ Step2Form(agreementForm types.AgreementForm, toast templ.Component) {
+templ Step2Form(agreementForm baseTypes.Form, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_AGREEMENT_FINALIZE, "outerHTML") {
 		@formComponents.H1("Souhlas s provozním řádem stěny")
 		@formComponents.InfoDiv("Na zadaný email byl odeslán ověřovací kód, který musíte zadat v tomto kroku pro dokončení souhlasu.")
-		@formComponents.FormField(agreementForm.Email)
-		@formComponents.FormField(agreementForm.FirstName)
-		@formComponents.FormField(agreementForm.LastName)
-		@formComponents.FormField(agreementForm.BirthDate)
-		@formComponents.FormField(agreementForm.ConfirmationCode)
+		@formComponents.FormField(agreementForm.FormFields["email"])
+		@formComponents.FormField(agreementForm.FormFields["firstName"])
+		@formComponents.FormField(agreementForm.FormFields["lastName"])
+		@formComponents.FormField(agreementForm.FormFields["birthDate"])
+		@formComponents.FormField(agreementForm.FormFields["confirmationCode"])
 		<div class="w-full mt-2">
 			<input type="checkbox" id="agree" class="form-checkbox h-5 w-5 text-primary-600"/>
 			<label for="agree" class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">Souhlasím s provozním řádem stěny</label>
@@ -41,7 +42,7 @@ templ Step2Form(agreementForm types.AgreementForm, toast templ.Component) {
 templ AgreementPage() {
 	@layouts.BaseLayout(false) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
-			@Step1Form(types.AgreementFormStep1InitModel, nil)
+			@Step1Form(models.AgreementFormStep1InitModel(), nil)
 		</div>
 	}
 }

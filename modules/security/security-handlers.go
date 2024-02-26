@@ -74,8 +74,6 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 
 			authSession.Save(c.Request(), c.Response())
 
-			loginModel.WasOk = true
-
 			return utils.HTML(c, home.HomePage(h.db, true))
 		}
 	}

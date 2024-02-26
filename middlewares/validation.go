@@ -28,7 +28,7 @@ func ValidateFormField(c echo.Context) error {
 		fieldType := c.Request().Header.Get("Field-Type")
 		fieldLabel, _ := url.QueryUnescape(c.Request().Header.Get("Field-Label"))
 
-		formField := types.FormField{ID: fieldName, Label: fieldLabel, FieldType: fieldType, Value: fieldValue, Validation: fieldValidation}
+		formField := types.FormField{ID: fieldName, Label: fieldLabel, FieldType: fieldType, Value: fieldValue}
 
 		if fieldValidation == "required" && fieldValue == "" {
 			formField.Errors = []string{"Toto pole je povinné!"}

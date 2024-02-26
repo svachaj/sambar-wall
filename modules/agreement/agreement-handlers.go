@@ -8,8 +8,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/utils"
 
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	agreementTemplates "github.com/svachaj/sambar-wall/modules/agreement/templates"
-	"github.com/svachaj/sambar-wall/modules/agreement/types"
 	toasts "github.com/svachaj/sambar-wall/modules/toasts"
 )
 
@@ -36,26 +36,34 @@ func (h *AgreementHandlers) AgreementStartPage(c echo.Context) error {
 
 func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
-	email := c.FormValue("email")
-
-	// validate email
-	if email == "" {
-		model := types.AgreementFormStep1InitModel
-		model.Email.Errors = append(model.Email.Errors, "Email je povinný údaj.")
-		step1WithToast := agreementTemplates.Step1Form(model, nil)
+	// validate form
+	step1Form := models.AgreementFormStep1InitModel()
+	params, err := c.FormParams()
+	if err != nil {
+		log.Error().Msgf("FormParams error: %v", err)
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
+
+	isValid := step1Form.ValidateFields(params)
+
+	if !isValid {
+		step1WithToast := agreementTemplates.Step1Form(step1Form, nil)
+		return utils.HTML(c, step1WithToast)
+	}
+
+	email := step1Form.FormFields["email"].Value
 
 	// check if email exists
 	existEmail, err := h.service.EmailExists(email)
 	if err != nil {
 		log.Error().Msgf("CheckEmail error: %v", err)
-		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
 
 	if existEmail {
-		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
 		return utils.HTML(c, step1WithToast)
 	}
 
@@ -64,7 +72,7 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	err = h.service.SaveVerificationCode(email, code)
 	if err != nil {
 		log.Error().Msgf("Save verification code error: %v", err)
-		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
 
@@ -72,21 +80,38 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	err = h.service.SendVerificationCode(email, code)
 	if err != nil {
 		log.Error().Msgf("Send verification code error: %v", err)
-		step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.ServerErrorToast())
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
 		return utils.HTML(c, step1WithToast)
 	}
 
-	agreementForm := types.AgreementFormInitModel
-	agreementForm.Email.Value = email
+	agreementForm := models.AgreementFormInitModel()
+	if val, ok := agreementForm.FormFields["email"]; ok {
+		val.Value = email
+		agreementForm.FormFields["email"] = val
+	}
 	step2 := agreementTemplates.Step2Form(agreementForm, toasts.InfoToast(fmt.Sprintf("Na zadaný email %v byl odeslán ověřovací kód.", email)))
 	return utils.HTML(c, step2)
 }
 
 func (h *AgreementHandlers) Finalize(c echo.Context) error {
 
-	//email := c.FormValue("email")
+	// validate form
+	agreementForm := models.AgreementFormInitModel()
+	params, err := c.FormParams()
+	if err != nil {
+		log.Error().Msgf("FormParams error: %v", err)
+		step2WithToast := agreementTemplates.Step2Form(agreementForm, toasts.ServerErrorToast())
+		return utils.HTML(c, step2WithToast)
+	}
 
-	step1WithToast := agreementTemplates.Step1Form(types.AgreementFormStep1InitModel, toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))
+	isValid := agreementForm.ValidateFields(params)
+
+	if !isValid {
+		step2WithToast := agreementTemplates.Step2Form(agreementForm, nil)
+		return utils.HTML(c, step2WithToast)
+	}
+
+	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))
 	return utils.HTML(c, step1WithToast)
 
 }
