@@ -1,10 +1,9 @@
 package middlewares
 
 import (
-	"net/url"
-
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 	toasts "github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/modules/types"
@@ -23,18 +22,31 @@ func ValidateFormField(c echo.Context) error {
 		return utils.HTMLWithStatus(c, 500, errToast)
 	} else {
 		fieldName := c.Request().Header.Get("HX-Trigger-Name")
-		fieldValue := body[fieldName].(string)
-		fieldValidation := c.Request().Header.Get("Field-Validation")
-		fieldType := c.Request().Header.Get("Field-Type")
-		fieldLabel, _ := url.QueryUnescape(c.Request().Header.Get("Field-Label"))
-
-		formField := types.FormField{ID: fieldName, Label: fieldLabel, FieldType: fieldType, Value: fieldValue}
-
-		if fieldValidation == "required" && fieldValue == "" {
-			formField.Errors = []string{"Toto pole je povinné!"}
-
+		fieldValue := ""
+		fieldVal := body[fieldName]
+		if fieldVal != nil {
+			fieldValue = fieldVal.(string)
 		}
+
+		formId := c.Request().Header.Get("Form-Id")
+
+		form := Forms[formId]
+
+		formField := form.FormFields[fieldName]
+		formField.Value = fieldValue
+
+		for _, rule := range formField.Validations {
+			if !rule.ValidateFunc(fieldValue) {
+				formField.Errors = append(formField.Errors, rule.MessageFunc())
+			}
+		}
+
 		return utils.HTML(c, formComponents.FormField(formField))
 
 	}
+}
+
+var Forms map[string]types.Form = map[string]types.Form{
+	models.AGREEMENT_FORM_STEP1: models.AgreementFormStep1InitModel(),
+	models.AGREEMENT_FORM_STEP2: models.AgreementFormInitModel(),
 }

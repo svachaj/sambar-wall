@@ -3,14 +3,16 @@ package types
 import "regexp"
 
 type FormField struct {
-	ID          string   `json:"id"`
-	Label       string   `json:"label"`
-	Value       string   `json:"value"`
-	Errors      []string `json:"errors"`
-	FieldType   string   `json:"inputType"` // text | number | date | boolean | email | password
+	ID          string
+	Label       string
+	Placeholder string
+	Value       string
+	Errors      []string
+	FieldType   string
 	Validations []ValidationRule
 	Link        string
 	Disabled    bool
+	FormId      string
 }
 type IForm interface {
 	ValidateFields(data map[string][]string) bool

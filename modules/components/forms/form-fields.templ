@@ -1,14 +1,13 @@
 package components
 
 import (
-	"net/url"
 	"github.com/svachaj/sambar-wall/utils"
 	"github.com/svachaj/sambar-wall/modules/types"
 	"fmt"
 )
 
 templ FormField(field types.FormField) {
-	<div class="mt-2 w-full form-field">
+	<div class="mt-1 w-full form-field">
 		if field.FieldType == "text" || field.FieldType == "email" || field.FieldType == "number" || field.FieldType == "date" {
 			<label class="w-full block text-left p-1 text-white text-sm" for={ field.ID }>{ field.Label }</label>
 			if field.Disabled {
@@ -23,11 +22,17 @@ templ FormField(field types.FormField) {
 				<input type="hidden" name={ field.ID } id={ field.ID } value={ field.Value }/>
 			} else {
 				<input
-					hx-post="/validate-form-field"
-					hx-headers={ fmt.Sprintf(`{"Field-Validation": "%v", "Field-Type": "%v", "Field-Label": "%v"}`, "TODO", field.FieldType, url.QueryEscape(field.Label)) }
-					hx-trigger="change changed"
-					hx-target="closest .form-field"
-					hx-swap="outerHTML"
+					if field.FormId != "" && field.Validations != nil {
+						hx-post="/validate-form-field"
+						hx-headers={ fmt.Sprintf(`{"Form-Id": "%v"}`, field.FormId) }
+						if field.FieldType == "date" {
+							hx-trigger="blur"
+						} else {
+							hx-trigger="change"
+						}
+						hx-target="closest .form-field"
+						hx-swap="outerHTML"
+					}
 					type={ field.FieldType }
 					id={ field.ID }
 					name={ field.ID }
@@ -39,23 +44,21 @@ templ FormField(field types.FormField) {
 			}
 		}
 		if field.FieldType == "checkbox" {
-			<div class="w-full mt-2 flex justify-start items-start">
-				if field.Value == "on" {
-					<input
-						id={ field.ID }
-						name={ field.ID }
-						type="checkbox"
-						class="form-checkbox h-5 w-5 text-primary-600 mt-1"
+			<div class="w-full mt-1 flex justify-start items-start">
+				<input
+					id={ field.ID }
+					name={ field.ID }
+					type="checkbox"
+					hx-post="/validate-form-field"
+					hx-headers={ fmt.Sprintf(`{"Form-Id": "%v"}`, field.FormId) }
+					hx-trigger="click"
+					hx-target="closest .form-field"
+					hx-swap="outerHTML"
+					class="form-checkbox h-5 w-5 text-primary-600 mt-1"
+					if field.Value == "on" {
 						checked
-					/>
-				} else {
-					<input
-						id={ field.ID }
-						name={ field.ID }
-						type="checkbox"
-						class="form-checkbox h-5 w-5 text-primary-600 mt-1"
-					/>
-				}
+					}
+				/>
 				<label for={ field.ID } class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">
 					if field.Link != "" {
 						<a href={ templ.SafeURL(field.Link) } target="_blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 underline">{ field.Label }</a>
@@ -66,9 +69,9 @@ templ FormField(field types.FormField) {
 			</div>
 		}
 		if len(field.Errors) > 0 {
-			<div class="text-accent-500 italic text-xs w-full text-left pl-1 animate-show-smooth-1/2s">{ field.Errors[0] }</div>
+			<div class="text-accent-500 italic sm:text-sm text-xs w-full text-left pl-1 pt-[1px] animate-show-smooth-1/2s">{ field.Errors[0] }</div>
 		} else {
-			<div class="text-accent-500 italic text-xs w-full animate-hide-smooth-1/2s">&nbsp; </div>
+			<div class="text-accent-500 italic sm:text-sm text-xs w-full pt-[1px] animate-hide-smooth-1/2s">&nbsp; </div>
 		}
 	</div>
 }
