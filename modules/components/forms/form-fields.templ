@@ -63,7 +63,7 @@ templ FormField(field types.FormField) {
 						checked
 					}
 				/>
-				<label for={ field.ID } class="ml-2 text-lg text-neutral-600 dark:text-neutral-400">
+				<label for={ field.ID } class="ml-2 sm:text-lg text-base text-neutral-600 dark:text-neutral-400">
 					if field.Link != "" {
 						<a href={ templ.SafeURL(field.Link) } target="_blank" hx-boost="false" class="font-semibold text-primary-600 hover:text-primary-400 underline">{ field.Label }</a>
 					} else {
