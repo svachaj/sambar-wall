@@ -42,7 +42,7 @@ func AgreementFormInitModel() baseTypes.Form {
 			AGREEMENT_FORM_CONFIRMATION_CODE: {
 				ID:          AGREEMENT_FORM_CONFIRMATION_CODE,
 				Label:       "Ověřovací kód z emailu",
-				FieldType:   "text",
+				FieldType:   "number",
 				Validations: baseTypes.Validations(baseTypes.Required()), FormId: AGREEMENT_FORM_STEP2},
 			AGREEMENT_FORM_RULES_AGREEMENT: {
 				ID:          AGREEMENT_FORM_RULES_AGREEMENT,
