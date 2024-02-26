@@ -48,6 +48,7 @@ func AgreementFormStep1InitModel() baseTypes.Form {
 			AGREEMENT_FORM_EMAIL: {
 				ID:          AGREEMENT_FORM_EMAIL,
 				Label:       "Nejprve zadejte svůj email, prosím",
+				Placeholder: "Email",
 				FieldType:   "text",
 				FormId:      AGREEMENT_FORM_STEP1,
 				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},
