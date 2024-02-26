@@ -95,7 +95,6 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 
 	isValid := agreementForm.ValidateFields(params)
 
-	log.Error().Msgf("Finalize error: form is not valid: %v", agreementForm.FormFields["rulesAgreement"].Errors)
 	if !isValid {
 		step2 := agreementTemplates.Step2Form(agreementForm, nil)
 		return utils.HTML(c, step2)

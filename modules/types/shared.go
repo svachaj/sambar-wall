@@ -68,6 +68,19 @@ func Required() ValidationFunc {
 	}
 }
 
+func RequiredMsg(customMessage string) ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return customMessage
+			},
+			ValidateFunc: func(value string) bool {
+				return value != ""
+			},
+		}
+	}
+}
+
 func Email() ValidationFunc {
 	return func() ValidationRule {
 		return ValidationRule{
