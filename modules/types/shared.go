@@ -34,6 +34,15 @@ func (model Form) ValidateFields(data map[string][]string) bool {
 				}
 			}
 			model.FormFields[k] = v
+		} else if v.FieldType == "checkbox" {
+			v.Value = ""
+			for _, rule := range v.Validations {
+				if !rule.ValidateFunc(v.Value) {
+					v.Errors = append(v.Errors, rule.MessageFunc())
+					isValid = false
+				}
+			}
+			model.FormFields[k] = v
 		}
 	}
 	return isValid

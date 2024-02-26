@@ -12,6 +12,7 @@ func AgreementFormInitModel() baseTypes.Form {
 			"email":            {ID: "email", Label: "Email", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},
 			"birthDate":        {ID: "birthDate", Label: "Datum narození", FieldType: "date", Validations: baseTypes.Validations(baseTypes.Required())},
 			"confirmationCode": {ID: "confirmationCode", Label: "Ověřovací kód z emailu", FieldType: "text", Validations: baseTypes.Validations(baseTypes.Required())},
+			"rulesAgreement":   {ID: "rulesAgreement", Label: "Souhlasím s provozním řádem stěny", FieldType: "checkbox", Validations: baseTypes.Validations(baseTypes.Required())},
 		},
 	}
 }

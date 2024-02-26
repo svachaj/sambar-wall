@@ -38,18 +38,12 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
 	// validate form
 	step1Form := models.AgreementFormStep1InitModel()
-	params, err := c.FormParams()
-	if err != nil {
-		log.Error().Msgf("FormParams error: %v", err)
-		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
-		return utils.HTML(c, step1WithToast)
-	}
-
+	params, _ := c.FormParams()
 	isValid := step1Form.ValidateFields(params)
 
 	if !isValid {
-		step1WithToast := agreementTemplates.Step1Form(step1Form, nil)
-		return utils.HTML(c, step1WithToast)
+		step1 := agreementTemplates.Step1Form(step1Form, nil)
+		return utils.HTML(c, step1)
 	}
 
 	email := step1Form.FormFields["email"].Value
@@ -97,18 +91,14 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 
 	// validate form
 	agreementForm := models.AgreementFormInitModel()
-	params, err := c.FormParams()
-	if err != nil {
-		log.Error().Msgf("FormParams error: %v", err)
-		step2WithToast := agreementTemplates.Step2Form(agreementForm, toasts.ServerErrorToast())
-		return utils.HTML(c, step2WithToast)
-	}
+	params, _ := c.FormParams()
 
 	isValid := agreementForm.ValidateFields(params)
 
+	log.Error().Msgf("Finalize error: form is not valid: %v", agreementForm.FormFields["rulesAgreement"].Errors)
 	if !isValid {
-		step2WithToast := agreementTemplates.Step2Form(agreementForm, nil)
-		return utils.HTML(c, step2WithToast)
+		step2 := agreementTemplates.Step2Form(agreementForm, nil)
+		return utils.HTML(c, step2)
 	}
 
 	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))

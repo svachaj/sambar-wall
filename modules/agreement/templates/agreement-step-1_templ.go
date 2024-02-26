@@ -150,7 +150,15 @@ func Step2Form(agreementForm baseTypes.Form, toast templ.Component) templ.Compon
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-full mt-2\"><input type=\"checkbox\" id=\"agree\" class=\"form-checkbox h-5 w-5 text-primary-600\"> <label for=\"agree\" class=\"ml-2 text-lg text-neutral-600 dark:text-neutral-400\">Souhlasím s provozním řádem stěny</label></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = formComponents.FormField(agreementForm.FormFields["rulesAgreement"]).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
