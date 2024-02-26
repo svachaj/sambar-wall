@@ -57,7 +57,7 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 	}
 
 	if existEmail {
-		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.WarnToast(fmt.Sprintf("Email %v je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu.", email)))
+		step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.WarnToast("Tento email je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu."))
 		return utils.HTML(c, step1WithToast)
 	}
 
@@ -98,6 +98,27 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 	if !isValid {
 		step2 := agreementTemplates.Step2Form(agreementForm, nil)
 		return utils.HTML(c, step2)
+	}
+
+	// finalize agreement
+	email := agreementForm.FormFields[models.AGREEMENT_FORM_EMAIL].Value
+	firstName := agreementForm.FormFields[models.AGREEMENT_FORM_FIRST_NAME].Value
+	lastName := agreementForm.FormFields[models.AGREEMENT_FORM_LAST_NAME].Value
+	birthDate := agreementForm.FormFields[models.AGREEMENT_FORM_BIRTH_DATE].Value
+	confirmationCode := agreementForm.FormFields[models.AGREEMENT_FORM_CONFIRMATION_CODE].Value
+
+	err := h.service.FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode)
+
+	if err != nil {
+		log.Error().Msgf("FinalizeAgreement error: %v", err)
+		if err.Error() == AGREEMENT_ERROR_BAD_CONFIRMATION_CODE {
+			agreementForm.Errors = append(agreementForm.Errors, "Chybný ověřovací kód")
+			step2WithToast := agreementTemplates.Step2Form(agreementForm, toasts.ErrorToast("Chybný ověřovací kód"))
+			return utils.HTML(c, step2WithToast)
+		} else {
+			step2WithToast := agreementTemplates.Step2Form(agreementForm, toasts.ServerErrorToast())
+			return utils.HTML(c, step2WithToast)
+		}
 	}
 
 	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))

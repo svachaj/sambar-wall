@@ -7,6 +7,8 @@ import (
 
 func MapAgreementRoutes(e *echo.Echo, h IAgreementHandlers) {
 
+	e.GET("/", h.AgreementStartPage)
+
 	e.GET(constants.ROUTE_AGREEMENT_START_PAGE, h.AgreementStartPage)
 
 	e.POST(constants.ROUTE_AGREEMENT_CHECK_EMAIL, h.CheckEmail)

@@ -6,6 +6,6 @@ import (
 
 func MapHomeRoutes(e *echo.Echo, h IHomeHandlers) {
 
-	e.GET("/", h.Home)
+	e.GET("/kurzy-test", h.Home)
 
 }

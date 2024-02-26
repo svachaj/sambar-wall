@@ -15,6 +15,7 @@ type IAgreementService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string) error
+	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error
 }
 
 type AgreementService struct {
@@ -68,3 +69,31 @@ func (s *AgreementService) SendVerificationCode(email string, code string) error
 	}
 	return nil
 }
+
+func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error {
+
+	// check confirmation code
+	var count int
+	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", email, confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
+	err := s.db.Get(&count, query)
+
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
+	}
+
+	// finalize agreement
+	query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true')", email, firstName, lastName, birthDate, time.Now().Format("2006-01-02 15:04:05"))
+	_, err = s.db.Exec(query)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const AGREEMENT_ERROR_BAD_CONFIRMATION_CODE = "Neplatný ověřovací kód"
