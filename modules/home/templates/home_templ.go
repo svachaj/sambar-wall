@@ -12,6 +12,7 @@ import "bytes"
 
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
+	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	"github.com/svachaj/sambar-wall/modules/layouts"
 )
 
@@ -28,7 +29,7 @@ func HomeComponent(courses []types.Course) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"mx-auto w-fit flex flex-col gap-8 text-center\"><h1 class=\"text-3xl font-bold text-neutral-800 dark:text-neutral-200\">Kroužky Lezení</h1></section>")
+		templ_7745c5c3_Err = coursesTemplates.CoursesList(courses).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
