@@ -37,8 +37,9 @@ func AgreementFormInitModel() baseTypes.Form {
 			AGREEMENT_FORM_BIRTH_DATE: {
 				ID:          AGREEMENT_FORM_BIRTH_DATE,
 				Label:       "Datum narození",
-				FieldType:   "date",
-				Validations: baseTypes.Validations(baseTypes.Required()), FormId: AGREEMENT_FORM_STEP2},
+				FieldType:   "text",
+				Placeholder: "den.měsíc.rok",
+				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Date()), FormId: AGREEMENT_FORM_STEP2},
 			AGREEMENT_FORM_CONFIRMATION_CODE: {
 				ID:          AGREEMENT_FORM_CONFIRMATION_CODE,
 				Label:       "Ověřovací kód z emailu",

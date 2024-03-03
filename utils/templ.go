@@ -28,3 +28,7 @@ func ClassIf(condition bool, className string, elseClassName string) string {
 	}
 	return elseClassName
 }
+
+func NormalizeDate(value string) string {
+	return strings.ReplaceAll(value, " ", "")
+}

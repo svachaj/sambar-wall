@@ -21,7 +21,13 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 		return err
 	}
 
-	emailService := utils.NewEmailService(settings.SmtpHost, settings.SmtpPort, settings.SmtpUser, settings.SmtpPassword)
+	var emailService utils.IEmailService
+
+	if settings.AppEnv == config.APP_ENV_LOCALHOST {
+		emailService = utils.NewMockEmailService()
+	} else {
+		emailService = utils.NewEmailService(settings.SmtpHost, settings.SmtpPort, settings.SmtpUser, settings.SmtpPassword)
+	}
 
 	securityHandlers := security.NewSecurityHandlers(db)
 	security.MapSecurityRoutes(e, securityHandlers)

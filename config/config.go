@@ -14,6 +14,7 @@ func LoadConfiguraion() (*Config, error) {
 
 	config.AppSecret = os.Getenv("APP_SECRET")
 	config.AppPort = parseIntWithDefaultValue(os.Getenv("APP_PORT"), 5500)
+	config.AppEnv = os.Getenv("APP_ENV")
 
 	// we assume that the database is MS SQL Server to backward compatibility
 	// if we want to support other databases, we can simply change the database driver and connection string
@@ -47,6 +48,7 @@ func parseIntWithDefaultValue(inputString string, defaultValue int) (result int)
 type Config struct {
 	AppPort   int
 	AppSecret string
+	AppEnv    string
 
 	// Database
 	DbHost     string
@@ -61,3 +63,7 @@ type Config struct {
 	SmtpUser     string
 	SmtpPassword string
 }
+
+const APP_ENV_PRODUCTION = "" // empty string or other string then localhost or test means production
+const APP_ENV_LOCALHOST = "localhost"
+const APP_ENV_TEST = "test"

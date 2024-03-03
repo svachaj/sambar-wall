@@ -1,6 +1,9 @@
 package types
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 type FormField struct {
 	ID          string
@@ -13,6 +16,7 @@ type FormField struct {
 	Link        string
 	Disabled    bool
 	FormId      string
+	Pattern     string
 }
 type IForm interface {
 	ValidateFields(data map[string][]string) bool
@@ -93,6 +97,20 @@ func Email() ValidationFunc {
 			},
 			ValidateFunc: func(value string) bool {
 				return emailRegex.MatchString(value)
+			},
+		}
+	}
+}
+
+func Date() ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return "Neplatný datum - akceptovaný formát je: den.měsíc.rok"
+			},
+			ValidateFunc: func(value string) bool {
+				dateParts := strings.Split(value, ".")
+				return len(dateParts) == 3
 			},
 		}
 	}

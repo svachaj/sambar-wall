@@ -6,6 +6,9 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+type IEmailService interface {
+	SendEmail(subject string, body string, to string) error
+}
 type EmailService struct {
 	Host     string
 	Port     int
@@ -13,7 +16,7 @@ type EmailService struct {
 	Password string
 }
 
-func NewEmailService(host string, port int, username string, password string) *EmailService {
+func NewEmailService(host string, port int, username string, password string) IEmailService {
 	return &EmailService{Host: host, Port: port, Username: username, Password: password}
 }
 
@@ -28,4 +31,15 @@ func (es *EmailService) SendEmail(subject string, body string, to string) error 
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
 	return d.DialAndSend(m)
+}
+
+type MockEmailService struct {
+}
+
+func NewMockEmailService() IEmailService {
+	return &MockEmailService{}
+}
+
+func (es *MockEmailService) SendEmail(subject string, body string, to string) error {
+	return nil
 }
