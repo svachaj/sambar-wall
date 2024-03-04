@@ -2,6 +2,7 @@ package security
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -48,7 +49,7 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 	password := c.FormValue("password")
 
 	var user db.User
-	query := fmt.Sprintf("SELECT id, passwordhash, username FROM t_system_user tsu WHERE tsu.username = '%[1]s' or tsu.email = '%[1]s' ", username)
+	query := fmt.Sprintf("SELECT id, passwordhash, username FROM t_system_user tsu WHERE lower(tsu.username) = '%[1]s' or tsu.email = '%[1]s' ", strings.ToLower(username))
 	log.Info().Msg(query)
 	err := h.db.Get(&user, query)
 
