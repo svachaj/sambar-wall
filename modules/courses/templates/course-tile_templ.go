@@ -25,7 +25,7 @@ func CourseTile(courseName string, validFrom, validTo time.Time) templ.Component
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col\"><div class=\"text-xl font-bold text-neutral-800 dark:text-neutral-200\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col max-w-64 min-w-64 min-h-40 max-h-40 dark:bg-stone-700 bg-stone-100 border px-2 py-4 rounded-lg shadow-lg\"><div class=\"text-lg font-bold text-neutral-800 dark:text-neutral-200\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -38,7 +38,7 @@ func CourseTile(courseName string, validFrom, validTo time.Time) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"text-lg text-neutral-800 dark:text-neutral-200\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"text-base text-neutral-800 dark:text-neutral-200\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
