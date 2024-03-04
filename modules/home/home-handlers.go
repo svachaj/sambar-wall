@@ -9,6 +9,7 @@ import (
 	"github.com/svachaj/sambar-wall/middlewares"
 	"github.com/svachaj/sambar-wall/utils"
 
+	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	homeTemplates "github.com/svachaj/sambar-wall/modules/home/templates"
 )
 
@@ -44,7 +45,7 @@ func HomePage(db *sqlx.DB, isAuthenticated bool) templ.Component {
 		courses = append(courses, types.Course{Name: "Chyba při načítání kurzů"})
 	}
 
-	homeComponent := homeTemplates.HomeComponent(courses)
+	homeComponent := coursesTemplates.CoursesList(courses)
 	homePage := homeTemplates.HomePage(homeComponent, isAuthenticated)
 
 	return homePage

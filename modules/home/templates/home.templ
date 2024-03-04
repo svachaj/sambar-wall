@@ -2,13 +2,7 @@ package homeTemplates
 
 import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
-	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
-	types "github.com/svachaj/sambar-wall/db/types"
 )
-
-templ HomeComponent(courses []types.Course) {	
-	@coursesTemplates.CoursesList(courses)
-}
 
 templ HomePage(cmp templ.Component, isAuthenticated bool) {
 	@layouts.BaseLayout(isAuthenticated) {
