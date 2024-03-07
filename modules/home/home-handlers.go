@@ -36,7 +36,8 @@ func (h *HomeHandlers) Home(c echo.Context) error {
 
 func HomePage(db *sqlx.DB, isAuthenticated bool) templ.Component {
 	courses := []types.Course{}
-	err := db.Select(&courses, `SELECT tc.id as id, tct.Name1 as name , tc.ValidFrom as valid_from, tc.ValidTo as valid_to FROM t_course tc
+	err := db.Select(&courses, `
+	SELECT tc.id as id, tct.Name1 as name , tc.ValidFrom as valid_from, tc.ValidTo as valid_to FROM t_course tc
 	inner join t_course_type tct on tc.ID_typeOfCourse = tct.ID
 	ORDER BY tc.ValidTo desc, tct.Name1 `)
 	if err != nil {
