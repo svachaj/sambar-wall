@@ -1,10 +1,10 @@
-package homeTemplates
+package courses
 
 import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
 )
 
-templ HomePage(cmp templ.Component, isAuthenticated bool) {
+templ CoursesPage(cmp templ.Component, isAuthenticated bool) {
 	@layouts.BaseLayout(isAuthenticated) {
 		@cmp
 	}

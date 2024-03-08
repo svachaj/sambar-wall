@@ -11,7 +11,8 @@ import (
 	"github.com/rs/zerolog/log"
 	db "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/constants"
-	"github.com/svachaj/sambar-wall/modules/home"
+	"github.com/svachaj/sambar-wall/modules/courses"
+	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	loginTemplates "github.com/svachaj/sambar-wall/modules/security/templates"
 	types "github.com/svachaj/sambar-wall/modules/security/types"
 	"github.com/svachaj/sambar-wall/utils"
@@ -25,11 +26,12 @@ type ISecurityHandlers interface {
 }
 
 type SecurityHandlers struct {
-	db *sqlx.DB
+	db             *sqlx.DB
+	coursesService courses.ICoursesService
 }
 
-func NewSecurityHandlers(db *sqlx.DB) ISecurityHandlers {
-	return &SecurityHandlers{db: db}
+func NewSecurityHandlers(db *sqlx.DB, coursesService courses.ICoursesService) ISecurityHandlers {
+	return &SecurityHandlers{db: db, coursesService: coursesService}
 }
 
 func (h *SecurityHandlers) LoginModal(c echo.Context) error {
@@ -75,7 +77,18 @@ func (h *SecurityHandlers) SignIn(c echo.Context) error {
 
 			authSession.Save(c.Request(), c.Response())
 
-			return utils.HTML(c, home.HomePage(h.db, true))
+			// if user is authenticated, we want to retarget to the courses page
+
+			courses, err := h.coursesService.GetCoursesList()
+
+			if err != nil {
+				return c.String(500, "Internal Server Error")
+			}
+
+			coursesListComponent := coursesTemplates.CoursesList(courses, true)
+			coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
+
+			return utils.HTML(c, coursesPage)
 		}
 	}
 
@@ -97,5 +110,14 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 
 	authSession.Save(c.Request(), c.Response())
 
-	return utils.HTML(c, home.HomePage(h.db, false))
+	courses, err := h.coursesService.GetCoursesList()
+
+	if err != nil {
+		return c.String(500, "Internal Server Error")
+	}
+
+	coursesListComponent := coursesTemplates.CoursesList(courses, false)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false)
+
+	return utils.HTML(c, coursesPage)
 }
