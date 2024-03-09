@@ -1,14 +1,66 @@
 package courses
 
-import "time"
+import (
+	types "github.com/svachaj/sambar-wall/db/types"
+	"strconv"
+)
 
-templ CourseTile(courseName string, validFrom, validTo time.Time) {
-	<div class="flex flex-col max-w-64 min-w-64 min-h-40 max-h-40 dark:bg-stone-700 bg-stone-100 border px-2 py-4 rounded-lg shadow-lg">
-		<div class="text-lg font-bold text-neutral-800 dark:text-neutral-200">
-			{ courseName }
+templ CourseTile(course types.CourseType) {
+	<div class="w-full border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
+		<div class="py-3 bg-slate-800 rounded-t-xl">
+			<h2 class="px-4 text-xl text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">{ course.Name }</h2>
 		</div>
-		<div class="text-base text-neutral-800 dark:text-neutral-200">
-			{ validFrom.Format("02.01. 2006") } - { validTo.Format("02.01. 2006") }
+		<div class="flex items-center justify-center py-4">
+			<h3 class="px-4 text-base text-justify leading-7 text-gray-200 sm:px-6 lg:px-8 max-w-2xl">{ course.Description }</h3>
 		</div>
+		<table class="mt-2 w-full whitespace-nowrap text-left">
+			<colgroup>
+				<col class="w-20"/>
+				<col class="w-20"/>
+				<col class="w-full"/>
+				<col class="lg:w-1/12"/>
+				<col class="lg:w-1/12"/>
+			</colgroup>
+			<thead class="border-b border-white/10 text-sm leading-6 text-white">
+				<tr>
+					<th scope="col" class="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center">Den</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Čas</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Typ kurzu</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Věk</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Cena</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-white/5">
+				for _, course := range course.Courses {
+					<tr class="hover:bg-slate-800">
+						<td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+							<div class="flex items-center gap-x-4">
+								<div class="truncate text-sm font-medium leading-6 text-white">{ course.Days }</div>
+							</div>
+						</td>
+						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+							<div class="w-full text-center">
+								{ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") }
+							</div>
+						</td>
+						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+							<div class="w-full text-center">
+								{ course.Name }
+							</div>
+						</td>
+						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+							<div class="w-full text-center">
+								{ course.AgeGroup }
+							</div>
+						</td>
+						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+							<div class="w-full text-center">
+								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
 	</div>
 }

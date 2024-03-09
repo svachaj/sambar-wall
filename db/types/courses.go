@@ -12,6 +12,9 @@ type Course struct {
 	ApplicationsCount int       `json:"applicationsCount" db:"applicationsCount"`
 	TimeFrom          time.Time `json:"valid_from" db:"timeFrom"`
 	TimeTo            time.Time `json:"valid_to" db:"timeTo"`
+	PartipicatnsCount int       `json:"partipicatnsCount" db:"partipicatnsCount"`
+	Price             float64   `json:"price" db:"price"`
+	DurationMin       int       `json:"durationMin" db:"durationMin"`
 }
 
 type CourseType struct {

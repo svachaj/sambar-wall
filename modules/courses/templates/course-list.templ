@@ -2,23 +2,12 @@ package courses
 
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
-	"strconv"
 )
 
-templ CoursesList(courses []types.CourseType, isAuthenticated bool) {
-	<div class="flex flex-col justify-start items-center">
-		<section>
-			<h1 class="text-3xl font-bold text-neutral-800 dark:text-neutral-200 mb-4">Kroužky Lezení</h1>
-		</section>
-		<section class="mx-auto w-full flex flex-row flex-wrap items-center gap-6 max-w-6xl">
-			for _, course := range courses {
-				<div class="text-white">
-					{ course.Name }
-					if isAuthenticated {
-						<a href={ templ.SafeURL("/course/" + strconv.Itoa(course.ID) + "/apply") } class="text-blue-500">Apply</a>
-					}
-				</div>
-			}
-		</section>
+templ CoursesList(coursesTypes []types.CourseType, isAuthenticated bool) {
+	<div class="mx-auto container">
+		for _, course := range coursesTypes {
+			@CourseTile(course)
+		}
 	</div>
 }
