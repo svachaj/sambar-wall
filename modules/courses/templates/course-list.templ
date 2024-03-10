@@ -5,7 +5,7 @@ import (
 )
 
 templ CoursesList(coursesTypes []types.CourseType, isAuthenticated bool) {
-	<div class="mx-auto container">
+	<div class="mx-auto container flex flex-col justify-start items-center px-1">
 		for _, course := range coursesTypes {
 			@CourseTile(course)
 		}

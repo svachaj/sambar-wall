@@ -28,14 +28,14 @@ func CourseTile(course types.CourseType) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl\"><h2 class=\"px-4 text-xl text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10\"><h2 class=\"px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(course.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 10, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 10, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -54,7 +54,7 @@ func CourseTile(course types.CourseType) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-20\"> <col class=\"w-20\"> <col class=\"w-full\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"border-b border-white/10 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center\">Den</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Čas</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Typ kurzu</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Věk</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Cena</th></tr></thead> <tbody class=\"divide-y divide-white/5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-24\"> <col class=\"w-24\"> <col class=\"w-fit\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"> <col class=\"w-24\"></colgroup> <thead class=\"border-b border-white/10 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center\">Den</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Čas</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Typ kurzu</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Věk</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\"></th></tr></thead> <tbody class=\"divide-y divide-white/5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,7 +66,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(course.Days)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 37, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 39, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -79,7 +79,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(course.TimeFrom.Format("15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 42, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 44, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -92,7 +92,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(course.TimeTo.Format("15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 42, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 44, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -105,7 +105,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(course.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 47, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 49, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -118,7 +118,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(course.AgeGroup)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 52, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 54, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -131,13 +131,13 @@ func CourseTile(course types.CourseType) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(course.Price, 'f', 2, 64))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 57, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 59, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td></tr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\"><button class=\"bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40\">Přihlásit se</button></div></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
