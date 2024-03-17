@@ -15,7 +15,7 @@ func SignInStep1InitModel() baseTypes.Form {
 		FormFields: map[string]baseTypes.FormField{
 			LOGIN_FORM_EMAIL: {
 				ID:          LOGIN_FORM_EMAIL,
-				Label:       "Zadej email pro pokračování",
+				Label:       "Zadej email pro přihlášení",
 				Placeholder: "Email",
 				FieldType:   "text",
 				FormId:      LOGIN_FORM_STEP1,
