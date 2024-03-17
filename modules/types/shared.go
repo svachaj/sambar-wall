@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -111,6 +112,19 @@ func Date() ValidationFunc {
 			ValidateFunc: func(value string) bool {
 				dateParts := strings.Split(value, ".")
 				return len(dateParts) == 3
+			},
+		}
+	}
+}
+
+func MinLength(min int) ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return fmt.Sprintf("Minimální délka je %d", min)
+			},
+			ValidateFunc: func(value string) bool {
+				return len(value) >= min
 			},
 		}
 	}
