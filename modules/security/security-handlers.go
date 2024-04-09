@@ -21,7 +21,9 @@ import (
 
 type ISecurityHandlers interface {
 	LoginModal(c echo.Context) error
-	SignIn(c echo.Context) error
+	Login(c echo.Context) error
+	SignInStep1(c echo.Context) error
+	SignInStep2(c echo.Context) error
 	SignOut(c echo.Context) error
 }
 
@@ -34,6 +36,13 @@ func NewSecurityHandlers(db *sqlx.DB, coursesService courses.ICoursesService) IS
 	return &SecurityHandlers{db: db, coursesService: coursesService}
 }
 
+func (h *SecurityHandlers) Login(c echo.Context) error {
+
+	loginPage := loginTemplates.LoginPage()
+
+	return utils.HTML(c, loginPage)
+}
+
 func (h *SecurityHandlers) LoginModal(c echo.Context) error {
 
 	loginModel := types.LoginFormInitModel
@@ -43,7 +52,7 @@ func (h *SecurityHandlers) LoginModal(c echo.Context) error {
 	return utils.HTML(c, loginModal)
 }
 
-func (h *SecurityHandlers) SignIn(c echo.Context) error {
+func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 
 	loginModel := types.LoginFormInitModel
 
@@ -120,4 +129,9 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false)
 
 	return utils.HTML(c, coursesPage)
+}
+
+func (h *SecurityHandlers) SignInStep1(c echo.Context) error {
+
+	return c.String(200, "OK")
 }
