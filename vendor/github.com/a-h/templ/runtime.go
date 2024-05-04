@@ -119,7 +119,7 @@ func WithStatus(status int) func(*ComponentHandler) {
 	}
 }
 
-// WithConentType sets the Content-Type header returned by the ComponentHandler.
+// WithContentType sets the Content-Type header returned by the ComponentHandler.
 func WithContentType(contentType string) func(*ComponentHandler) {
 	return func(ch *ComponentHandler) {
 		ch.ContentType = contentType
@@ -461,25 +461,6 @@ func SanitizeCSS[T ~string](property string, value T) SafeCSS {
 	return SafeCSS(p + ":" + v + ";")
 }
 
-// Hyperlink sanitization.
-
-// FailedSanitizationURL is returned if a URL fails sanitization checks.
-const FailedSanitizationURL = SafeURL("about:invalid#TemplFailedSanitizationURL")
-
-// URL sanitizes the input string s and returns a SafeURL.
-func URL(s string) SafeURL {
-	if i := strings.IndexRune(s, ':'); i >= 0 && !strings.ContainsRune(s[:i], '/') {
-		protocol := s[:i]
-		if !strings.EqualFold(protocol, "http") && !strings.EqualFold(protocol, "https") && !strings.EqualFold(protocol, "mailto") {
-			return FailedSanitizationURL
-		}
-	}
-	return SafeURL(s)
-}
-
-// SafeURL is a URL that has been sanitized.
-type SafeURL string
-
 // Attributes is an alias to map[string]any made for spread attributes.
 type Attributes map[string]any
 
@@ -512,8 +493,20 @@ func RenderAttributes(ctx context.Context, w io.Writer, attributes Attributes) (
 			if err = writeStrings(w, ` `, EscapeString(key), `="`, EscapeString(value), `"`); err != nil {
 				return err
 			}
+		case *string:
+			if value != nil {
+				if err = writeStrings(w, ` `, EscapeString(key), `="`, EscapeString(*value), `"`); err != nil {
+					return err
+				}
+			}
 		case bool:
 			if value {
+				if err = writeStrings(w, ` `, EscapeString(key)); err != nil {
+					return err
+				}
+			}
+		case *bool:
+			if value != nil && *value {
 				if err = writeStrings(w, ` `, EscapeString(key)); err != nil {
 					return err
 				}

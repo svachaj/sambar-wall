@@ -3,7 +3,7 @@ module github.com/svachaj/sambar-wall
 go 1.21.0
 
 require (
-	github.com/a-h/templ v0.2.648
+	github.com/a-h/templ v0.2.663
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/rs/zerolog v1.32.0
 	golang.org/x/crypto v0.19.0
