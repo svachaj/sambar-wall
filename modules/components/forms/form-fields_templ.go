@@ -65,7 +65,7 @@ func FormField(field types.FormField) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if field.Disabled {
-				var templ_7745c5c3_Var4 = []any{utils.Classes("block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-lg text-base p-2"),
+				var templ_7745c5c3_Var4 = []any{utils.Classes("block w-full rounded-md border-0 py-1.5 text-neutral-500 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-lg text-base p-2 cursor-not-allowed "),
 					utils.ClassIf(len(field.Errors) > 0, "bg-red-700/10", "bg-white/5")}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 				if templ_7745c5c3_Err != nil {

@@ -10,10 +10,22 @@ import (
 )
 
 templ LoginFormStep1(loginForm baseTypes.Form, toast templ.Component) {
-	@formComponents.BaseForm(constants.ROUTE_LOGIN, "outerHTML", loginForm.Errors) {
+	@formComponents.BaseForm(constants.ROUTE_LOGIN_STEP1, "outerHTML", loginForm.Errors) {
 		@formComponents.H1("Přihlášení")
 		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL])
 		@formComponents.SubmitButton("Pokračovat")
+	}
+	if toast != nil {
+		@toast
+	}
+}
+
+templ LoginFormStep2(loginForm baseTypes.Form, toast templ.Component) {
+	@formComponents.BaseForm(constants.ROUTE_LOGIN_STEP2, "outerHTML", loginForm.Errors) {
+		@formComponents.H1("Dokončení přihlášení")
+		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL])
+		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE])
+		@formComponents.SubmitButton("Přihlásit se")
 	}
 	if toast != nil {
 		@toast
