@@ -2,6 +2,7 @@ package security
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -25,6 +26,7 @@ type ISecurityHandlers interface {
 	SignInStep2(c echo.Context) error
 	SignOut(c echo.Context) error
 	UserAccountPage(c echo.Context) error
+	SignMeIn(c echo.Context) error
 }
 
 type SecurityHandlers struct {
@@ -158,54 +160,52 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 
 	c.Response().Header().Set("HX-Retarget", "body")
 	return utils.HTML(c, coursesPage)
+}
 
-	// var user db.User
-	// query := fmt.Sprintf("SELECT id, passwordhash, username FROM t_system_user tsu WHERE lower(tsu.username) = '%[1]s' or tsu.email = '%[1]s' ", strings.ToLower(username))
-	// log.Info().Msg(query)
-	// err := h.db.Get(&user, query)
+func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
-	// if err != nil {
-	// 	loginModel.Errors = append(loginModel.Errors, types.ERROR_LOGIN)
-	// 	log.Err(err).Msg("Unathorized")
-	// } else {
-	// 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	// get query param and decode it
+	queryEncodedParam := c.QueryParam("c")
+	decodedParam := utils.Decrypt(queryEncodedParam)
+	params := strings.Split(decodedParam, ";")
 
-	// 	if err != nil {
-	// 		loginModel.Errors = append(loginModel.Errors, types.ERROR_LOGIN)
-	// 		log.Err(err).Msg("Unathorized")
-	// 	} else {
+	email := params[0]
+	confirmationCode := params[1]
 
-	// 		authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	// 		authSession.Options = &sessions.Options{
-	// 			Path:     "/",
-	// 			MaxAge:   3600, // 3600 seconds
-	// 			HttpOnly: true,
-	// 		}
+	err := h.securityService.FinalizeLogin(email, confirmationCode)
 
-	// 		authSession.Values[constants.AUTH_USER_KEY] = user.ID
+	if err != nil {
+		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
+		step1Form := models.SignInStep1InitModel()
+		step1 := security.LoginFormStep1(step1Form, toasts.ErrorToast(types.ERROR_LOGIN))
+		return utils.HTML(c, step1)
+	}
 
-	// 		authSession.Save(c.Request(), c.Response())
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	authSession.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600, // 3600 seconds
+		HttpOnly: true,
+	}
 
-	// 		// if user is authenticated, we want to retarget to the courses page
+	authSession.Values[constants.AUTH_USER_KEY] = email
 
-	// 		courses, err := h.coursesService.GetCoursesList()
+	authSession.Save(c.Request(), c.Response())
 
-	// 		if err != nil {
-	// 			return c.String(500, "Internal Server Error")
-	// 		}
+	// if user is authenticated, we want to retarget to the courses page
 
-	// 		coursesListComponent := coursesTemplates.CoursesList(courses, true)
-	// 		coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
+	courses, err := h.coursesService.GetCoursesList()
 
-	// 		return utils.HTML(c, coursesPage)
-	// 	}
-	// }
+	if err != nil {
+		return c.String(500, "Internal Server Error")
+	}
 
-	// loginForm := loginTemplates.LoginForm(loginModel)
-	// // there was an error, so we want to retarget to the login form again
-	// c.Response().Header().Set("HX-Retarget", "#login-form")
+	coursesListComponent := coursesTemplates.CoursesList(courses, true)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
 
-	// return utils.HTML(c, loginForm)
+	c.Response().Header().Set("HX-Retarget", "body")
+	c.Response().Header().Set("HX-Replace-Url", "/kurzy")
+	return utils.HTML(c, coursesPage)
 }
 
 func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {

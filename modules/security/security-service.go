@@ -51,7 +51,17 @@ func (s *SecurityService) SaveVerificationCode(email string, code string) error 
 func (s *SecurityService) SendVerificationCode(email string, code string) error {
 
 	subject := "Sambar Lezecká Stěna - přihlašovací kód"
-	body := fmt.Sprintf("Váš jednorázový přihlašovací kód je: %v", code)
+	// crypt email and code as query string
+	queryString := fmt.Sprintf("%v;%v", email, code)
+	queryStringEncoded := utils.Encrypt(queryString)
+
+	body := fmt.Sprintf("Váš jednorázový přihlašovací kód je: <a target='_blank' href='http://localhost:5500/sign-me-in?c=%v'>%v</a>", queryStringEncoded, code)
+	body += "<br><br>"
+	body += "Klinutím na kód je možné se rovnou přihlásit."
+	body += "<br><br>"
+	body += "Tento kód je platný 10 minut."
+	body += "<br><br>"
+	body += "Pokud jste o tento kód nepožádali, ignorujte tento email."
 
 	return s.emailService.SendEmail(subject, body, email)
 }
