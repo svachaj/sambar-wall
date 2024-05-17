@@ -204,7 +204,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
 
 	c.Response().Header().Set("HX-Retarget", "body")
-	c.Response().Header().Set("HX-Replace-Url", "/kurzy")
+	c.Response().Header().Set("HX-Redirect", "/kurzy")
 	return utils.HTML(c, coursesPage)
 }
 
