@@ -28,12 +28,13 @@ type ISecurityHandlers interface {
 }
 
 type SecurityHandlers struct {
-	db             *sqlx.DB
-	coursesService courses.ICoursesService
+	db              *sqlx.DB
+	coursesService  courses.ICoursesService
+	securityService ISecurityService
 }
 
-func NewSecurityHandlers(db *sqlx.DB, coursesService courses.ICoursesService) ISecurityHandlers {
-	return &SecurityHandlers{db: db, coursesService: coursesService}
+func NewSecurityHandlers(db *sqlx.DB, securityService ISecurityService, coursesService courses.ICoursesService) ISecurityHandlers {
+	return &SecurityHandlers{db: db, coursesService: coursesService, securityService: securityService}
 }
 
 func (h *SecurityHandlers) Login(c echo.Context) error {
@@ -71,32 +72,34 @@ func (h *SecurityHandlers) SignInStep1(c echo.Context) error {
 	// validate form
 	step1Form := models.SignInStep1InitModel()
 	params, _ := c.FormParams()
-	isValid := step1Form.ValidateFields(params)
+	isFormValid := step1Form.ValidateFields(params)
 
-	if !isValid {
+	if !isFormValid {
 		step1 := security.LoginFormStep1(step1Form, nil)
 		return utils.HTML(c, step1)
 	}
 
+	// get specific form fields from the form
 	email := step1Form.FormFields[models.LOGIN_FORM_EMAIL].Value
 
-	// generate and save verification code
-	// code := h.service.GenerateVerificationCode()
-	// err := h.service.SaveVerificationCode(email, code)
-	// if err != nil {
-	// 	log.Error().Msgf("Save verification code error: %v", err)
-	// 	step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
-	// 	return utils.HTML(c, step1WithToast)
-	// }
+	// generate and save sign-in code
+	code := h.securityService.GenerateVerificationCode()
+	err := h.securityService.SaveVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Save verification code error: %v", err)
+		step1WithToast := security.LoginFormStep1(step1Form, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
+	}
 
-	// // send verification code
-	// err = h.service.SendVerificationCode(email, code)
-	// if err != nil {
-	// 	log.Error().Msgf("Send verification code error: %v", err)
-	// 	step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
-	// 	return utils.HTML(c, step1WithToast)
-	// }
+	// send sign-in code to the user
+	err = h.securityService.SendVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Send verification code error: %v", err)
+		step1WithToast := security.LoginFormStep1(step1Form, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
+	}
 
+	// if everything is ok, we want to retarget to the step 2 of the sign-in process
 	step2Form := models.SignInStep2InitModel()
 	if val, ok := step2Form.FormFields[models.LOGIN_FORM_EMAIL]; ok {
 		val.Value = email
@@ -111,20 +114,23 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	// validate form
 	step2Form := models.SignInStep2InitModel()
 	params, _ := c.FormParams()
-	isValid := step2Form.ValidateFields(params)
+	isFormValid := step2Form.ValidateFields(params)
 
-	if !isValid {
+	if !isFormValid {
 		step1 := security.LoginFormStep2(step2Form, nil)
 		return utils.HTML(c, step1)
 	}
 
+	// get specific form fields from the form
 	email := step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value
 	confirmationCode := step2Form.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE].Value
 
-	if confirmationCode != "1234" && email != "" {
+	err := h.securityService.FinalizeLogin(email, confirmationCode)
+
+	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
 		step2Form.Errors = append(step2Form.Errors, types.ERROR_LOGIN)
-		step2 := security.LoginFormStep2(step2Form, nil)
+		step2 := security.LoginFormStep2(step2Form, toasts.ErrorToast(types.ERROR_LOGIN))
 		return utils.HTML(c, step2)
 	}
 

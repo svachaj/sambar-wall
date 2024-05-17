@@ -15,4 +15,4 @@ var LoginFormInitModel LoginFormResponse = LoginFormResponse{
 	Password: baseTypes.FormField{Label: "Heslo"},
 }
 
-const ERROR_LOGIN = "Chybný ověřovací kód"
+const ERROR_LOGIN = "Neplatný kód"

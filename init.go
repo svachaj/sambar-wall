@@ -41,8 +41,10 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	coursesService := courses.NewCoursesService(db, emailService)
 	coursesHandlers := courses.NewCoursesHandler(coursesService)
 	courses.MapCoursesRoutes(e, coursesHandlers)
+	log.Info().Msg("Module Courses Initialized and Routes Mapped Successfully.")
 
-	securityHandlers := security.NewSecurityHandlers(db, coursesService)
+	securityService := security.NewSecurityService(db, emailService)
+	securityHandlers := security.NewSecurityHandlers(db, securityService, coursesService)
 	security.MapSecurityRoutes(e, securityHandlers)
 	log.Info().Msg("Module Security Initialized and Routes Mapped Successfully.")
 
