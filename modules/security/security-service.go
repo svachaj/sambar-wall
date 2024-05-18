@@ -57,7 +57,7 @@ func (s *SecurityService) SendVerificationCode(email string, code string) error 
 
 	body := fmt.Sprintf("Váš jednorázový přihlašovací kód je: <a target='_blank' href='http://localhost:5500/sign-me-in?c=%v'>%v</a>", queryStringEncoded, code)
 	body += "<br><br>"
-	body += "Klinutím na kód je možné se rovnou přihlásit."
+	body += "Kliknutím na kód je možné se rovnou přihlásit."
 	body += "<br><br>"
 	body += "Tento kód je platný 10 minut."
 	body += "<br><br>"

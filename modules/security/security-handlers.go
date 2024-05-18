@@ -176,9 +176,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
-		step1Form := models.SignInStep1InitModel()
-		step1 := security.LoginFormStep1(step1Form, toasts.ErrorToast(types.ERROR_LOGIN))
-		return utils.HTML(c, step1)
+		return c.Redirect(302, "/prihlaseni")
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
@@ -194,18 +192,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	// if user is authenticated, we want to retarget to the courses page
 
-	courses, err := h.coursesService.GetCoursesList()
-
-	if err != nil {
-		return c.String(500, "Internal Server Error")
-	}
-
-	coursesListComponent := coursesTemplates.CoursesList(courses, true)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
-
-	c.Response().Header().Set("HX-Retarget", "body")
-	c.Response().Header().Set("HX-Redirect", "/kurzy")
-	return utils.HTML(c, coursesPage)
+	return c.Redirect(302, "/kurzy")
 }
 
 func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {
