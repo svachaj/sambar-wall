@@ -71,6 +71,8 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 
 func (h *SecurityHandlers) SignInStep1(c echo.Context) error {
 
+	log.Info().Msg(c.Path())
+
 	// validate form
 	step1Form := models.SignInStep1InitModel()
 	params, _ := c.FormParams()
@@ -144,6 +146,11 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	}
 
 	authSession.Values[constants.AUTH_USER_KEY] = email
+	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
+	returnUrl := ""
+	if returnUrlInterf != nil {
+		returnUrl = returnUrlInterf.(string)
+	}
 
 	authSession.Save(c.Request(), c.Response())
 
@@ -158,7 +165,11 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	coursesListComponent := coursesTemplates.CoursesList(courses, true)
 	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
 
-	c.Response().Header().Set("HX-Retarget", "body")
+	if returnUrl != "" {
+		c.Response().Header().Set("HX-Redirect", returnUrl)
+	} else {
+		c.Response().Header().Set("HX-Retarget", "body")
+	}
 	return utils.HTML(c, coursesPage)
 }
 
@@ -186,11 +197,21 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 		HttpOnly: true,
 	}
 
+	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
+	returnUrl := ""
+	if returnUrlInterf != nil {
+		returnUrl = returnUrlInterf.(string)
+	}
+
 	authSession.Values[constants.AUTH_USER_KEY] = email
 
 	authSession.Save(c.Request(), c.Response())
 
 	// if user is authenticated, we want to retarget to the courses page
+
+	if returnUrl != "" {
+		return c.Redirect(302, returnUrl)
+	}
 
 	return c.Redirect(302, "/kurzy")
 }
