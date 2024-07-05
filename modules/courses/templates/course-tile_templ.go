@@ -140,7 +140,35 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\"><button class=\"bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40\">Přihlásit se</button></div></td></tr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if course.ApplicationsCount < course.Capacity {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(int64(course.Capacity-course.ApplicationsCount), 10))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 67, Col: 84}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" volných míst </button>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Kurz naplněn")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

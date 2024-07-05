@@ -29,7 +29,7 @@ func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
 		tct.Description1 as description 
 	FROM t_course tc 
 	LEFT JOIN t_course_type tct on tc.ID_typeOfCourse = tct.ID 
-	WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate()
+	WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate() and tc.IsActive = 1
 	GROUP BY tct.Name1, tct.Description1 , tct.ID, tct.Code 
 	ORDER BY tct.Code`)
 
@@ -56,7 +56,7 @@ func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
 		LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
 		LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
 		LEFT JOIN t_course_application_form tcaf on tc.ID = tcaf.ID_course
-		WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate() AND tc.ID_typeOfCourse = @p1
+		WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate() AND tc.IsActive = 1 AND tc.ID_typeOfCourse = @p1
 		GROUP BY tc.ID, tc.TimeFrom ,tc.TimeTo , tcd.Name1 , tcag.Name1, tc.Capacity, tcd.Code, tc.PartipicatnsCount ,tc.Price , tc.DurationMin
 		ORDER BY tcd.Code, tc.TimeFrom ;
 		`, courseType.ID)
