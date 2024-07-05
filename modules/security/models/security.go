@@ -31,7 +31,15 @@ func SignInStep2InitModel() baseTypes.Form {
 				ID:          LOGIN_FORM_CONFIRMATION_CODE,
 				Label:       "Ověřovací kód z emailu",
 				FieldType:   "number",
-				Validations: baseTypes.Validations(baseTypes.Required()), FormId: LOGIN_FORM_STEP2},
+				Validations: baseTypes.Validations(baseTypes.Required()),
+				FormId:      LOGIN_FORM_STEP2},
+			LOGIN_FORM_EMAIL: {
+				ID:          LOGIN_FORM_EMAIL,
+				Label:       "Email",
+				Disabled:    true,
+				FieldType:   "text",
+				FormId:      LOGIN_FORM_STEP2,
+				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.Email())},
 		},
 	}
 }

@@ -1,6 +1,6 @@
 ![templ](https://github.com/a-h/templ/raw/main/templ.png)
 
-## A HTML templating language for Go that has great developer tooling.
+## An HTML templating language for Go that has great developer tooling.
 
 ![templ](ide-demo.gif)
 
@@ -76,6 +76,16 @@ go run ./cmd/templ generate -include-version=false
 go test ./...
 ```
 
+### test-short
+
+Run Go tests.
+
+```sh
+go run ./get-version > .version
+go run ./cmd/templ generate -include-version=false
+go test ./... -short
+```
+
 ### test-cover
 
 Run Go tests.
@@ -100,6 +110,12 @@ go tool covdata percent -i=./coverage/fmt,./coverage/generate,./coverage/version
 go tool covdata textfmt -i=./coverage/fmt,./coverage/generate,./coverage/version,./coverage/unit -o coverage.out
 # Print total
 go tool cover -func coverage.out | grep total
+```
+
+### test-cover-watch
+
+```sh
+gotestsum --watch -- -coverprofile=coverage.out
 ```
 
 ### benchmark

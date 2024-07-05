@@ -9,31 +9,34 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	db "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/courses"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
+	"github.com/svachaj/sambar-wall/modules/security/models"
 	loginTemplates "github.com/svachaj/sambar-wall/modules/security/templates"
+	security "github.com/svachaj/sambar-wall/modules/security/templates"
 	types "github.com/svachaj/sambar-wall/modules/security/types"
+	"github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type ISecurityHandlers interface {
-	LoginModal(c echo.Context) error
 	Login(c echo.Context) error
 	SignInStep1(c echo.Context) error
 	SignInStep2(c echo.Context) error
 	SignOut(c echo.Context) error
+	UserAccountPage(c echo.Context) error
+	SignMeIn(c echo.Context) error
 }
 
 type SecurityHandlers struct {
-	db             *sqlx.DB
-	coursesService courses.ICoursesService
+	db              *sqlx.DB
+	coursesService  courses.ICoursesService
+	securityService ISecurityService
 }
 
-func NewSecurityHandlers(db *sqlx.DB, coursesService courses.ICoursesService) ISecurityHandlers {
-	return &SecurityHandlers{db: db, coursesService: coursesService}
+func NewSecurityHandlers(db *sqlx.DB, securityService ISecurityService, coursesService courses.ICoursesService) ISecurityHandlers {
+	return &SecurityHandlers{db: db, coursesService: coursesService, securityService: securityService}
 }
 
 func (h *SecurityHandlers) Login(c echo.Context) error {
@@ -41,71 +44,6 @@ func (h *SecurityHandlers) Login(c echo.Context) error {
 	loginPage := loginTemplates.LoginPage()
 
 	return utils.HTML(c, loginPage)
-}
-
-func (h *SecurityHandlers) LoginModal(c echo.Context) error {
-
-	loginModel := types.LoginFormInitModel
-
-	loginModal := loginTemplates.LoginModal(loginModel)
-
-	return utils.HTML(c, loginModal)
-}
-
-func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
-
-	loginModel := types.LoginFormInitModel
-
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	var user db.User
-	query := fmt.Sprintf("SELECT id, passwordhash, username FROM t_system_user tsu WHERE lower(tsu.username) = '%[1]s' or tsu.email = '%[1]s' ", strings.ToLower(username))
-	log.Info().Msg(query)
-	err := h.db.Get(&user, query)
-
-	if err != nil {
-		loginModel.Errors = append(loginModel.Errors, types.ERROR_LOGIN)
-		log.Err(err).Msg("Unathorized")
-	} else {
-		err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-
-		if err != nil {
-			loginModel.Errors = append(loginModel.Errors, types.ERROR_LOGIN)
-			log.Err(err).Msg("Unathorized")
-		} else {
-
-			authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-			authSession.Options = &sessions.Options{
-				Path:     "/",
-				MaxAge:   3600, // 3600 seconds
-				HttpOnly: true,
-			}
-
-			authSession.Values[constants.AUTH_USER_KEY] = user.ID
-
-			authSession.Save(c.Request(), c.Response())
-
-			// if user is authenticated, we want to retarget to the courses page
-
-			courses, err := h.coursesService.GetCoursesList()
-
-			if err != nil {
-				return c.String(500, "Internal Server Error")
-			}
-
-			coursesListComponent := coursesTemplates.CoursesList(courses, true)
-			coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
-
-			return utils.HTML(c, coursesPage)
-		}
-	}
-
-	loginForm := loginTemplates.LoginForm(loginModel)
-	// there was an error, so we want to retarget to the login form again
-	c.Response().Header().Set("HX-Retarget", "#login-form")
-
-	return utils.HTML(c, loginForm)
 }
 
 func (h *SecurityHandlers) SignOut(c echo.Context) error {
@@ -133,5 +71,157 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 
 func (h *SecurityHandlers) SignInStep1(c echo.Context) error {
 
-	return c.String(200, "OK")
+	log.Info().Msg(c.Path())
+
+	// validate form
+	step1Form := models.SignInStep1InitModel()
+	params, _ := c.FormParams()
+	isFormValid := step1Form.ValidateFields(params)
+
+	if !isFormValid {
+		step1 := security.LoginFormStep1(step1Form, nil)
+		return utils.HTML(c, step1)
+	}
+
+	// get specific form fields from the form
+	email := step1Form.FormFields[models.LOGIN_FORM_EMAIL].Value
+
+	// generate and save sign-in code
+	code := h.securityService.GenerateVerificationCode()
+	err := h.securityService.SaveVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Save verification code error: %v", err)
+		step1WithToast := security.LoginFormStep1(step1Form, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
+	}
+
+	// send sign-in code to the user
+	err = h.securityService.SendVerificationCode(email, code)
+	if err != nil {
+		log.Error().Msgf("Send verification code error: %v", err)
+		step1WithToast := security.LoginFormStep1(step1Form, toasts.ServerErrorToast())
+		return utils.HTML(c, step1WithToast)
+	}
+
+	// if everything is ok, we want to retarget to the step 2 of the sign-in process
+	step2Form := models.SignInStep2InitModel()
+	if val, ok := step2Form.FormFields[models.LOGIN_FORM_EMAIL]; ok {
+		val.Value = email
+		step2Form.FormFields[models.LOGIN_FORM_EMAIL] = val
+	}
+	step2 := security.LoginFormStep2(step2Form, toasts.InfoToast(fmt.Sprintf("Na zadaný email %v byl odeslán ověřovací kód.", email)))
+	return utils.HTML(c, step2)
+}
+
+func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
+
+	// validate form
+	step2Form := models.SignInStep2InitModel()
+	params, _ := c.FormParams()
+	isFormValid := step2Form.ValidateFields(params)
+
+	if !isFormValid {
+		step1 := security.LoginFormStep2(step2Form, nil)
+		return utils.HTML(c, step1)
+	}
+
+	// get specific form fields from the form
+	email := step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value
+	confirmationCode := step2Form.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE].Value
+
+	err := h.securityService.FinalizeLogin(email, confirmationCode)
+
+	if err != nil {
+		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
+		step2Form.Errors = append(step2Form.Errors, types.ERROR_LOGIN)
+		step2 := security.LoginFormStep2(step2Form, toasts.ErrorToast(types.ERROR_LOGIN))
+		return utils.HTML(c, step2)
+	}
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	authSession.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600, // 3600 seconds
+		HttpOnly: true,
+	}
+
+	authSession.Values[constants.AUTH_USER_KEY] = email
+	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
+	returnUrl := ""
+	if returnUrlInterf != nil {
+		returnUrl = returnUrlInterf.(string)
+	}
+
+	authSession.Save(c.Request(), c.Response())
+
+	// if user is authenticated, we want to retarget to the courses page
+
+	courses, err := h.coursesService.GetCoursesList()
+
+	if err != nil {
+		return c.String(500, "Internal Server Error")
+	}
+
+	coursesListComponent := coursesTemplates.CoursesList(courses, true)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
+
+	if returnUrl != "" {
+		c.Response().Header().Set("HX-Redirect", returnUrl)
+	} else {
+		c.Response().Header().Set("HX-Retarget", "body")
+	}
+	return utils.HTML(c, coursesPage)
+}
+
+func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
+
+	// get query param and decode it
+	queryEncodedParam := c.QueryParam("c")
+	decodedParam := utils.Decrypt(queryEncodedParam)
+	params := strings.Split(decodedParam, ";")
+
+	email := params[0]
+	confirmationCode := params[1]
+
+	err := h.securityService.FinalizeLogin(email, confirmationCode)
+
+	if err != nil {
+		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
+		return c.Redirect(302, "/prihlaseni")
+	}
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	authSession.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600, // 3600 seconds
+		HttpOnly: true,
+	}
+
+	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
+	returnUrl := ""
+	if returnUrlInterf != nil {
+		returnUrl = returnUrlInterf.(string)
+	}
+
+	authSession.Values[constants.AUTH_USER_KEY] = email
+
+	authSession.Save(c.Request(), c.Response())
+
+	// if user is authenticated, we want to retarget to the courses page
+
+	if returnUrl != "" {
+		return c.Redirect(302, returnUrl)
+	}
+
+	return c.Redirect(302, "/kurzy")
+}
+
+func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	userEmail := authSession.Values[constants.AUTH_USER_KEY].(string)
+
+	userAccountPage := loginTemplates.UserAccountPage(userEmail)
+
+	return utils.HTML(c, userAccountPage)
 }

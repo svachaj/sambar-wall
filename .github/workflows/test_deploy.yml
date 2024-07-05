@@ -1,0 +1,38 @@
+name: Deploy Go Web App - Sambar Registrace - TEST
+
+on:
+  push:
+    branches:
+      - test # Change this to the branch you want to deploy
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Stop Web App Service
+        run: |
+          Stop-Service -Name "sambar-wall-web-app"
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22
+
+      - name: Build Go Web App
+        run: |
+          go build -v -o tmp/sambar-wall-web-app.exe -ldflags "-s -w"
+
+      - name: Deploy Content
+        run: |
+          # Add your deployment script or commands here
+          # For example, if you just need to copy files to a destination
+          Copy-Item -Path "static\*" -Destination "C:\inetpub\wwwroot\sambar-registrace-test\static" -Force -Recurse
+          Copy-Item -Path "tmp/sambar-wall-web-app.exe" -Destination "C:\inetpub\wwwroot\sambar-registrace-test" -Force
+
+      - name: Start Web App Service
+        if: always()
+        run: |
+          Start-Service -Name "sambar-wall-web-app-test"

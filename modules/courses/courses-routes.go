@@ -6,6 +6,8 @@ import (
 
 func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 
+	e.GET("/", h.GetCoursesList)
+
 	e.GET("/kurzy", h.GetCoursesList)
 
 }
