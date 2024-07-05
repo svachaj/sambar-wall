@@ -62,9 +62,13 @@ templ CourseTile(course types.CourseType) {
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center">
-								<button class="bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40">
-									Přihlásit se
-								</button>
+								if course.ApplicationsCount < course.Capacity {
+									<button class="bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40">
+										{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
+									</button>
+								} else {
+									Kurz naplněn
+								}
 							</div>
 						</td>
 					</tr>
