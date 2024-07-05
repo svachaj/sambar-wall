@@ -26,7 +26,7 @@ func ValidateFormField(c echo.Context) error {
 		fieldValue := ""
 		fieldVal := body[fieldName]
 		if fieldVal != nil {
-			fieldValue = fieldVal.(string)
+			fieldValue = fieldVal.([]string)[0]
 		}
 
 		formId := c.Request().Header.Get("Form-Id")
