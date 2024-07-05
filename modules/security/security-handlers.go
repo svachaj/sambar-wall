@@ -156,21 +156,14 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 
 	// if user is authenticated, we want to retarget to the courses page
 
-	courses, err := h.coursesService.GetCoursesList()
-
-	if err != nil {
-		return c.String(500, "Internal Server Error")
-	}
-
-	coursesListComponent := coursesTemplates.CoursesList(courses, true)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, true)
-
 	if returnUrl != "" {
 		c.Response().Header().Set("HX-Redirect", returnUrl)
 	} else {
-		c.Response().Header().Set("HX-Retarget", "body")
+		c.Response().Header().Set("HX-Redirect", constants.ROUTE_HOME)
 	}
-	return utils.HTML(c, coursesPage)
+
+	step2 := security.LoginFormStep2(step2Form, toasts.SuccessToast("Přihlášení proběhlo úspěšně."))
+	return utils.HTML(c, step2)
 }
 
 func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
