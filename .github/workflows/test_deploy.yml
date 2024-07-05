@@ -14,7 +14,7 @@ jobs:
 
       - name: Stop Web App Service
         run: |
-          Stop-Service -Name "sambar-wall-web-app"
+          Stop-Service -Name "sambar-wall-web-app-test"
 
       - name: Set up Go
         uses: actions/setup-go@v4
