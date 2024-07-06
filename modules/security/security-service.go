@@ -12,7 +12,7 @@ import (
 type ISecurityService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
-	SendVerificationCode(email string, code string) error
+	SendVerificationCode(email string, code string, host string) error
 	FinalizeLogin(email, confirmationCode string) error
 }
 
@@ -48,14 +48,14 @@ func (s *SecurityService) SaveVerificationCode(email string, code string) error 
 	return err
 }
 
-func (s *SecurityService) SendVerificationCode(email string, code string) error {
+func (s *SecurityService) SendVerificationCode(email string, code string, host string) error {
 
 	subject := "Sambar Lezecká Stěna - přihlašovací kód"
 	// crypt email and code as query string
 	queryString := fmt.Sprintf("%v;%v", email, code)
 	queryStringEncoded := utils.Encrypt(queryString)
 
-	body := fmt.Sprintf("<span style='letter-spacing: 0.75px;'>Tvůj jednorázový přihlašovací kód je: <a target='_blank' href='http://localhost:5500/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a>", queryStringEncoded, code)
+	body := fmt.Sprintf("<span style='letter-spacing: 0.75px;'>Tvůj jednorázový přihlašovací kód je: <a target='_blank' href='%v/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a>", host, queryStringEncoded, code)
 	body += "<br><br>"
 	body += "<span style='letter-spacing: 0.75px;'>Kliknutím na kód je možné se rovnou přihlásit.</span>"
 	body += "<br><br>"
