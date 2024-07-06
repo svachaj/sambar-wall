@@ -7,6 +7,7 @@ import (
 	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 	"github.com/svachaj/sambar-wall/modules/security/models"
+	"github.com/svachaj/sambar-wall/modules/toasts"
 )
 
 templ LoginFormStep1(loginForm baseTypes.Form, toast templ.Component) {
@@ -84,8 +85,12 @@ templ LoginModal(model types.LoginFormResponse) {
 	}
 }
 
-templ LoginPage() {
+templ LoginPage(expired bool) {
 	@layouts.BaseLayout(false) {
-		@LoginFormStep1(models.SignInStep1InitModel(), nil)
+		if !expired {
+			@LoginFormStep1(models.SignInStep1InitModel(), nil)
+		} else {
+			@LoginFormStep1(models.SignInStep1InitModel(), toasts.ErrorToast("Kód již vypršel, zadejte svůj email znovu."))
+		}
 	}
 }
