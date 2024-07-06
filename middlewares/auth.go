@@ -40,6 +40,6 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		authSession.Values[constants.AUTH_RETURN_URL] = returnUrl
 		authSession.Save(c.Request(), c.Response())
 
-		return utils.HTMLWithStatus(c, 401, security.LoginPage())
+		return utils.HTMLWithStatus(c, 401, security.LoginPage(false))
 	}
 }

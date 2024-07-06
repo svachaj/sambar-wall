@@ -20,6 +20,10 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
+const (
+	EXPIRATION_SESSION_TIME_SECONDS = 60 * 60 * 48 // 48 hours
+)
+
 type ISecurityHandlers interface {
 	Login(c echo.Context) error
 	SignInStep1(c echo.Context) error
@@ -41,7 +45,9 @@ func NewSecurityHandlers(db *sqlx.DB, securityService ISecurityService, coursesS
 
 func (h *SecurityHandlers) Login(c echo.Context) error {
 
-	loginPage := loginTemplates.LoginPage()
+	expired := c.QueryParam("expired")
+
+	loginPage := loginTemplates.LoginPage(expired == "true")
 
 	return utils.HTML(c, loginPage)
 }
@@ -141,7 +147,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
 	authSession.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600, // 3600 seconds
+		MaxAge:   EXPIRATION_SESSION_TIME_SECONDS,
 		HttpOnly: true,
 	}
 
@@ -180,13 +186,13 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
-		return c.Redirect(302, "/prihlaseni")
+		return c.Redirect(302, "/prihlaseni?expired=true")
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
 	authSession.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600, // 3600 seconds
+		MaxAge:   EXPIRATION_SESSION_TIME_SECONDS,
 		HttpOnly: true,
 	}
 
