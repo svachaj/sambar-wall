@@ -13,7 +13,6 @@ import (
 	"github.com/svachaj/sambar-wall/modules/courses"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	"github.com/svachaj/sambar-wall/modules/security/models"
-	loginTemplates "github.com/svachaj/sambar-wall/modules/security/templates"
 	security "github.com/svachaj/sambar-wall/modules/security/templates"
 	types "github.com/svachaj/sambar-wall/modules/security/types"
 	"github.com/svachaj/sambar-wall/modules/toasts"
@@ -47,7 +46,7 @@ func (h *SecurityHandlers) Login(c echo.Context) error {
 
 	expired := c.QueryParam("expired")
 
-	loginPage := loginTemplates.LoginPage(expired == "true")
+	loginPage := security.LoginPage(expired == "true")
 
 	return utils.HTML(c, loginPage)
 }
@@ -160,6 +159,9 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 
 	authSession.Save(c.Request(), c.Response())
 
+	ipAddress := c.RealIP()
+	log.Info().Msgf("User %v signed in from IP %v", email, ipAddress)
+
 	// if user is authenticated, we want to retarget to the courses page
 
 	if returnUrl != "" {
@@ -186,7 +188,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
-		return c.Redirect(302, "/prihlaseni?expired=true")
+		return c.Redirect(302, constants.ROUTE_LOGIN+"?expired=true")
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
@@ -206,13 +208,15 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	authSession.Save(c.Request(), c.Response())
 
+	ipAddress := c.RealIP()
+	log.Info().Msgf("User %v signed in from IP %v", email, ipAddress)
 	// if user is authenticated, we want to retarget to the courses page
 
 	if returnUrl != "" {
 		return c.Redirect(302, returnUrl)
 	}
 
-	return c.Redirect(302, "/kurzy")
+	return c.Redirect(302, constants.ROUTE_COURSES)
 }
 
 func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {
@@ -220,7 +224,7 @@ func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
 	userEmail := authSession.Values[constants.AUTH_USER_KEY].(string)
 
-	userAccountPage := loginTemplates.UserAccountPage(userEmail)
+	userAccountPage := security.UserAccountPage(userEmail)
 
 	return utils.HTML(c, userAccountPage)
 }
