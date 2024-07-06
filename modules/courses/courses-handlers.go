@@ -5,10 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/svachaj/sambar-wall/middlewares"
-	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/courses/models"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
-	"github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -64,9 +62,7 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 		return utils.HTML(c, applicationFormComponent)
 	}
 
-	c.Response().Header().Set("HX-Redirect", constants.ROUTE_HOME)
-
-	applicationFormComponent := coursesTemplates.ApplicationForm(applicationForm, toasts.SuccessToast("Přihlášení proběhlo úspěšně."))
-	return utils.HTML(c, applicationFormComponent)
+	successInfo := coursesTemplates.ApplicationFormSuccessInfo()
+	return utils.HTML(c, successInfo)
 
 }
