@@ -1,0 +1,17 @@
+package courses
+
+import (
+	"github.com/svachaj/sambar-wall/modules/layouts"
+)
+
+templ ApplicationFormPage(course_id string) {
+	@layouts.BaseLayout(true) {
+		@ApplicationForm(course_id)
+	}
+}
+
+templ ApplicationForm(course_id string) {
+	<div>
+		Course ID: { course_id }
+	</div>
+}
