@@ -101,7 +101,7 @@ func (h *SecurityHandlers) SignInStep1(c echo.Context) error {
 	}
 
 	// send sign-in code to the user
-	err = h.securityService.SendVerificationCode(email, code, c.Request().Host)
+	err = h.securityService.SendVerificationCode(email, code, c.Request().Header.Get("Origin"))
 	if err != nil {
 		log.Error().Msgf("Send verification code error: %v", err)
 		step1WithToast := security.LoginFormStep1(step1Form, toasts.ServerErrorToast())
