@@ -130,6 +130,19 @@ func MinLength(min int) ValidationFunc {
 	}
 }
 
+func MaxLength(max int) ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return fmt.Sprintf("Maximální délka je %d", max)
+			},
+			ValidateFunc: func(value string) bool {
+				return len(value) <= max
+			},
+		}
+	}
+}
+
 func Validations(validations ...ValidationFunc) []ValidationRule {
 	rules := make([]ValidationRule, len(validations))
 	for i, v := range validations {

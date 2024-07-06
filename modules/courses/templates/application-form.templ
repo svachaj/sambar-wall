@@ -1,17 +1,35 @@
 package courses
 
 import (
+	"github.com/svachaj/sambar-wall/modules/courses/models"
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/modules/constants"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
+	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 )
 
 templ ApplicationFormPage(course_id string) {
 	@layouts.BaseLayout(true) {
-		@ApplicationForm(course_id)
+		<div class="w-full flex flex-col items-center justify-center px-2">
+			@ApplicationForm(models.ApplicationFormModel(), nil)
+		</div>
 	}
 }
 
-templ ApplicationForm(course_id string) {
-	<div>
-		Course ID: { course_id }
-	</div>
+templ ApplicationForm(applicationForm baseTypes.Form, toast templ.Component) {
+	@formComponents.BaseForm(constants.ROUTE_COURSES_APPLAICATION_FORM, "outerHTML", applicationForm.Errors) {
+		@formComponents.H1("Přihláška na kurz")
+		@formComponents.InfoDiv("Vyplňte prosím následující formulář pro dokončení přihlášky na kurz.")
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_FIRST_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PHONE])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_GDPR])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_RULES])
+		@formComponents.SubmitButton("Dokončit")
+	}
+	if toast != nil {
+		@toast
+	}
 }
