@@ -61,10 +61,22 @@ templ CourseTile(course types.CourseType) {
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+							<div class="w-full text-center" x-data="{ hoverButton: false }">
 								if course.ApplicationsCount < course.Capacity {
-									<button class="bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40">
-										{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
+									<button
+										@mouseenter="hoverButton = true"
+										@mouseleave="hoverButton = false"
+										hx-get={ "/prihlaska/" + strconv.FormatInt(int64(course.ID), 10) }
+										hx-push-url="true"
+										hx-target="body"
+										class="bg-primary-600  text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40"
+									>
+										<span x-show="!hoverButton">
+											{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
+										</span>
+										<span x-show="hoverButton">
+											Přihlásit se 
+										</span>
 									</button>
 								} else {
 									Kurz naplněn

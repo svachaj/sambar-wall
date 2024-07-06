@@ -11,6 +11,7 @@ import (
 
 type ICoursesHandler interface {
 	GetCoursesList(c echo.Context) error
+	ApplicationFormPage(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -35,4 +36,13 @@ func (h *CoursesHandler) GetCoursesList(c echo.Context) error {
 	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated)
 
 	return utils.HTML(c, coursesPage)
+}
+
+func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
+
+	id := c.Param("id")
+
+	applicationForm := coursesTemplates.ApplicationFormPage(id)
+
+	return utils.HTML(c, applicationForm)
 }

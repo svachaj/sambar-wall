@@ -88,6 +88,10 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) error {
 	END;`, email)
 	_, _ = s.db.Exec(query)
 
+	// set last logon date
+	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", email)
+	_, _ = s.db.Exec(query)
+
 	// if everything is ok, delete the confirmation code
 	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", email)
 	_, _ = s.db.Exec(query)

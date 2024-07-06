@@ -4,8 +4,6 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/svachaj/sambar-wall/modules/constants"
-	security "github.com/svachaj/sambar-wall/modules/security/templates"
-	"github.com/svachaj/sambar-wall/utils"
 )
 
 func IsAuthenticated(c *echo.Context) (bool, string) {
@@ -40,6 +38,8 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		authSession.Values[constants.AUTH_RETURN_URL] = returnUrl
 		authSession.Save(c.Request(), c.Response())
 
-		return utils.HTMLWithStatus(c, 401, security.LoginPage(false))
+		c.Response().Header().Set("HX-Redirect", returnUrl)
+
+		return c.Redirect(302, constants.ROUTE_LOGIN)
 	}
 }
