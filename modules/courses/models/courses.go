@@ -6,6 +6,7 @@ import (
 
 const APPLICATION_FORM = "applicationForm"
 
+const APPLICATION_FORM_COURSE_ID = "courseId"
 const APPLICATION_FORM_FIRST_NAME = "firstName"
 const APPLICATION_FORM_LAST_NAME = "lastName"
 const APPLICATION_FORM_PERSONAL_ID = "personalId"
@@ -14,9 +15,15 @@ const APPLICATION_FORM_PARENT_NAME = "parentName"
 const APPLICATION_FORM_GDPR = "gdpr"
 const APPLICATION_FORM_RULES = "rules"
 
-func ApplicationFormModel() baseTypes.Form {
+func ApplicationFormModel(courseId string) baseTypes.Form {
 	return baseTypes.Form{
 		FormFields: map[string]baseTypes.FormField{
+			APPLICATION_FORM_COURSE_ID: {
+				ID:        APPLICATION_FORM_COURSE_ID,
+				Label:     "ID kurzu",
+				FieldType: "hidden",
+				FormId:    APPLICATION_FORM,
+				Value:     courseId},
 			APPLICATION_FORM_FIRST_NAME: {
 				ID:          APPLICATION_FORM_FIRST_NAME,
 				Label:       "Jméno (koho přihlašuji)",

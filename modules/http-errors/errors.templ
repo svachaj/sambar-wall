@@ -37,3 +37,11 @@ templ ErrorPage(cmp templ.Component) {
 		@cmp
 	}
 }
+
+templ InternalServerErrorSimple() {
+	<div class="mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8">
+		<h1 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">Promiň, něco se pokazilo</h1>
+		<p class="mt-4 text-base text-white/70 sm:mt-6">Zkus to prosím znovu.</p>
+		<a href="/" class="mt-20 text-sm font-semibold leading-7 text-primary-700 underline hover:text-primary-400">Zpět na úvodní stránku</a>
+	</div>
+}

@@ -53,5 +53,5 @@ var Forms map[string]types.Form = map[string]types.Form{
 	agreementModels.AGREEMENT_FORM_STEP2: agreementModels.AgreementFormInitModel(),
 	securityModels.LOGIN_FORM_STEP1:      securityModels.SignInStep1InitModel(),
 	securityModels.LOGIN_FORM_STEP2:      securityModels.SignInStep2InitModel(),
-	coursesModels.APPLICATION_FORM:       coursesModels.ApplicationFormModel(),
+	coursesModels.APPLICATION_FORM:       coursesModels.ApplicationFormModel("0"),
 }

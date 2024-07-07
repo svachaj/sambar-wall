@@ -13,7 +13,7 @@ type ISecurityService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string, host string) error
-	FinalizeLogin(email, confirmationCode string) error
+	FinalizeLogin(email, confirmationCode string) (userId int, err error)
 }
 
 type SecurityService struct {
@@ -66,19 +66,19 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 	return s.emailService.SendEmail(subject, body, email)
 }
 
-func (s *SecurityService) FinalizeLogin(email, confirmationCode string) error {
+func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId int, err error) {
 
 	// check confirmation code
 	var count int
 	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", email, confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
-	err := s.db.Get(&count, query)
+	err = s.db.Get(&count, query)
 
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	if count == 0 {
-		return fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
+		return -1, fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
 	}
 
 	// we want to create a new user with the email if it does not exist
@@ -88,6 +88,14 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) error {
 	END;`, email)
 	_, _ = s.db.Exec(query)
 
+	// get user id
+	query = fmt.Sprintf("SELECT ID FROM t_system_user WHERE UserName = '%v'", email)
+	err = s.db.Get(&userId, query)
+
+	if err != nil {
+		return -1, err
+	}
+
 	// set last logon date
 	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", email)
 	_, _ = s.db.Exec(query)
@@ -96,7 +104,7 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) error {
 	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", email)
 	_, _ = s.db.Exec(query)
 
-	return nil
+	return userId, nil
 }
 
 const AGREEMENT_ERROR_BAD_CONFIRMATION_CODE = "Neplatný přihlašovací kód"

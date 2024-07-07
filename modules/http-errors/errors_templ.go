@@ -105,3 +105,29 @@ func ErrorPage(cmp templ.Component) templ.Component {
 		return templ_7745c5c3_Err
 	})
 }
+
+func InternalServerErrorSimple() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8\"><h1 class=\"mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl\">Promiň, něco se pokazilo</h1><p class=\"mt-4 text-base text-white/70 sm:mt-6\">Zkus to prosím znovu.</p><a href=\"/\" class=\"mt-20 text-sm font-semibold leading-7 text-primary-700 underline hover:text-primary-400\">Zpět na úvodní stránku</a></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
