@@ -11,7 +11,7 @@ import (
 templ ApplicationFormPage(course_id string) {
 	@layouts.BaseLayout(true) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
-			@ApplicationForm(models.ApplicationFormModel(), nil)
+			@ApplicationForm(models.ApplicationFormModel(course_id), nil)
 		</div>
 	}
 }
@@ -36,10 +36,17 @@ templ ApplicationForm(applicationForm baseTypes.Form, toast templ.Component) {
 }
 
 templ ApplicationFormSuccessInfo() {
-	<div class="w-full flex flex-col items-center justify-center px-2">
-		<div class="w-full bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-			<strong class="font-bold">Přihláška byla úspěšně odeslána!</strong>
-			<span class="block sm:inline">Děkujeme za vaši přihlášku. Brzy se vám ozveme s dalšími informacemi.</span>
-		</div>
+	<div class="rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center">
+		<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">Přihláška byla úspěšně odeslána!</h1>
+		<div class="sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center">Děkujeme za vaši přihlášku. Brzy se vám ozveme s dalšími informacemi.</div>
+		<a href="/" class="mt-4 text-cyan-200 hover:text-cyan-100">Zpět na výběr kurzů</a>
+	</div>
+}
+
+templ ApplicationFormErrorInfo(message string) {
+	<div class="rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center">
+		<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">Omlouváme se, ale ...</h1>
+		<div class="sm:text-lg text-sm text-cyan-200 pt-3 mb-10	 sm:w-10/12 font-bold text-center">{ message }</div>
+		<a href="/" class="mt-4 text-cyan-200 hover:text-cyan-100">Zpět na výběr kurzů</a>
 	</div>
 }

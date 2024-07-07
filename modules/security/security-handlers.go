@@ -134,7 +134,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	email := step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value
 	confirmationCode := step2Form.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE].Value
 
-	err := h.securityService.FinalizeLogin(email, confirmationCode)
+	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
@@ -150,7 +150,8 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 		HttpOnly: true,
 	}
 
-	authSession.Values[constants.AUTH_USER_KEY] = email
+	authSession.Values[constants.AUTH_USER_USERNAME] = email
+	authSession.Values[constants.AUTH_USER_ID] = userId
 	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
 	returnUrl := ""
 	if returnUrlInterf != nil {
@@ -184,7 +185,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 	email := params[0]
 	confirmationCode := params[1]
 
-	err := h.securityService.FinalizeLogin(email, confirmationCode)
+	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
@@ -204,7 +205,8 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 		returnUrl = returnUrlInterf.(string)
 	}
 
-	authSession.Values[constants.AUTH_USER_KEY] = email
+	authSession.Values[constants.AUTH_USER_USERNAME] = email
+	authSession.Values[constants.AUTH_USER_ID] = userId
 
 	authSession.Save(c.Request(), c.Response())
 
@@ -222,7 +224,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	userEmail := authSession.Values[constants.AUTH_USER_KEY].(string)
+	userEmail := authSession.Values[constants.AUTH_USER_USERNAME].(string)
 
 	userAccountPage := security.UserAccountPage(userEmail)
 

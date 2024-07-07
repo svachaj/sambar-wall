@@ -50,7 +50,7 @@ func ApplicationFormPage(course_id string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ApplicationForm(models.ApplicationFormModel(), nil).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ApplicationForm(models.ApplicationFormModel(course_id), nil).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -216,7 +216,46 @@ func ApplicationFormSuccessInfo() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full flex flex-col items-center justify-center px-2\"><div class=\"w-full bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative\" role=\"alert\"><strong class=\"font-bold\">Přihláška byla úspěšně odeslána!</strong> <span class=\"block sm:inline\">Děkujeme za vaši přihlášku. Brzy se vám ozveme s dalšími informacemi.</span></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Přihláška byla úspěšně odeslána!</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">Děkujeme za vaši přihlášku. Brzy se vám ozveme s dalšími informacemi.</div><a href=\"/\" class=\"mt-4 text-cyan-200 hover:text-cyan-100\">Zpět na výběr kurzů</a></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func ApplicationFormErrorInfo(message string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Omlouváme se, ale ...</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 mb-10\t sm:w-10/12 font-bold text-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 49, Col: 102}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><a href=\"/\" class=\"mt-4 text-cyan-200 hover:text-cyan-100\">Zpět na výběr kurzů</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
