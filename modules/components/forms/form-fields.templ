@@ -49,8 +49,7 @@ templ FormField(field types.FormField) {
 					}
 				/>
 			}
-		}
-		if field.FieldType == "checkbox" {
+		} else if field.FieldType == "checkbox" {
 			<div class="w-full mt-1 flex justify-start items-start">
 				<input
 					id={ field.ID }
@@ -74,6 +73,8 @@ templ FormField(field types.FormField) {
 					}
 				</label>
 			</div>
+		} else if field.FieldType == "hidden" {
+			<input type="hidden" name={ field.ID } id={ field.ID } value={ field.Value }/>
 		}
 		if len(field.Errors) > 0 {
 			<div class="text-accent-500 italic sm:text-sm text-xs w-full text-left pl-1 pt-[1px] animate-show-smooth-1/2s">{ field.Errors[0] }</div>

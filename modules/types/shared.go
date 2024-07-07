@@ -54,7 +54,7 @@ func (model Form) ValidateFields(data map[string][]string) bool {
 			model.FormFields[k] = v
 		} else {
 			for _, rule := range v.Validations {
-				if rule.ValidateFunc(v.Value) {
+				if !rule.ValidateFunc(v.Value) {
 					v.Errors = append(v.Errors, rule.MessageFunc())
 					isValid = false
 				}
