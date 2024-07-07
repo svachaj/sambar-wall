@@ -16,7 +16,7 @@ const (
 
 	ROUTE_USER_ACCOUNT = "/ucet"
 
-	ROUTE_COURSES                        = "/kurzy"
-	ROUTE_COURSES_APPLAICATION_FORM_PAGE = "/prihlaska/:id"
-	ROUTE_COURSES_APPLAICATION_FORM      = "/prihlaska"
+	ROUTE_COURSES                       = "/kurzy"
+	ROUTE_COURSES_APPLICATION_FORM_PAGE = "/prihlaska/:id"
+	ROUTE_COURSES_APPLICATION_FORM      = "/prihlaska"
 )

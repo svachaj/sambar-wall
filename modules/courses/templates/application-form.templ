@@ -17,7 +17,7 @@ templ ApplicationFormPage(course_id string) {
 }
 
 templ ApplicationForm(applicationForm baseTypes.Form, toast templ.Component) {
-	@formComponents.BaseForm(constants.ROUTE_COURSES_APPLAICATION_FORM, "outerHTML", applicationForm.Errors) {
+	@formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM, "outerHTML", applicationForm.Errors) {
 		@formComponents.H1("Přihláška na kurz")
 		@formComponents.InfoDiv("Vyplňte prosím následující formulář pro dokončení přihlášky na kurz.")
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_FIRST_NAME])

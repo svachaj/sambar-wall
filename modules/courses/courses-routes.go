@@ -12,8 +12,8 @@ func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 
 	e.GET(constants.ROUTE_COURSES, h.GetCoursesList)
 
-	e.GET(constants.ROUTE_COURSES_APPLAICATION_FORM_PAGE, h.ApplicationFormPage, middlewares.AuthMiddleware)
+	e.GET(constants.ROUTE_COURSES_APPLICATION_FORM_PAGE, h.ApplicationFormPage, middlewares.AuthMiddleware)
 
-	e.POST(constants.ROUTE_COURSES_APPLAICATION_FORM, h.ProcessApplicationForm, middlewares.AuthMiddleware)
+	e.POST(constants.ROUTE_COURSES_APPLICATION_FORM, h.ProcessApplicationForm, middlewares.AuthMiddleware)
 
 }
