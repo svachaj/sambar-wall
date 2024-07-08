@@ -218,7 +218,7 @@ func ApplicationFormSuccessInfo() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Přihláška byla úspěšně odeslána!</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">Děkujeme za vaši přihlášku. Brzy se vám ozveme s dalšími informacemi.</div><a href=\"/\" class=\"mt-4 text-cyan-200 hover:text-cyan-100\">Zpět na výběr kurzů</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Přihláška byla úspěšně odeslána!</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">Brzy se vám ozveme s dalšími informacemi.</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -283,7 +283,7 @@ func CourseInfoCard(courseInfo dbTypes.Course) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-700 shadow-lg px-4 py-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-700 shadow-lg px-4 py-4 mt-4 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

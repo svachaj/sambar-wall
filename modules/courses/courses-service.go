@@ -9,10 +9,10 @@ import (
 
 type ICoursesService interface {
 	GetCoursesList() ([]types.CourseType, error)
-	CheckApplicationFormExists(courseId int, personalId int) (bool, error)
+	CheckApplicationFormExists(courseId int, personalId string) (bool, error)
 	GetOrCreateParticipant(firstName string, lastName string, birthYear int, parentUserId int) (int, error)
 	CheckCourseCapacity(courseId int) (bool, error)
-	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error)
+	CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error)
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
@@ -79,12 +79,12 @@ func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
 	return courses, nil
 }
 
-func (s *CoursesService) CheckApplicationFormExists(courseId int, personalId int) (bool, error) {
+func (s *CoursesService) CheckApplicationFormExists(courseId int, personalId string) (bool, error) {
 	var count int
 	err := s.db.Get(&count, `
 	SELECT count(*) 
 	FROM t_course_application_form 
-	WHERE ID_course = @p1 AND PersonalIdNumber = @p2
+	WHERE ID_course = @p1 AND PersonalId = @p2
 	`, courseId, personalId)
 
 	if err != nil {
@@ -144,13 +144,13 @@ func (s *CoursesService) CheckCourseCapacity(courseId int) (bool, error) {
 	return capacity > 0, nil
 }
 
-func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error) {
+func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error) {
 	var applicationFormId int
 	err := s.db.Get(&applicationFormId, `
 	INSERT INTO t_course_application_form(
 	ID_course, 
 	ID_participant,
-	PersonalIdNumber,
+	PersonalId,
 	ParentName,
 	Phone,
 	Email,
@@ -245,7 +245,7 @@ func (s *CoursesService) GetApplicationsByUserId(userId int) ([]types.Applicatio
 	SELECT 
 tcaf.ID as id, 
 tcaf.Paid as paid,
-tcaf.PersonalIdNumber as personalId,
+tcaf.PersonalId as personalId,
 tc.ID as courseId,
 tct.Name1 as courseName,
 tcd.Name1 as courseDays,

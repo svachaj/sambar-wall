@@ -3,6 +3,7 @@ package courses
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
 	"strconv"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 templ CourseTile(course types.CourseType) {
@@ -36,27 +37,27 @@ templ CourseTile(course types.CourseType) {
 				for _, course := range course.Courses {
 					<tr class="hover:bg-slate-800">
 						<td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-							<div class="flex items-center gap-x-4">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center gap-x-4", "w-full text-center gap-x-4 line-through decoration-neutral-400") }>
 								<div class="truncate text-sm font-medium leading-6 text-white">{ course.Days }</div>
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") }
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.Name }
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.AgeGroup }
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
 							</div>
 						</td>
@@ -69,6 +70,7 @@ templ CourseTile(course types.CourseType) {
 										hx-get={ "/prihlaska/" + strconv.FormatInt(int64(course.ID), 10) }
 										hx-push-url="true"
 										hx-target="body"
+										hx-swap="show:window:top"
 										class="bg-primary-600  text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40"
 									>
 										<span x-show="!hoverButton">
