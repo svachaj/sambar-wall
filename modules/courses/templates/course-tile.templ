@@ -25,11 +25,11 @@ templ CourseTile(course types.CourseType) {
 			<thead class="border-b border-white/10 text-sm leading-6 text-white">
 				<tr>
 					<th scope="col" class="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center">Den</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Čas</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Typ kurzu</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Věk</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Cena</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center"></th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Čas</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Typ kurzu</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Věk</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Cena</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center"></th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-white/5">
@@ -40,27 +40,27 @@ templ CourseTile(course types.CourseType) {
 								<div class="truncate text-sm font-medium leading-6 text-white">{ course.Days }</div>
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center">
 								{ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center">
 								{ course.Name }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center">
 								{ course.AgeGroup }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center">
 								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center" x-data="{ hoverButton: false }">
 								if course.ApplicationsCount < course.Capacity {
 									<button

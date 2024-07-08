@@ -57,7 +57,7 @@ func CourseTile(course types.CourseType) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-24\"> <col class=\"w-24\"> <col class=\"w-fit\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"> <col class=\"w-24\"></colgroup> <thead class=\"border-b border-white/10 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center\">Den</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Čas</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Typ kurzu</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Věk</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center\"></th></tr></thead> <tbody class=\"divide-y divide-white/5\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-24\"> <col class=\"w-24\"> <col class=\"w-fit\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"> <col class=\"w-24\"></colgroup> <thead class=\"border-b border-white/10 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center\">Den</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Čas</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Typ kurzu</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Věk</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\"></th></tr></thead> <tbody class=\"divide-y divide-white/5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -75,7 +75,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></td><td class=\"hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,7 +101,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +114,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +127,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></td><td class=\"hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -140,7 +140,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td><td class=\"hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\" x-data=\"{ hoverButton: false }\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Kč</div></td><td class=\"hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm\"><div class=\"w-full text-center\" x-data=\"{ hoverButton: false }\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
