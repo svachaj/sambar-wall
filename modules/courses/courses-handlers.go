@@ -135,14 +135,14 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 	}
 
 	// create a new application form
-	_, err = h.service.CreateApplicationForm(courseId, participantId, personalId, parentName, phone, userEmail)
+	applicationFormId, err := h.service.CreateApplicationForm(courseId, participantId, personalId, parentName, phone, userEmail, userId)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create application form")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
 	// send an email to the user and the admin
-	err = h.service.SendApplicationFormEmail(userEmail, courseId, firstName, lastName, parentName, phone, birthYear1+birthYear2)
+	err = h.service.SendApplicationFormEmail(applicationFormId, userEmail, courseId, firstName, lastName, parentName, phone, birthYear1+birthYear2)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to send application form email")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())

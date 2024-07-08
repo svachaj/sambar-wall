@@ -2,6 +2,7 @@ package courses
 
 import (
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/utils"
 )
@@ -11,8 +12,8 @@ type ICoursesService interface {
 	CheckApplicationFormExists(courseId int, personalId int) (bool, error)
 	GetOrCreateParticipant(firstName string, lastName string, birthYear int, parentUserId int) (int, error)
 	CheckCourseCapacity(courseId int) (bool, error)
-	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string) (int, error)
-	SendApplicationFormEmail(email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
+	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error)
+	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 }
 
 type CoursesService struct {
@@ -141,7 +142,7 @@ func (s *CoursesService) CheckCourseCapacity(courseId int) (bool, error) {
 	return capacity > 0, nil
 }
 
-func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string) (int, error) {
+func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error) {
 	var applicationFormId int
 	err := s.db.Get(&applicationFormId, `
 	INSERT INTO t_course_application_form(
@@ -151,12 +152,14 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	ParentName,
 	Phone,
 	Email,
+	GDPR_confirmed,
+	Rules_confirmed,
 	UpdatedDate,
 	CreatedDate,
 	ID_UpdatedBy,
 	ID_CreatedBy,
 	GID,
-	IsActive)
+	EmailSent,Paid)
 	VALUES (
 	@p1,
 	@p2,
@@ -164,16 +167,16 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	@p4,
 	@p5,
 	@p6,
+	1,
+	1,
 	GETDATE(),
 	GETDATE(),
 	@p7,
-	@p8,
+	@p7,
 	NEWID(),
-	1
-	);
-
-	SELECT SCOPE_IDENTITY();
-	`, courseId, participantId, personalId, parentName, phone, email, email, email)
+	0,0)
+	SELECT SCOPE_IDENTITY()
+	`, courseId, participantId, personalId, parentName, phone, email, userId)
 
 	if err != nil {
 		return 0, err
@@ -182,7 +185,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	return applicationFormId, nil
 }
 
-func (s *CoursesService) SendApplicationFormEmail(email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error {
+func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error {
 	course := types.Course{}
 	err := s.db.Get(&course, `
 	SELECT 
@@ -209,5 +212,26 @@ func (s *CoursesService) SendApplicationFormEmail(email string, courseId int, fi
 	body += "S pozdravem\n"
 	body += "Tým Sambar Lezecká Stěna"
 
-	return s.emailService.SendEmail(subject, body, email)
+	err = s.emailService.SendEmail(subject, body, email)
+
+	if err == nil {
+		// send the email also to the admin and then set the emailSent flag to true on the application form
+		adminEmail := "svachajirka@gmail.com"
+		err = s.emailService.SendEmail(subject, body, adminEmail)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to send application form email to the admin")
+		}
+
+		_, err = s.db.Exec(`
+		UPDATE t_course_application_form 
+		SET EmailSent = 1
+		WHERE ID = @p1
+		`, applicationFormId)
+
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to update application form emailSent flag")
+		}
+	}
+
+	return err
 }

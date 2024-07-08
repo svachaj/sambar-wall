@@ -255,7 +255,7 @@ func ApplicationFormErrorInfo(message string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><a href=\"/\" class=\"mt-4 text-cyan-200 hover:text-cyan-100\">Zpět na výběr kurzů</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
