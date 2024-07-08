@@ -49,8 +49,14 @@ func (h *CoursesHandler) GetCoursesList(c echo.Context) error {
 func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 
 	id := c.Param("id")
+	courseId, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to convert courseId to int")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+	courseInfo := h.service.GetCourseInfo(courseId)
 
-	applicationForm := coursesTemplates.ApplicationFormPage(id)
+	applicationForm := coursesTemplates.ApplicationFormPage(id, courseInfo)
 
 	return utils.HTML(c, applicationForm)
 }
@@ -58,13 +64,20 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 
 	// validate form
-	applicationForm := models.ApplicationFormModel(c.Param(models.APPLICATION_FORM_COURSE_ID))
 	params, _ := c.FormParams()
+	courseIdString := params.Get(models.APPLICATION_FORM_COURSE_ID)
+	courseId, err := strconv.Atoi(courseIdString)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to convert courseId to int")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+	applicationForm := models.ApplicationFormModel(courseIdString)
 
 	isValid := applicationForm.ValidateFields(params)
 
 	if !isValid {
-		applicationFormComponent := coursesTemplates.ApplicationForm(applicationForm, nil)
+		courseInfo := h.service.GetCourseInfo(courseId)
+		applicationFormComponent := coursesTemplates.ApplicationForm(applicationForm, courseInfo, nil)
 		return utils.HTML(c, applicationFormComponent)
 	}
 
@@ -73,12 +86,6 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 	lastName := applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME].Value
 	phone := applicationForm.FormFields[models.APPLICATION_FORM_PHONE].Value
 	parentName := applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
-
-	courseId, err := strconv.Atoi(applicationForm.FormFields[models.APPLICATION_FORM_COURSE_ID].Value)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to convert courseId to int")
-		return utils.HTML(c, httperrors.InternalServerErrorSimple())
-	}
 
 	personalIdString := applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
 	personalId, err := strconv.Atoi(personalIdString)

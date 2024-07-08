@@ -15,6 +15,7 @@ type ICoursesService interface {
 	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error)
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
+	GetCourseInfo(id int) types.Course
 }
 
 type CoursesService struct {
@@ -267,4 +268,35 @@ WHERE tsu.ID = @p1;
 	}
 
 	return applicationForms, nil
+}
+
+func (s *CoursesService) GetCourseInfo(id int) types.Course {
+	course := types.Course{}
+
+	err := s.db.Get(&course, `
+	SELECT TOP 1
+tc.ID as id, 
+tct.Name1 as name,
+tct.Description1 as description,
+tcd.Name1 as days,
+tc.TimeFrom as timeFrom,
+tc.TimeTo as timeTo,
+tcag.Name1 as ageGroup,
+tc.Price as price
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
+WHERE tc.ID = @p1
+GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tc.TimeFrom,tc.TimeTo, tcag.Name1, tc.Price, tcd.Name1;
+	`, id)
+
+	if err != nil {
+		return types.Course{}
+	}
+
+	return course
 }

@@ -5,21 +5,23 @@ import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/modules/constants"
 	baseTypes "github.com/svachaj/sambar-wall/modules/types"
+	dbTypes "github.com/svachaj/sambar-wall/db/types"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	"strconv"
 )
 
-templ ApplicationFormPage(course_id string) {
+templ ApplicationFormPage(course_id string, courseInfo dbTypes.Course) {
 	@layouts.BaseLayout(true) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
-			@ApplicationForm(models.ApplicationFormModel(course_id), nil)
+			@ApplicationForm(models.ApplicationFormModel(course_id), courseInfo, nil)
 		</div>
 	}
 }
 
-templ ApplicationForm(applicationForm baseTypes.Form, toast templ.Component) {
+templ ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM, "outerHTML", applicationForm.Errors) {
 		@formComponents.H1("Přihláška na kurz")
-		@formComponents.InfoDiv("Vyplňte prosím následující formulář pro dokončení přihlášky na kurz.")
+		@CourseInfoCard(courseInfo)
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_COURSE_ID])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_FIRST_NAME])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME])
@@ -48,5 +50,14 @@ templ ApplicationFormErrorInfo(message string) {
 		<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">Omlouváme se, ale ...</h1>
 		<div class="sm:text-lg text-sm text-cyan-200 pt-3 mb-10	 sm:w-10/12 font-bold text-center">{ message }</div>
 		<a href="/" class="mt-4 text-primary-600 underline hover:text-primary-400">Zpět na výběr kurzů</a>
+	</div>
+}
+
+templ CourseInfoCard(courseInfo dbTypes.Course) {
+	<div class="rounded-lg bg-neutral-700 shadow-lg px-4 py-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center">
+		<div class="sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center">{ courseInfo.Name }</div>
+		<div class="sm:text-base text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center">{ courseInfo.Days + " (" + courseInfo.TimeFrom.Format("15:04") + " - " + courseInfo.TimeTo.Format("15:04") + ")" }</div>
+		<div class="sm:text-base text-sm text-cyan-200 pt-2 sm:w-10/12 font-bold text-center">{ courseInfo.AgeGroup }</div>
+		<div class="sm:text-base text-sm text-cyan-200 pt-2 sm:w-10/12 font-bold text-center">{ strconv.FormatFloat(courseInfo.Price, 'f', 2, 64) + " Kč" }</div>
 	</div>
 }
