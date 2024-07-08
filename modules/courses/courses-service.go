@@ -14,6 +14,7 @@ type ICoursesService interface {
 	CheckCourseCapacity(courseId int) (bool, error)
 	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error)
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
+	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 }
 
 type CoursesService struct {
@@ -234,4 +235,36 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	}
 
 	return err
+}
+
+func (s *CoursesService) GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error) {
+	applicationForms := []types.ApplicationForm{}
+
+	err := s.db.Select(&applicationForms, `
+	SELECT 
+tcaf.ID as id, 
+tcaf.Paid as paid,
+tcaf.PersonalIdNumber as personalId,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
+WHERE tsu.ID = @p1;
+	`, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return applicationForms, nil
 }

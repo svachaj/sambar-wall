@@ -1,0 +1,48 @@
+package courses
+
+import (
+	"github.com/svachaj/sambar-wall/modules/layouts"
+	types "github.com/svachaj/sambar-wall/db/types"
+)
+
+templ MyApplicationsList(applications []types.ApplicationForm) {
+	<div class="w-full flex flex-col items-center justify-center px-2">
+		<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
+			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
+				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Moje přihlášky</h2>
+			</div>
+			<table class="mt-2 w-full whitespace-nowrap text-left">
+				<colgroup>
+					<col class="w-24"/>
+					<col class="w-24"/>
+					<col class="w-fit"/>
+					<col class="lg:w-1/12"/>
+					<col class="lg:w-1/12"/>
+					<col class="w-24"/>
+				</colgroup>
+				<thead class="border-b border-white/10 text-sm leading-6 text-white">
+					<tr>
+						<th scope="col" class="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center">Kurz</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-white/5">
+					for _, application := range applications {
+						<tr class="hover:bg-slate-800">
+							<td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+								<div class="flex items-start gap-x-4">
+									<div class="truncate text-sm font-medium leading-6 text-white">{ application.CourseName }</div>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}
+
+templ MyApplicationsPage(cmp templ.Component) {
+	@layouts.BaseLayout(true) {
+		@cmp
+	}
+}

@@ -19,6 +19,7 @@ type ICoursesHandler interface {
 	GetCoursesList(c echo.Context) error
 	ApplicationFormPage(c echo.Context) error
 	ProcessApplicationForm(c echo.Context) error
+	MyApplicationsPage(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -150,4 +151,21 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 
 	successInfo := coursesTemplates.ApplicationFormSuccessInfo()
 	return utils.HTML(c, successInfo)
+}
+
+func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	userId := authSession.Values[constants.AUTH_USER_ID].(int)
+
+	applications, err := h.service.GetApplicationsByUserId(userId)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get applications by userId")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
+	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent)
+
+	return utils.HTML(c, applicationsPage)
 }
