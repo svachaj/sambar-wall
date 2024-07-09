@@ -283,7 +283,7 @@ func CourseInfoCard(courseInfo dbTypes.Course) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-700 shadow-lg px-4 py-4 mt-4 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded-lg bg-neutral-700 shadow-lg lg:px-4 px-1 lg:py-4 py-2 lg:mt-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
