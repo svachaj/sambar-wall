@@ -12,6 +12,7 @@ import (
 	"github.com/svachaj/sambar-wall/modules/courses/models"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
+	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -54,6 +55,17 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 		log.Error().Err(err).Msg("Failed to convert courseId to int")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
+
+	// first check if the course is still available
+	capacityOK, err := h.service.CheckCourseCapacity(courseId)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to check course capacity")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+	if !capacityOK {
+		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true))
+	}
+
 	courseInfo := h.service.GetCourseInfo(courseId)
 
 	applicationForm := coursesTemplates.ApplicationFormPage(id, courseInfo)
@@ -87,12 +99,7 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 	phone := applicationForm.FormFields[models.APPLICATION_FORM_PHONE].Value
 	parentName := applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
 
-	personalIdString := applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
-	personalId, err := strconv.Atoi(personalIdString)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to convert personalId to int")
-		return utils.HTML(c, httperrors.InternalServerErrorSimple())
-	}
+	personalId := applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
 
 	// get username from the session
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
@@ -110,7 +117,7 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 
 	// create or use existing participant by first name, last name and birth year extracted from the personalId
 	//get birth year from the personalIdString
-	birthYear2 := personalIdString[0:2]
+	birthYear2 := personalId[0:2]
 	birthYear2Int, err := strconv.Atoi(birthYear2)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to convert birthYear2 to int")

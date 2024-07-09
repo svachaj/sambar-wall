@@ -1,6 +1,8 @@
 package courses
 
 import (
+	"strconv"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/db/types"
@@ -9,10 +11,10 @@ import (
 
 type ICoursesService interface {
 	GetCoursesList() ([]types.CourseType, error)
-	CheckApplicationFormExists(courseId int, personalId int) (bool, error)
+	CheckApplicationFormExists(courseId int, personalId string) (bool, error)
 	GetOrCreateParticipant(firstName string, lastName string, birthYear int, parentUserId int) (int, error)
 	CheckCourseCapacity(courseId int) (bool, error)
-	CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error)
+	CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error)
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
@@ -79,12 +81,12 @@ func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
 	return courses, nil
 }
 
-func (s *CoursesService) CheckApplicationFormExists(courseId int, personalId int) (bool, error) {
+func (s *CoursesService) CheckApplicationFormExists(courseId int, personalId string) (bool, error) {
 	var count int
 	err := s.db.Get(&count, `
 	SELECT count(*) 
 	FROM t_course_application_form 
-	WHERE ID_course = @p1 AND PersonalIdNumber = @p2
+	WHERE ID_course = @p1 AND PersonalId = @p2
 	`, courseId, personalId)
 
 	if err != nil {
@@ -144,13 +146,13 @@ func (s *CoursesService) CheckCourseCapacity(courseId int) (bool, error) {
 	return capacity > 0, nil
 }
 
-func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId int, parentName, phone, email string, userId int) (int, error) {
+func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error) {
 	var applicationFormId int
 	err := s.db.Get(&applicationFormId, `
 	INSERT INTO t_course_application_form(
 	ID_course, 
 	ID_participant,
-	PersonalIdNumber,
+	PersonalId,
 	ParentName,
 	Phone,
 	Email,
@@ -192,9 +194,16 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	err := s.db.Get(&course, `
 	SELECT 
 		tct.Name1 as name, 
-		tct.Description1 as description 
+		tct.Description1 as description ,
+		tc.Price as price,
+		tc.TimeFrom as timeFrom,
+		tc.TimeTo as timeTo,
+		tcd.Name1 as days,
+		tcag.Name1 as ageGroup
 	FROM t_course tc 
 	LEFT JOIN t_course_type tct on tc.ID_typeOfCourse = tct.ID 
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
 	WHERE tc.ID = @p1
 	`, courseId)
 
@@ -202,17 +211,25 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 		return err
 	}
 
-	subject := "Přihláška na kurz " + course.Name
-	body := "Dobrý den,\n\n"
-	body += "Děkujeme za Vaši přihlášku na kurz " + course.Name + ".\n\n"
-	body += "Níže naleznete informace o přihlášce:\n\n"
-	body += "Jméno: " + firstName + " " + lastName + "\n"
-	body += "Jméno rodiče: " + parentName + "\n"
-	body += "Telefon: " + phone + "\n"
-	body += "Rok narození: " + birthYear + "\n\n"
-	body += "Těšíme se na setkání s Vámi.\n\n"
-	body += "S pozdravem\n"
-	body += "Tým Sambar Lezecká Stěna"
+	subject := "Přihláška na kurz: " + course.Name
+	body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+	body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Níže naleznete informace o přihlášce:</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">\n"
+	body += "<strong>Kdy:</strong> " + course.Days + "<br>\n"
+	body += "<strong>V čase:</strong>  od " + course.TimeFrom.Format("15:04") + " do " + course.TimeTo.Format("15:04") + "<br>\n"
+	body += "<strong>Věková skupina:</strong> " + course.AgeGroup + "<br>\n"
+	body += "<strong>Jméno:</strong> " + firstName + " " + lastName + "<br>\n"
+	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
+	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
+	body += "<strong>Telefon:</strong> " + phone + "<br><br>\n"
+	body += "<strong>Cena kurzu:</strong> " + strconv.FormatFloat(course.Price, 'f', 2, 64) + " Kč\n"
+	body += "</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Těšíme se na setkání s Vámi.</p>\n\n"
+	body += "<p style=\"margin-top: 20px; font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+	body += "Tým Sambar Lezecká Stěna Kladno</p>\n"
+	body += "</div>\n"
 
 	err = s.emailService.SendEmail(subject, body, email)
 
@@ -245,14 +262,16 @@ func (s *CoursesService) GetApplicationsByUserId(userId int) ([]types.Applicatio
 	SELECT 
 tcaf.ID as id, 
 tcaf.Paid as paid,
-tcaf.PersonalIdNumber as personalId,
+tcaf.PersonalId as personalId,
 tc.ID as courseId,
 tct.Name1 as courseName,
 tcd.Name1 as courseDays,
 tc.TimeFrom as courseTimeFrom,
 tc.TimeTo as courseTimeTo,
 tcag.Name1 as courseAgeGroup,
-tc.Price as coursePrice
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName
 FROM t_course_application_form tcaf
 LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
 LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
@@ -260,7 +279,8 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
-WHERE tsu.ID = @p1;
+WHERE tsu.ID = @p1
+ORDER BY tcaf.CreatedDate DESC;
 	`, userId)
 
 	if err != nil {

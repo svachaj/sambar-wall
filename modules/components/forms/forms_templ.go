@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-const formClass = "rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center "
+const formClass = "rounded-lg bg-neutral-800 shadow-lg px-6 py-6 mb-4 flex flex-col m-auto w-full max-w-2xl items-center "
 
 func BaseForm(hxPost, hxSwap string, errors []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
