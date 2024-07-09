@@ -21,12 +21,13 @@ type ICoursesService interface {
 }
 
 type CoursesService struct {
-	db           *sqlx.DB
-	emailService utils.IEmailService
+	db               *sqlx.DB
+	emailService     utils.IEmailService
+	emailCopyAddress string
 }
 
-func NewCoursesService(db *sqlx.DB, emailService utils.IEmailService) ICoursesService {
-	return &CoursesService{db: db, emailService: emailService}
+func NewCoursesService(db *sqlx.DB, emailService utils.IEmailService, emailCopyAddress string) ICoursesService {
+	return &CoursesService{db: db, emailService: emailService, emailCopyAddress: emailCopyAddress}
 }
 
 func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
@@ -235,7 +236,7 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 
 	if err == nil {
 		// send the email also to the admin and then set the emailSent flag to true on the application form
-		adminEmail := "svachajirka@gmail.com"
+		adminEmail := s.emailCopyAddress
 		err = s.emailService.SendEmail(subject, body, adminEmail)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to send application form email to the admin")
