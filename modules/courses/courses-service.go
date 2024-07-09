@@ -227,9 +227,19 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	body += "<strong>Telefon:</strong> " + phone + "<br><br>\n"
 	body += "<strong>Cena kurzu:</strong> " + strconv.FormatFloat(course.Price, 'f', 2, 64) + " Kč\n"
 	body += "</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">Těšíme se na setkání s Vámi.</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
+
+	body += "<p>Často kladené otázky - <a target=\"_blank\" href=\"http://www.stenakladno.cz/clanek-1533038613-casto-kladene-otazky-cs/\">zde</a></p>"
+	body += "<p>Najdete nás na adrese: Huťská, 272 01 Kladno (vjezd do areálu u svářečské školy)</p>"
+	body += "<p>Nejbližší autobusová zastávka: Poldi (autobusy číslo: 7, 8, 9, 11, 12, 13, 14, 18)</p>"
+	body += " <p><a href=\"https://www.google.cz/maps/place/Lezecká+stěna+Kladno/@50.150291,14.119982,17z/data=!3m1!4b1!4m2!3m1!1s0x470bc81df4294531:0xba79ce925bcfb29\" target=\"_blank\">Mapa stěny</a>"
+	body += "<br>"
+	body += "<a href=\"https://maps.google.cz/maps/ms?msid=215522111162202071644.0004bacd0e0ab317a4e99&msa=0&ll=50.143246,14.153481&spn=0.119914,0.338173&dg=feature\" target=\"_blank\">Mapa příjezdových tras ke stěně</a>"
+	body += "</p>"
+	body += "<p> GPS: 50°9'0.613\"N, 14°7'11.908\"E </p> <p> Telefon recepce: 730 827 898 </p>"
 	body += "<p style=\"margin-top: 20px; font-size: 14px; color: #555;\">S pozdravem,<br>\n"
-	body += "Tým Sambar Lezecká Stěna Kladno</p>\n"
+	body += "Lezecká Stěna Kladno</p>\n"
 	body += "</div>\n"
 
 	err = s.emailService.SendEmail(subject, body, email)
