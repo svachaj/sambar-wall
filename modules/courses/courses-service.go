@@ -1,6 +1,8 @@
 package courses
 
 import (
+	"strconv"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/db/types"
@@ -192,9 +194,16 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	err := s.db.Get(&course, `
 	SELECT 
 		tct.Name1 as name, 
-		tct.Description1 as description 
+		tct.Description1 as description ,
+		tc.Price as price,
+		tc.TimeFrom as timeFrom,
+		tc.TimeTo as timeTo,
+		tcd.Name1 as days,
+		tcag.Name1 as ageGroup
 	FROM t_course tc 
 	LEFT JOIN t_course_type tct on tc.ID_typeOfCourse = tct.ID 
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
 	WHERE tc.ID = @p1
 	`, courseId)
 
@@ -202,17 +211,25 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 		return err
 	}
 
-	subject := "Přihláška na kurz " + course.Name
-	body := "Dobrý den,\n\n"
-	body += "Děkujeme za Vaši přihlášku na kurz " + course.Name + ".\n\n"
-	body += "Níže naleznete informace o přihlášce:\n\n"
-	body += "Jméno: " + firstName + " " + lastName + "\n"
-	body += "Jméno rodiče: " + parentName + "\n"
-	body += "Telefon: " + phone + "\n"
-	body += "Rok narození: " + birthYear + "\n\n"
-	body += "Těšíme se na setkání s Vámi.\n\n"
-	body += "S pozdravem\n"
-	body += "Tým Sambar Lezecká Stěna"
+	subject := "Přihláška na kurz: " + course.Name
+	body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+	body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Níže naleznete informace o přihlášce:</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">\n"
+	body += "<strong>Kdy:</strong> " + course.Days + "<br>\n"
+	body += "<strong>V čase:</strong>  od " + course.TimeFrom.Format("15:04") + " do " + course.TimeTo.Format("15:04") + "<br>\n"
+	body += "<strong>Věková skupina:</strong> " + course.AgeGroup + "<br>\n"
+	body += "<strong>Jméno:</strong> " + firstName + " " + lastName + "<br>\n"
+	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
+	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
+	body += "<strong>Telefon:</strong> " + phone + "<br><br>\n"
+	body += "<strong>Cena kurzu:</strong> " + strconv.FormatFloat(course.Price, 'f', 2, 64) + " Kč\n"
+	body += "</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Těšíme se na setkání s Vámi.</p>\n\n"
+	body += "<p style=\"margin-top: 20px; font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+	body += "Tým Sambar Lezecká Stěna Kladno</p>\n"
+	body += "</div>\n"
 
 	err = s.emailService.SendEmail(subject, body, email)
 
