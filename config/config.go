@@ -16,6 +16,9 @@ func LoadConfiguraion() (*Config, error) {
 	config.AppPort = parseIntWithDefaultValue(os.Getenv("APP_PORT"), 5500)
 	config.AppEnv = os.Getenv("APP_ENV")
 	config.AppApplicationFormEmailCopy = os.Getenv("APP_APPLICATION_EMAIL_COPY")
+	config.AppAccountIBAN = os.Getenv("APP_ACCOUNT_IBAN")
+	config.AppAccountNumber = os.Getenv("APP_ACCOUNT_NUMBER")
+	config.AppGeneratePaymentInfo = os.Getenv("APP_GENERATE_PAYMENT_INFO")
 
 	// we assume that the database is MS SQL Server to backward compatibility
 	// if we want to support other databases, we can simply change the database driver and connection string
@@ -51,6 +54,9 @@ type Config struct {
 	AppSecret                   string
 	AppEnv                      string
 	AppApplicationFormEmailCopy string
+	AppAccountIBAN              string
+	AppAccountNumber            string
+	AppGeneratePaymentInfo      string
 
 	// Database
 	DbHost     string

@@ -42,6 +42,7 @@ templ ApplicationFormSuccessInfo() {
 		<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">Přihláška byla úspěšně odeslána!</h1>
 		<div class="sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center">Brzy se vám ozveme s dalšími informacemi.</div>
 		<a href="/" class="mt-4 text-primary-600 underline hover:text-primary-400">Zpět na výběr kurzů</a>
+		<a href="/moje-prihlasky" class="mt-4 text-primary-600 underline hover:text-primary-400">Přehled mých přihlášek</a>
 	</div>
 }
 
@@ -50,6 +51,7 @@ templ ApplicationFormErrorInfo(message string) {
 		<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">Omlouváme se, ale ...</h1>
 		<div class="sm:text-lg text-sm text-cyan-200 pt-3 mb-10	 sm:w-10/12 font-bold text-center">{ message }</div>
 		<a href="/" class="mt-4 text-primary-600 underline hover:text-primary-400">Zpět na výběr kurzů</a>
+		<a href="/moje-prihlasky" class="mt-4 text-primary-600 underline hover:text-primary-400">Přehled mých přihlášek</a>
 	</div>
 }
 
