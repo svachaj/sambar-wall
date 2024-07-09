@@ -38,7 +38,7 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	agreement.MapAgreementRoutes(e, agreementHandlers)
 	log.Info().Msg("Module Agreement Initialized and Routes Mapped Successfully.")
 
-	coursesService := courses.NewCoursesService(db, emailService, settings.AppApplicationFormEmailCopy)
+	coursesService := courses.NewCoursesService(db, emailService, settings.AppApplicationFormEmailCopy, settings.AppAccountIBAN, settings.AppAccountNumber, settings.AppGeneratePaymentInfo == "1")
 	coursesHandlers := courses.NewCoursesHandler(coursesService)
 	courses.MapCoursesRoutes(e, coursesHandlers)
 	log.Info().Msg("Module Courses Initialized and Routes Mapped Successfully.")

@@ -1,12 +1,17 @@
 package courses
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 	"github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/utils"
+
+	"encoding/base64"
+
+	qrcode "github.com/skip2/go-qrcode"
 )
 
 type ICoursesService interface {
@@ -21,13 +26,16 @@ type ICoursesService interface {
 }
 
 type CoursesService struct {
-	db               *sqlx.DB
-	emailService     utils.IEmailService
-	emailCopyAddress string
+	db                  *sqlx.DB
+	emailService        utils.IEmailService
+	emailCopyAddress    string
+	accountIBAN         string
+	accountNumber       string
+	generatePaymentInfo bool
 }
 
-func NewCoursesService(db *sqlx.DB, emailService utils.IEmailService, emailCopyAddress string) ICoursesService {
-	return &CoursesService{db: db, emailService: emailService, emailCopyAddress: emailCopyAddress}
+func NewCoursesService(db *sqlx.DB, emailService utils.IEmailService, emailCopyAddress string, accountIBAN string, accountNumber string, genratePaymentInfo bool) ICoursesService {
+	return &CoursesService{db: db, emailService: emailService, emailCopyAddress: emailCopyAddress, accountIBAN: accountIBAN, accountNumber: accountNumber, generatePaymentInfo: genratePaymentInfo}
 }
 
 func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
@@ -212,6 +220,8 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 		return err
 	}
 
+	price := strconv.FormatFloat(course.Price, 'f', 2, 64)
+
 	subject := "Přihláška na kurz: " + course.Name
 	body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
 	body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
@@ -225,8 +235,27 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
 	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
 	body += "<strong>Telefon:</strong> " + phone + "<br><br>\n"
-	body += "<strong>Cena kurzu:</strong> " + strconv.FormatFloat(course.Price, 'f', 2, 64) + " Kč\n"
+	body += "<strong>Cena kurzu:</strong> " + price + " Kč\n"
 	body += "</p>\n\n"
+	if s.generatePaymentInfo {
+		// The data to encode as a QR code (e.g., payment information)
+		paymentInfo := fmt.Sprintf("SPD*1.0*ACC:%v*AM:%v*CC:CZK*RF:%v*X-VS:%v*PT:IP*MSG:Platba za kurz - %v %v", s.accountIBAN, price, applicationFormId, applicationFormId, firstName+" "+lastName, birthYear)
+		// Generate the QR code
+		var png []byte
+		png, err = qrcode.Encode(paymentInfo, qrcode.Medium, 256)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to generate QR code")
+			return err
+		}
+
+		// Encode the QR code image to base64
+		base64QRCode := base64.StdEncoding.EncodeToString(png)
+		body += "<p style=\"margin-bottom: 20px;\">Pro okamžitou platbu kurzu můžete použít QR kód nebo můžete zaplatit převodem na účet:</p>\n\n"
+		body += "<img src=\"data:image/png;base64," + base64QRCode + "\" style=\"margin-bottom: 20px;\"/>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Číslo účtu: " + s.accountNumber + "</p>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Variabilní symbol: " + strconv.Itoa(applicationFormId) + "</p>\n\n"
+		body += "<br><br>"
+	}
 	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
 	body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
 
