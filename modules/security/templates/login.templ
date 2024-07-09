@@ -1,18 +1,19 @@
 package security
 
 import (
-	"github.com/svachaj/sambar-wall/modules/layouts"
-	"github.com/svachaj/sambar-wall/modules/constants"
-	types "github.com/svachaj/sambar-wall/modules/security/types"
-	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	"github.com/svachaj/sambar-wall/modules/constants"
+	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/modules/security/models"
+	types "github.com/svachaj/sambar-wall/modules/security/types"
 	"github.com/svachaj/sambar-wall/modules/toasts"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
 
 templ LoginFormStep1(loginForm baseTypes.Form, toast templ.Component) {
 	@formComponents.BaseForm(constants.ROUTE_LOGIN_STEP1, "outerHTML", loginForm.Errors) {
 		@formComponents.H1("Přihlášení")
+		@formComponents.InfoDiv("Zadej svůj email, na který ti pošleme jednorázový kód pro přihlášení.")
 		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL])
 		@formComponents.SubmitButton("Pokračovat")
 	}

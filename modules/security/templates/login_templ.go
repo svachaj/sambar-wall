@@ -56,6 +56,14 @@ func LoginFormStep1(loginForm baseTypes.Form, toast templ.Component) templ.Compo
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = formComponents.InfoDiv("Zadej svůj email, na který ti pošleme jednorázový kód pro přihlášení.").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -183,7 +191,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(model.UserName.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 47, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 48, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -201,7 +209,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(model.UserName.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 50, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 51, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -219,7 +227,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(model.UserName.Errors[0])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 54, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 55, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -237,7 +245,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(model.Password.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 60, Col: 105}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 61, Col: 105}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -250,7 +258,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(model.Password.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 66, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 67, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -268,7 +276,7 @@ func LoginForm(model types.LoginFormResponse) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 71, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/security/templates/login.templ`, Line: 72, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
