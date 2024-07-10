@@ -13,7 +13,7 @@ tailwind:
 templ:
 	templ generate
 
-upgrade-tools:
+install-tools:
 	go install github.com/a-h/templ/cmd/templ@latest
 	go install github.com/air-verse/air@latest
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
