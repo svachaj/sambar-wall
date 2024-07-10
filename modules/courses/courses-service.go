@@ -234,7 +234,9 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	body += "<strong>Jméno:</strong> " + firstName + " " + lastName + "<br>\n"
 	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
 	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
-	body += "<strong>Telefon:</strong> " + phone + "<br><br>\n"
+	body += "<strong>Telefon:</strong> " + phone + "<br>\n"
+	body += "<strong>Email:</strong> " + email + "<br>\n"
+	body += "<strong>Číslo přihlášky:</strong> " + strconv.Itoa(applicationFormId) + "<br><br>\n"
 	body += "<strong>Cena kurzu:</strong> " + price + " Kč\n"
 	body += "</p>\n\n"
 	if s.generatePaymentInfo {
