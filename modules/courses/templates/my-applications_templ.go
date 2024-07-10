@@ -32,12 +32,12 @@ func MyApplicationsList(applications []types.ApplicationForm) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full flex flex-col items-center justify-center px-2\"><div class=\"w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10\"><h2 class=\"px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">Moje přihlášky</h2></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-24\"> <col class=\"w-24\"> <col class=\"w-fit\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-full flex flex-col items-center justify-center px-2\"><div class=\"w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10\"><h2 class=\"px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">Moje přihlášky</h2></div><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-fit\"> <col class=\"w-24\"> <col class=\"w-24\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, application := range applications {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\"><div class=\"truncate text-sm font-medium leading-6 text-white\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\"><div class=\"truncate text-sm font-medium leading-6 text-white text-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -104,7 +104,7 @@ func MyApplicationsList(applications []types.ApplicationForm) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-start gap-x-4\"><div class=\"truncate text-sm font-medium leading-6 text-white\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-start gap-x-4\"><div class=\"truncate text-sm font-medium leading-6 text-white text-balance\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -23,6 +23,7 @@ type ICoursesService interface {
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
+	GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error)
 }
 
 type CoursesService struct {
@@ -361,4 +362,42 @@ GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tc.TimeFrom,tc.TimeTo, tcag
 	}
 
 	return course
+}
+
+func (s *CoursesService) GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error) {
+	applicationForms := []types.ApplicationForm{}
+
+	err := s.db.Select(&applicationForms, `
+	SELECT
+tcaf.ID as id,
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tsup.BirthYear as birthYear,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tsu.Email as email,
+tcaf.CreatedDate as createdDate
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
+WHERE NULL is NULL OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1)
+ORDER BY tcaf.CreatedDate DESC;
+	`, "%"+searchText+"%")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return applicationForms, nil
 }

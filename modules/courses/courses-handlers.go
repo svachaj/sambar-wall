@@ -21,6 +21,7 @@ type ICoursesHandler interface {
 	ApplicationFormPage(c echo.Context) error
 	ProcessApplicationForm(c echo.Context) error
 	MyApplicationsPage(c echo.Context) error
+	GetAllApplicationForms(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -177,7 +178,29 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 	applications, err := h.service.GetApplicationsByUserId(userId)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get applications by userId")
-		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
+	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent)
+
+	return utils.HTML(c, applicationsPage)
+}
+
+func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	userName := authSession.Values[constants.AUTH_USER_USERNAME].(string)
+
+	if userName != "anna@stenakladno.cz" && userName != "j.svacha@seznam.cz" {
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.NotFoundComponent()))
+	}
+
+	searchText := c.QueryParam("searchText")
+	applications, err := h.service.GetAllApplicationForms(searchText)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all applications")
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
 	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
