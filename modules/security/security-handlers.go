@@ -131,7 +131,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	}
 
 	// get specific form fields from the form
-	email := step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value
+	email := strings.ToLower(step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value)
 	confirmationCode := step2Form.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE].Value
 
 	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
@@ -182,7 +182,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 	decodedParam := utils.Decrypt(queryEncodedParam)
 	params := strings.Split(decodedParam, ";")
 
-	email := params[0]
+	email := strings.ToLower(params[0])
 	confirmationCode := params[1]
 
 	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
