@@ -16,35 +16,33 @@ templ CourseTile(course types.CourseType) {
 		</div>
 		<table class="mt-2 w-full whitespace-nowrap text-left">
 			<colgroup>
-				<col class="w-24"/>
-				<col class="w-24"/>
 				<col class="w-fit"/>
-				<col class="lg:w-1/12"/>
-				<col class="lg:w-1/12"/>
 				<col class="w-24"/>
+				//<col class="w-fit"/>
+				<col class="w-1/12"/>
+				<col class="w-1/12"/>
+				<col class="w-fit"/>
 			</colgroup>
 			<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
 				<tr>
-					<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Den</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Čas</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Typ kurzu</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Věk</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Cena</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center"></th>
+					<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold md:table-cell sm:pl-6 lg:pl-8 text-center">Den</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Čas</th>
+					// <th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Typ kurzu</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Věk</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Cena</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center"></th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-white/20">
 				for _, course := range course.Courses {
 					<tr class="hover:bg-slate-800">
-						<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
+						<td class="md:hidden table-cell py-4 pl-4 w-full text-white text-sm">
 							<div class="flex flex-row flex-wrap">
-								<div class="flex-grow">
-									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }>{ course.Days } ({ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") })</div>
-									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }>
-										{ course.Name }, &nbsp;{ course.AgeGroup }
-									</div>
-									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6 font-medium", "truncate leading-6 font-medium line-through decoration-neutral-400") }>
-										{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
+								<div class="flex flex-col w-52">
+									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }><span class="font-medium">{ course.Days }</span> ({ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") })</div>
+									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "flex flex-row gap-2 truncate leading-6", "flex flex-row truncate leading-6 gap-2 line-through decoration-neutral-400") }>
+										<div>{ course.AgeGroup }</div>
+										<div class="font-medium">{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč </div>
 									</div>
 								</div>
 								<div class="flex-1 flex justify-center items-center px-1 py-1">
@@ -57,7 +55,7 @@ templ CourseTile(course types.CourseType) {
 												hx-push-url="true"
 												hx-target="body"
 												hx-swap="show:window:top"
-												class="bg-primary-600  text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40"
+												class="bg-primary-600  text-white rounded-md px-4 py-2 hover:bg-primary-400 w-auto"
 											>
 												<span x-show="!hoverButton">
 													{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
@@ -73,32 +71,32 @@ templ CourseTile(course types.CourseType) {
 								</div>
 							</div>
 						</td>
-						<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<td class="hidden py-4 pl-4 pr-8 md:table-cell sm:pl-6 lg:pl-8">
 							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center gap-x-4", "w-full text-center gap-x-4 line-through decoration-neutral-400") }>
 								<div class="truncate text-sm font-medium leading-6 text-white">{ course.Days }</div>
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
 							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
-							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
-								{ course.Name }
-							</div>
-						</td>
-						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						// <td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						// 	<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
+						// 		{ course.Name }
+						// 	</div>
+						// </td>
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
 							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.AgeGroup }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
 							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
 							<div class="w-full text-center" x-data="{ hoverButton: false }">
 								if course.ApplicationsCount < course.Capacity {
 									<button

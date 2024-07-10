@@ -228,20 +228,12 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	subject := "Přihláška na kurz: " + course.Name
 	body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
 	body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">Níže naleznete informace o přihlášce:</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">\n"
-	body += "<strong>Kdy:</strong> " + course.Days + "<br>\n"
-	body += "<strong>V čase:</strong>  od " + course.TimeFrom.Format("15:04") + " do " + course.TimeTo.Format("15:04") + "<br>\n"
-	body += "<strong>Věková skupina:</strong> " + course.AgeGroup + "<br>\n"
-	body += "<strong>Jméno:</strong> " + firstName + " " + lastName + "<br>\n"
-	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
-	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
-	body += "<strong>Telefon:</strong> " + phone + "<br>\n"
-	body += "<strong>Email:</strong> " + email + "<br>\n"
-	body += "<strong>Číslo přihlášky:</strong> " + strconv.Itoa(applicationFormId) + "<br><br>\n"
-	body += "<strong>Cena kurzu:</strong> " + price + " Kč\n"
-	body += "</p>\n\n"
+	//body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. <br>Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
+
+	body += "<br><br><strong>Cena kurzu:</strong> " + price + " Kč\n"
+
 	if s.generatePaymentInfo {
 		// The data to encode as a QR code (e.g., payment information)
 		paymentInfo := fmt.Sprintf("SPD*1.0*ACC:%v*AM:%v*CC:CZK*RF:%v*X-VS:%v*PT:IP*MSG:Platba za kurz - %v %v", s.accountIBAN, price, applicationFormId, applicationFormId, firstName+" "+lastName, birthYear)
@@ -257,22 +249,36 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 		base64QRCode := base64.StdEncoding.EncodeToString(png)
 		body += "<p style=\"margin-bottom: 20px;\">Pro okamžitou platbu kurzu můžete použít QR kód nebo můžete zaplatit převodem na účet:</p>\n\n"
 		body += "<img src=\"data:image/png;base64," + base64QRCode + "\" style=\"margin-bottom: 20px;\"/>\n\n"
-		body += "<p style=\"margin-bottom: 20px;\">Číslo účtu: " + s.accountNumber + "</p>\n\n"
+		body += "<p style=\"margin-bottom: 5px;\">Číslo účtu: " + s.accountNumber + "</p>\n\n"
 		body += "<p style=\"margin-bottom: 20px;\">Variabilní symbol: " + strconv.Itoa(applicationFormId) + "</p>\n\n"
-		body += "<br><br>"
-	}
-	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
 
-	body += "<p>Často kladené otázky - <a target=\"_blank\" href=\"http://www.stenakladno.cz/clanek-1533038613-casto-kladene-otazky-cs/\">zde</a></p>"
-	body += "<p>Najdete nás na adrese: Huťská, 272 01 Kladno (vjezd do areálu u svářečské školy)</p>"
-	body += "<p>Nejbližší autobusová zastávka: Poldi (autobusy číslo: 7, 8, 9, 11, 12, 13, 14, 18)</p>"
-	body += " <p><a href=\"https://www.google.cz/maps/place/Lezecká+stěna+Kladno/@50.150291,14.119982,17z/data=!3m1!4b1!4m2!3m1!1s0x470bc81df4294531:0xba79ce925bcfb29\" target=\"_blank\">Mapa stěny</a>"
-	body += "<br>"
-	body += "<a href=\"https://maps.google.cz/maps/ms?msid=215522111162202071644.0004bacd0e0ab317a4e99&msa=0&ll=50.143246,14.153481&spn=0.119914,0.338173&dg=feature\" target=\"_blank\">Mapa příjezdových tras ke stěně</a>"
-	body += "</p>"
-	body += "<p> GPS: 50°9'0.613\"N, 14°7'11.908\"E </p> <p> Telefon recepce: 730 827 898 </p>"
-	body += "<p style=\"margin-top: 20px; font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+	}
+	// body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
+	// body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
+
+	// body += "<p>Často kladené otázky - <a target=\"_blank\" href=\"http://www.stenakladno.cz/clanek-1533038613-casto-kladene-otazky-cs/\">zde</a></p>"
+	// body += "<p>Najdete nás na adrese: Huťská, 272 01 Kladno (vjezd do areálu u svářečské školy)</p>"
+	// body += "<p>Nejbližší autobusová zastávka: Poldi (autobusy číslo: 7, 8, 9, 11, 12, 13, 14, 18)</p>"
+	// body += " <p><a href=\"https://www.google.cz/maps/place/Lezecká+stěna+Kladno/@50.150291,14.119982,17z/data=!3m1!4b1!4m2!3m1!1s0x470bc81df4294531:0xba79ce925bcfb29\" target=\"_blank\">Mapa stěny</a>"
+	// body += "<br>"
+	// body += "<a href=\"https://maps.google.cz/maps/ms?msid=215522111162202071644.0004bacd0e0ab317a4e99&msa=0&ll=50.143246,14.153481&spn=0.119914,0.338173&dg=feature\" target=\"_blank\">Mapa příjezdových tras ke stěně</a>"
+	// body += "</p>"
+	// body += "<p> GPS: 50°9'0.613\"N, 14°7'11.908\"E </p> <p> Telefon recepce: 730 827 898 </p>"
+
+	body += "<p style=\"margin-bottom: 20px;\">Shrnutí přihlášky:</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">\n"
+	body += "<strong>Kdy:</strong> " + course.Days + "<br>\n"
+	body += "<strong>V čase:</strong>  od " + course.TimeFrom.Format("15:04") + " do " + course.TimeTo.Format("15:04") + "<br>\n"
+	body += "<strong>Věková skupina:</strong> " + course.AgeGroup + "<br>\n"
+	body += "<strong>Jméno:</strong> " + firstName + " " + lastName + "<br>\n"
+	body += "<strong>Rok narození:</strong> " + birthYear + "<br><br>\n"
+	body += "<strong>Jméno rodiče:</strong> " + parentName + "<br>\n"
+	body += "<strong>Telefon:</strong> " + phone + "<br>\n"
+	body += "<strong>Email:</strong> " + email + "<br>\n"
+	body += "<strong>Číslo přihlášky:</strong> " + strconv.Itoa(applicationFormId) + "<br><br>\n"
+	body += "</p>\n\n"
+
+	body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
 	body += "Lezecká Stěna Kladno</p>\n"
 	body += "</div>\n"
 
