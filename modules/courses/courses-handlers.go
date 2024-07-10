@@ -124,7 +124,9 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 	birthYear1 := "20"
-	if birthYear2Int >= 54 {
+	if len(personalId) == 9 {
+		birthYear1 = "19"
+	} else if birthYear2Int >= 54 {
 		birthYear1 = "19"
 	}
 	birthYear, err := strconv.Atoi(birthYear1 + birthYear2)

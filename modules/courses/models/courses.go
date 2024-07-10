@@ -39,9 +39,10 @@ func ApplicationFormModel(courseId string) baseTypes.Form {
 			APPLICATION_FORM_PERSONAL_ID: {
 				ID:          APPLICATION_FORM_PERSONAL_ID,
 				Label:       "Rodné číslo (koho přihlašuji)",
+				Placeholder: "10 čísel bez lomítka (9 pro 1953 a starší)",
 				FieldType:   "number",
 				FormId:      APPLICATION_FORM,
-				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.MinLength(10), baseTypes.MaxLength(10))},
+				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.MinLength(9), baseTypes.MaxLength(10))},
 			APPLICATION_FORM_PHONE: {
 				ID:          APPLICATION_FORM_PHONE,
 				Label:       "Telefonní číslo zákonného zástupce",
