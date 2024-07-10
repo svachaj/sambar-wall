@@ -99,6 +99,7 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 	lastName := applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME].Value
 	phone := applicationForm.FormFields[models.APPLICATION_FORM_PHONE].Value
 	parentName := applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
+	healthState := applicationForm.FormFields[models.APPLICATION_FORM_HEALTH_STATE].Value
 
 	personalId := applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
 
@@ -153,7 +154,7 @@ func (h *CoursesHandler) ProcessApplicationForm(c echo.Context) error {
 	}
 
 	// create a new application form
-	applicationFormId, err := h.service.CreateApplicationForm(courseId, participantId, personalId, parentName, phone, userEmail, userId)
+	applicationFormId, err := h.service.CreateApplicationForm(courseId, participantId, personalId, parentName, phone, userEmail, userId, healthState)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to create application form")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())

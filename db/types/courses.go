@@ -30,6 +30,7 @@ type ApplicationForm struct {
 	LastName       string     `json:"lastName" db:"lastName"`
 	PersonalID     *string    `json:"personalId" db:"personalId"`
 	BirthYear      *int       `json:"birthYear" db:"birthYear"`
+	HealthState    *string    `json:"healthState" db:"healthState"`
 	Paid           bool       `json:"gdpr" db:"paid"`
 	CourseID       int        `json:"courseId" db:"courseId"`
 	CourseName     string     `json:"courseName" db:"courseName"`

@@ -19,7 +19,7 @@ type ICoursesService interface {
 	CheckApplicationFormExists(courseId int, personalId string) (bool, error)
 	GetOrCreateParticipant(firstName string, lastName string, birthYear int, parentUserId int) (int, error)
 	CheckCourseCapacity(courseId int) (bool, error)
-	CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error)
+	CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int, healthState string) (int, error)
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
@@ -156,7 +156,7 @@ func (s *CoursesService) CheckCourseCapacity(courseId int) (bool, error) {
 	return capacity > 0, nil
 }
 
-func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int) (int, error) {
+func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, personalId, parentName, phone, email string, userId int, healthState string) (int, error) {
 	var applicationFormId int
 	err := s.db.Get(&applicationFormId, `
 	INSERT INTO t_course_application_form(
@@ -166,6 +166,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	ParentName,
 	Phone,
 	Email,
+	HealthState,
 	GDPR_confirmed,
 	Rules_confirmed,
 	UpdatedDate,
@@ -181,6 +182,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	@p4,
 	@p5,
 	@p6,
+	@p8,
 	1,
 	1,
 	GETDATE(),
@@ -190,7 +192,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	NEWID(),
 	0,0)
 	SELECT SCOPE_IDENTITY()
-	`, courseId, participantId, personalId, parentName, phone, email, userId)
+	`, courseId, participantId, personalId, parentName, phone, email, userId, healthState)
 
 	if err != nil {
 		return 0, err
@@ -372,6 +374,7 @@ func (s *CoursesService) GetAllApplicationForms(searchText string) ([]types.Appl
 tcaf.ID as id,
 tcaf.Paid as paid,
 tcaf.PersonalId as personalId,
+tcaf.HealthState as healthState,
 tsup.BirthYear as birthYear,
 tc.ID as courseId,
 tct.Name1 as courseName,

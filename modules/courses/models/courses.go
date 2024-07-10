@@ -14,6 +14,7 @@ const APPLICATION_FORM_PHONE = "phone"
 const APPLICATION_FORM_PARENT_NAME = "parentName"
 const APPLICATION_FORM_GDPR = "gdpr"
 const APPLICATION_FORM_RULES = "rules"
+const APPLICATION_FORM_HEALTH_STATE = "healthState"
 
 func ApplicationFormModel(courseId string) baseTypes.Form {
 	return baseTypes.Form{
@@ -43,6 +44,11 @@ func ApplicationFormModel(courseId string) baseTypes.Form {
 				FieldType:   "number",
 				FormId:      APPLICATION_FORM,
 				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.MinLength(9), baseTypes.MaxLength(10))},
+			APPLICATION_FORM_HEALTH_STATE: {
+				ID:        APPLICATION_FORM_HEALTH_STATE,
+				Label:     "Zdravotní stav",
+				FieldType: "text",
+				FormId:    APPLICATION_FORM},
 			APPLICATION_FORM_PHONE: {
 				ID:          APPLICATION_FORM_PHONE,
 				Label:       "Telefonní číslo zákonného zástupce",
