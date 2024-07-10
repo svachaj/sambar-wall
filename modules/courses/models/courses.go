@@ -66,7 +66,7 @@ func ApplicationFormModel(courseId string) baseTypes.Form {
 				ID:          APPLICATION_FORM_RULES,
 				Label:       "Souhlasím s provozním řádem stěny",
 				FieldType:   "checkbox",
-				Link:        "/static/files/provozni-rad-2024-02-01.pdf",
+				Link:        "https://www.stenakladno.cz/provozni-rad",
 				FormId:      APPLICATION_FORM,
 				Validations: baseTypes.Validations(baseTypes.Required())},
 		},
