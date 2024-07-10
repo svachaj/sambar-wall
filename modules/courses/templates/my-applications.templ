@@ -12,96 +12,110 @@ templ MyApplicationsList(applications []types.ApplicationForm) {
 			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
 				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Moje přihlášky</h2>
 			</div>
-			<table class="mt-2 w-full whitespace-nowrap text-left">
-				<colgroup>
-					<col class="w-24"/>
-					<col class="w-24"/>
-					<col class="w-fit"/>
-					<col class="lg:w-1/12"/>
-					<col class="lg:w-1/12"/>
-				</colgroup>
-				<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
-					<tr>
-						<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Kurz</th>
-						<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Účastník</th>
-						<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Kdy</th>
-						<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Cena</th>
-						<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Zaplaceno</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-white/20">
-					for _, application := range applications {
-						<tr class="hover:bg-slate-800">
-							<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
-								<div class="flex flex-row flex-wrap">
-									<div class="flex-grow">
-										<div class="truncate text-sm font-medium leading-6 text-white">
-											{ application.CourseName }
-										</div>
-										<div class="truncate text-sm font-medium leading-6 text-white">
-											{ application.LastName + " " + application.FirstName }
-										</div>
-										<div class="truncate text-sm font-medium leading-6 text-white">
-											{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
-										</div>
-										<div class="truncate text-sm font-medium leading-6 text-white">
-											{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
-										</div>
-										<div class="truncate text-sm font-medium leading-6 text-white">
-											<span>Zaplaceno:&nbsp;</span>
-											if application.Paid {
-												<span class="text-green-500">ANO</span>
-											} else {
-												<span class="text-red-600">Ne</span>
-											}
-										</div>
-									</div>
-								</div>
-							</td>
-							<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-								<div class="flex items-start gap-x-4">
-									<div class="truncate text-sm font-medium leading-6 text-white">
-										{ application.CourseName }
-									</div>
-								</div>
-							</td>
-							<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-								<div class="flex items-center justify-center gap-x-4">
-									<div class="truncate text-sm font-medium leading-6 text-white">
-										{ application.LastName + " " + application.FirstName }
-									</div>
-								</div>
-							</td>
-							<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-								<div class="flex items-center justify-center gap-x-4">
-									<div class="truncate text-sm font-medium leading-6 text-white">
-										{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
-									</div>
-								</div>
-							</td>
-							<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-								<div class="flex items-center gap-x-4">
-									<div class="truncate text-sm font-medium leading-6 text-white">
-										{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
-									</div>
-								</div>
-							</td>
-							<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-								<div class="flex items-center gap-x-4">
-									<div class="truncate text-sm font-medium leading-6 text-white">
-										if application.Paid {
-											<span class="text-green-500">ANO</span>
-										} else {
-											<span class="text-red-600">Ne</span>
-										}
-									</div>
-								</div>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
+			if len(applications) == 0 {
+				@MyApplicationsNoApplications()
+			} else {
+				@MyApplicationsTable(applications)
+			}
 		</div>
+	</div>
+}
+
+templ MyApplicationsTable(applications []types.ApplicationForm) {
+	<table class="mt-2 w-full whitespace-nowrap text-left">
+		<colgroup>
+			<col class="w-fit"/>
+			<col class="w-24"/>
+			<col class="w-24"/>
+			<col class="lg:w-1/12"/>
+			<col class="lg:w-1/12"/>
+		</colgroup>
+		<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
+			<tr>
+				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Kurz</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Účastník</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Kdy</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Cena</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Zaplaceno</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-white/20">
+			for _, application := range applications {
+				<tr class="hover:bg-slate-800">
+					<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
+						<div class="flex flex-row flex-wrap">
+							<div class="flex-grow">
+								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+									{ application.CourseName }
+								</div>
+								<div class="truncate text-sm font-medium leading-6 text-white">
+									{ application.LastName + " " + application.FirstName }
+								</div>
+								<div class="truncate text-sm font-medium leading-6 text-white">
+									{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
+								</div>
+								<div class="truncate text-sm font-medium leading-6 text-white">
+									{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+								</div>
+								<div class="truncate text-sm font-medium leading-6 text-white">
+									<span>Zaplaceno:&nbsp;</span>
+									if application.Paid {
+										<span class="text-green-500">ANO</span>
+									} else {
+										<span class="text-red-600">Ne</span>
+									}
+								</div>
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-start gap-x-4">
+							<div class="truncate text-sm font-medium leading-6 text-white text-balance">
+								{ application.CourseName }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-center justify-center gap-x-4">
+							<div class="truncate text-sm font-medium leading-6 text-white">
+								{ application.LastName + " " + application.FirstName }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-center justify-center gap-x-4">
+							<div class="truncate text-sm font-medium leading-6 text-white">
+								{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-center gap-x-4">
+							<div class="truncate text-sm font-medium leading-6 text-white">
+								{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-center gap-x-4">
+							<div class="truncate text-sm font-medium leading-6 text-white">
+								if application.Paid {
+									<span class="text-green-500">ANO</span>
+								} else {
+									<span class="text-red-600">Ne</span>
+								}
+							</div>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ MyApplicationsNoApplications() {
+	<div class="p-4 text-white text-center">
+		<p>Nemáte žádné přihlášky.</p>
 	</div>
 }
 

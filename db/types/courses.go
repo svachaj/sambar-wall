@@ -25,16 +25,21 @@ type CourseType struct {
 }
 
 type ApplicationForm struct {
-	ID             int       `json:"id" db:"id"`
-	FirstName      string    `json:"firstName" db:"firstName"`
-	LastName       string    `json:"lastName" db:"lastName"`
-	PersonalID     string    `json:"personalId" db:"personalId"`
-	Paid           bool      `json:"gdpr" db:"paid"`
-	CourseID       int       `json:"courseId" db:"courseId"`
-	CourseName     string    `json:"courseName" db:"courseName"`
-	CourseDays     string    `json:"courseDays" db:"courseDays"`
-	CourseTimeFrom time.Time `json:"courseTimeFrom" db:"courseTimeFrom"`
-	CourseTimeTo   time.Time `json:"courseTimeTo" db:"courseTimeTo"`
-	CourseAgeGroup string    `json:"courseAgeGroup" db:"courseAgeGroup"`
-	CoursePrice    float64   `json:"coursePrice" db:"coursePrice"`
+	ID             int        `json:"id" db:"id"`
+	FirstName      string     `json:"firstName" db:"firstName"`
+	LastName       string     `json:"lastName" db:"lastName"`
+	PersonalID     *string    `json:"personalId" db:"personalId"`
+	BirthYear      *int       `json:"birthYear" db:"birthYear"`
+	HealthState    *string    `json:"healthState" db:"healthState"`
+	Paid           bool       `json:"gdpr" db:"paid"`
+	CourseID       int        `json:"courseId" db:"courseId"`
+	CourseName     string     `json:"courseName" db:"courseName"`
+	CourseDays     string     `json:"courseDays" db:"courseDays"`
+	CourseTimeFrom time.Time  `json:"courseTimeFrom" db:"courseTimeFrom"`
+	CourseTimeTo   time.Time  `json:"courseTimeTo" db:"courseTimeTo"`
+	CourseAgeGroup string     `json:"courseAgeGroup" db:"courseAgeGroup"`
+	CoursePrice    float64    `json:"coursePrice" db:"coursePrice"`
+	Email          *string    `json:"email" db:"email"`
+	Phone          *string    `json:"phone" db:"phone"`
+	CreatedDate    *time.Time `json:"createdDate" db:"createdDate"`
 }
