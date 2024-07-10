@@ -3,6 +3,7 @@ package security
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -38,9 +39,9 @@ func (s *SecurityService) SaveVerificationCode(email string, code string) error 
 
 	var query string
 	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), '%v', '1234', '%v')", email, time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), '%v', '1234', '%v')", strings.ToLower(email), time.Now().Format("2006-01-02 15:04:05"))
 	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (email, code, createdate) VALUES ('%v', '%v', '%v')", email, code, time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_registration_code (email, code, createdate) VALUES ('%v', '%v', '%v')", strings.ToLower(email), code, time.Now().Format("2006-01-02 15:04:05"))
 	}
 
 	_, err := s.db.Exec(query)
@@ -70,7 +71,7 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 
 	// check confirmation code
 	var count int
-	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", email, confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
+	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", strings.ToLower(email), confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
 	err = s.db.Get(&count, query)
 
 	if err != nil {
@@ -85,11 +86,11 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 	query = fmt.Sprintf(`IF NOT EXISTS (SELECT 1 FROM t_system_user WHERE UserName = '%[1]v')
 	BEGIN
 		INSERT INTO t_system_user (email, username, CreateDate, IsActivated, IsDeleted, IsEnabled) VALUES ('%[1]v', '%[1]v', getdate(), 1, 0 ,1);
-	END;`, email)
+	END;`, strings.ToLower(email))
 	_, _ = s.db.Exec(query)
 
 	// get user id
-	query = fmt.Sprintf("SELECT ID FROM t_system_user WHERE UserName = '%v'", email)
+	query = fmt.Sprintf("SELECT ID FROM t_system_user WHERE UserName = '%v'", strings.ToLower(email))
 	err = s.db.Get(&userId, query)
 
 	if err != nil {
@@ -97,11 +98,11 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 	}
 
 	// set last logon date
-	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", email)
+	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", strings.ToLower(email))
 	_, _ = s.db.Exec(query)
 
 	// if everything is ok, delete the confirmation code
-	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", email)
+	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", strings.ToLower(email))
 	_, _ = s.db.Exec(query)
 
 	return userId, nil
