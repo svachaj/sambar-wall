@@ -73,7 +73,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-fit\"> <col class=\"w-24\"> <col class=\"w-24\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-fit\"> <col class=\"w-fit\"> <col class=\"w-24\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,7 +91,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-sm font-medium leading-6 text-white\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-sm font-medium leading-6 text-white text-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -158,7 +158,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center justify-center gap-x-4\"><div class=\"truncate text-sm font-medium leading-6 text-white\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center justify-center gap-x-4\"><div class=\"truncate text-sm font-medium leading-6 text-white text-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

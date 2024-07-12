@@ -4,11 +4,15 @@
 
 ### [Go](https://go.dev/) of course 🚀
 
+See go mod file for the version of Go used in this project.
+
+### Makefile command to install all the other tools needed for the project
+
+`make install-tools`
+
 ### [TEMPL](https://templ.guide/) - Template Engine
 
 To have the best templ experience, you should install VSCode extension `templ-vscode`.
-
-`go install github.com/a-h/templ/cmd/templ@latest`
 
 Than follow this link how to setup IDE [IDE Support](https://templ.guide/commands-and-tools/ide-support)
 
@@ -24,9 +28,7 @@ Extension settings:
   "templ": "html"
 }`
 
-### [Air](https://github.com/cosmtrek/air) - Live reload for Go apps
-
-`go install github.com/cosmtrek/air@latest`
+### [Air](https://github.com/air-verse/air) - Live reload for Go apps
 
 ## How to develop
 
@@ -41,7 +43,3 @@ Extension settings:
 ### 3. Run with Air
 
 `air`
-
-## Makefile
-
-### There is a makefile where you can find all the commands to run the application and better understand the project build process.
