@@ -48,19 +48,6 @@ func (h *AgreementHandlers) CheckEmail(c echo.Context) error {
 
 	email := step1Form.FormFields[models.AGREEMENT_FORM_EMAIL].Value
 
-	// // check if email exists
-	// existEmail, err := h.service.EmailExists(email)
-	// if err != nil {
-	// 	log.Error().Msgf("CheckEmail error: %v", err)
-	// 	step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.ServerErrorToast())
-	// 	return utils.HTML(c, step1WithToast)
-	// }
-
-	// if existEmail {
-	// 	step1WithToast := agreementTemplates.Step1Form(step1Form, toasts.WarnToast("Tento email je již pro souhlas s provozním řádem na naší stěně použitý. Přejme příjemnou zábavu."))
-	// 	return utils.HTML(c, step1WithToast)
-	// }
-
 	// generate and save verification code
 	code := h.service.GenerateVerificationCode()
 	err := h.service.SaveVerificationCode(email, code)

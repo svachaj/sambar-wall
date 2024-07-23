@@ -1,0 +1,15 @@
+package security
+
+import "github.com/svachaj/sambar-wall/modules/layouts"
+
+templ UserAccountForm(userName string) {
+	<div>
+		{ userName }
+	</div>
+}
+
+templ UserAccountPage(userName string) {
+	@layouts.BaseLayout(true) {
+		@UserAccountForm(userName)
+	}
+}

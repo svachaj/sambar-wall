@@ -3,8 +3,10 @@ package middlewares
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/svachaj/sambar-wall/modules/agreement/models"
+	agreementModels "github.com/svachaj/sambar-wall/modules/agreement/models"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	coursesModels "github.com/svachaj/sambar-wall/modules/courses/models"
+	securityModels "github.com/svachaj/sambar-wall/modules/security/models"
 	toasts "github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/modules/types"
 	"github.com/svachaj/sambar-wall/utils"
@@ -25,7 +27,7 @@ func ValidateFormField(c echo.Context) error {
 		fieldValue := ""
 		fieldVal := body[fieldName]
 		if fieldVal != nil {
-			fieldValue = fieldVal.(string)
+			fieldValue = fieldVal.([]string)[0]
 		}
 
 		formId := c.Request().Header.Get("Form-Id")
@@ -47,6 +49,9 @@ func ValidateFormField(c echo.Context) error {
 }
 
 var Forms map[string]types.Form = map[string]types.Form{
-	models.AGREEMENT_FORM_STEP1: models.AgreementFormStep1InitModel(),
-	models.AGREEMENT_FORM_STEP2: models.AgreementFormInitModel(),
+	agreementModels.AGREEMENT_FORM_STEP1: agreementModels.AgreementFormStep1InitModel(),
+	agreementModels.AGREEMENT_FORM_STEP2: agreementModels.AgreementFormInitModel(),
+	securityModels.LOGIN_FORM_STEP1:      securityModels.SignInStep1InitModel(),
+	securityModels.LOGIN_FORM_STEP2:      securityModels.SignInStep2InitModel(),
+	coursesModels.APPLICATION_FORM:       coursesModels.ApplicationFormModel("0"),
 }

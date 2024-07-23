@@ -2,69 +2,122 @@ package courses
 
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
+	"github.com/svachaj/sambar-wall/utils"
 	"strconv"
 )
 
 templ CourseTile(course types.CourseType) {
 	<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
 		<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
-			<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">{ course.Name }</h2>
+			<h2 class="px-4 lg:text-xl text-base text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">{ course.Name }</h2>
 		</div>
 		<div class="flex items-center justify-center py-4">
-			<h3 class="px-4 text-base text-justify leading-7 text-gray-200 sm:px-6 lg:px-8 max-w-2xl">{ course.Description }</h3>
+			<h3 class="px-4 lg:text-base text-sm text-justify leading-7 text-gray-200 sm:px-6 lg:px-8 max-w-2xl">{ course.Description }</h3>
 		</div>
 		<table class="mt-2 w-full whitespace-nowrap text-left">
 			<colgroup>
-				<col class="w-24"/>
-				<col class="w-24"/>
 				<col class="w-fit"/>
-				<col class="lg:w-1/12"/>
-				<col class="lg:w-1/12"/>
 				<col class="w-24"/>
+				//<col class="w-fit"/>
+				<col class="w-1/12"/>
+				<col class="w-1/12"/>
+				<col class="w-fit"/>
 			</colgroup>
-			<thead class="border-b border-white/10 text-sm leading-6 text-white">
+			<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
 				<tr>
-					<th scope="col" class="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8 text-center">Den</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Čas</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Typ kurzu</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Věk</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center">Cena</th>
-					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell text-center"></th>
+					<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold md:table-cell sm:pl-6 lg:pl-8 text-center">Den</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Čas</th>
+					// <th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Typ kurzu</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Věk</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center">Cena</th>
+					<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold md:table-cell text-center"></th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-white/5">
+			<tbody class="divide-y divide-white/20">
 				for _, course := range course.Courses {
 					<tr class="hover:bg-slate-800">
-						<td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-							<div class="flex items-center gap-x-4">
+						<td class="md:hidden table-cell py-4 pl-4 w-full text-white text-sm">
+							<div class="flex flex-row flex-wrap">
+								<div class="flex flex-col w-52">
+									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }><span class="font-medium">{ course.Days }</span> ({ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") })</div>
+									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "flex flex-row gap-2 truncate leading-6", "flex flex-row truncate leading-6 gap-2 line-through decoration-neutral-400") }>
+										<div>{ course.AgeGroup }</div>
+										<div class="font-medium">{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč </div>
+									</div>
+								</div>
+								<div class="flex-1 flex justify-center items-center px-1 py-1">
+									<div x-data="{ hoverButton: false }">
+										if course.ApplicationsCount < course.Capacity {
+											<button
+												@mouseenter="hoverButton = true"
+												@mouseleave="hoverButton = false"
+												hx-get={ "/prihlaska/" + strconv.FormatInt(int64(course.ID), 10) }
+												hx-push-url="true"
+												hx-target="body"
+												hx-swap="show:window:top"
+												class="bg-primary-600  text-white rounded-md px-4 py-2 hover:bg-primary-400 w-auto"
+											>
+												<span x-show="!hoverButton">
+													{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
+												</span>
+												<span x-show="hoverButton">
+													Přihlásit se 
+												</span>
+											</button>
+										} else {
+											<span class="font-medium">Kurz naplněn</span>
+										}
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="hidden py-4 pl-4 pr-8 md:table-cell sm:pl-6 lg:pl-8">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center gap-x-4", "w-full text-center gap-x-4 line-through decoration-neutral-400") }>
 								<div class="truncate text-sm font-medium leading-6 text-white">{ course.Days }</div>
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
-								{ course.Name }
-							</div>
-						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+						// <td class="hidden py-4 pl-0 pr-4 lg:table-cell sm:pr-8 text-white text-sm">
+						// 	<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
+						// 		{ course.Name }
+						// 	</div>
+						// </td>
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ course.AgeGroup }
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
+							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
 								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
 							</div>
 						</td>
-						<td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8 text-white text-sm">
-							<div class="w-full text-center">
-								<button class="bg-primary-600 text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40">
-									Přihlásit se
-								</button>
+						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
+							<div class="w-full text-center" x-data="{ hoverButton: false }">
+								if course.ApplicationsCount < course.Capacity {
+									<button
+										@mouseenter="hoverButton = true"
+										@mouseleave="hoverButton = false"
+										hx-get={ "/prihlaska/" + strconv.FormatInt(int64(course.ID), 10) }
+										hx-push-url="true"
+										hx-target="body"
+										hx-swap="show:window:top"
+										class="bg-primary-600  text-white rounded-md px-2 py-2 hover:bg-primary-400 w-40"
+									>
+										<span x-show="!hoverButton">
+											{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
+										</span>
+										<span x-show="hoverButton">
+											Přihlásit se 
+										</span>
+									</button>
+								} else {
+									<span class="font-medium">Kurz naplněn</span>
+								}
 							</div>
 						</td>
 					</tr>

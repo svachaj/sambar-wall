@@ -1,9 +1,38 @@
 package security
 
 import (
+	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/modules/security/models"
 	types "github.com/svachaj/sambar-wall/modules/security/types"
+	"github.com/svachaj/sambar-wall/modules/toasts"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
+
+templ LoginFormStep1(loginForm baseTypes.Form, toast templ.Component) {
+	@formComponents.BaseForm(constants.ROUTE_LOGIN_STEP1, "outerHTML", loginForm.Errors) {
+		@formComponents.H1("Přihlášení")
+		@formComponents.InfoDiv("Zadej svůj email, na který ti pošleme jednorázový kód pro přihlášení.")
+		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL])
+		@formComponents.SubmitButton("Pokračovat")
+	}
+	if toast != nil {
+		@toast
+	}
+}
+
+templ LoginFormStep2(loginForm baseTypes.Form, toast templ.Component) {
+	@formComponents.BaseForm(constants.ROUTE_LOGIN_STEP2, "outerHTML", loginForm.Errors) {
+		@formComponents.H1("Dokončení přihlášení")
+		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_EMAIL])
+		@formComponents.FormField(loginForm.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE])
+		@formComponents.SubmitButton("Přihlásit se")
+	}
+	if toast != nil {
+		@toast
+	}
+}
 
 templ LoginForm(model types.LoginFormResponse) {
 	<div class="flex min-h-full flex-col justify-center px-6 py-8" id="login-form">
@@ -54,5 +83,15 @@ templ LoginForm(model types.LoginFormResponse) {
 templ LoginModal(model types.LoginFormResponse) {
 	@layouts.ModalLayout() {
 		@LoginForm(model)
+	}
+}
+
+templ LoginPage(expired bool) {
+	@layouts.BaseLayout(false) {
+		if !expired {
+			@LoginFormStep1(models.SignInStep1InitModel(), nil)
+		} else {
+			@LoginFormStep1(models.SignInStep1InitModel(), toasts.ErrorToast("Kód již vypršel, zadejte svůj email znovu."))
+		}
 	}
 }

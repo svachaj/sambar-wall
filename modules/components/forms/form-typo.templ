@@ -1,9 +1,13 @@
 package components
 
 templ H1(text string) {
-	<h1 class="sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center">{ text }</h1>
+	<h1 class="lg:text-3xl text-xl font-bold text-neutral-100 lg:my-2 my-1 w-full text-center">{ text }</h1>
 }
 
 templ InfoDiv(text string) {
-	<div class="sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center">{ text }</div>
+	<div class="lg:text-lg text-sm text-cyan-200 pt-3 pb-3 lg:w-10/12 font-bold text-center">{ text }</div>
+}
+
+templ InfoItem(text string) {
+	<div class="lg:text-base text-sm text-cyan-200 pt-2 lg:w-10/12 font-bold text-center">{ text }</div>
 }

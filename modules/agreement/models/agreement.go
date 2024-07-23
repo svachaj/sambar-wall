@@ -44,12 +44,12 @@ func AgreementFormInitModel() baseTypes.Form {
 				ID:          AGREEMENT_FORM_CONFIRMATION_CODE,
 				Label:       "Ověřovací kód z emailu",
 				FieldType:   "number",
-				Validations: baseTypes.Validations(baseTypes.Required()), FormId: AGREEMENT_FORM_STEP2},
+				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.MinLength(4)), FormId: AGREEMENT_FORM_STEP2},
 			AGREEMENT_FORM_RULES_AGREEMENT: {
 				ID:          AGREEMENT_FORM_RULES_AGREEMENT,
 				Label:       "Souhlasím s provozním řádem stěny",
 				FieldType:   "checkbox",
-				Link:        "/static/files/provozni-rad-2024-02-01.pdf",
+				Link:        "https://www.stenakladno.cz/provozni-rad",
 				FormId:      AGREEMENT_FORM_STEP2,
 				Validations: baseTypes.Validations(baseTypes.RequiredMsg("Musíte souhlasit s provozním řádem stěny"))},
 			AGREEMENT_FORM_GDPR_AGREEMENT: {

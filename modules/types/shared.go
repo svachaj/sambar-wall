@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -44,6 +45,14 @@ func (model Form) ValidateFields(data map[string][]string) bool {
 			model.FormFields[k] = v
 		} else if v.FieldType == "checkbox" {
 			v.Value = ""
+			for _, rule := range v.Validations {
+				if !rule.ValidateFunc(v.Value) {
+					v.Errors = append(v.Errors, rule.MessageFunc())
+					isValid = false
+				}
+			}
+			model.FormFields[k] = v
+		} else {
 			for _, rule := range v.Validations {
 				if !rule.ValidateFunc(v.Value) {
 					v.Errors = append(v.Errors, rule.MessageFunc())
@@ -116,6 +125,32 @@ func Date() ValidationFunc {
 	}
 }
 
+func MinLength(min int) ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return fmt.Sprintf("Minimální délka je %d", min)
+			},
+			ValidateFunc: func(value string) bool {
+				return len(value) >= min
+			},
+		}
+	}
+}
+
+func MaxLength(max int) ValidationFunc {
+	return func() ValidationRule {
+		return ValidationRule{
+			MessageFunc: func() string {
+				return fmt.Sprintf("Maximální délka je %d", max)
+			},
+			ValidateFunc: func(value string) bool {
+				return len(value) <= max
+			},
+		}
+	}
+}
+
 func Validations(validations ...ValidationFunc) []ValidationRule {
 	rules := make([]ValidationRule, len(validations))
 	for i, v := range validations {
@@ -125,6 +160,6 @@ func Validations(validations ...ValidationFunc) []ValidationRule {
 }
 
 var (
-	emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$`)
 	urlRegex   = regexp.MustCompile(`^(http(s)?://)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w \.-]*)*/?$`)
 )
