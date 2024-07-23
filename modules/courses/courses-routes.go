@@ -20,4 +20,5 @@ func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 
 	e.GET(constants.ROUTE_COURSES_APPLICATION_FORMS, h.GetAllApplicationForms, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 
+	e.GET(constants.ROUTE_COURSES_APPLICATION_FORMS_SEARCH, h.SearchInApplications, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 }

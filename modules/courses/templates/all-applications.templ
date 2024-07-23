@@ -3,7 +3,7 @@ package courses
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/layouts"
-	"strconv"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 templ AllApplicationsList(applications []types.ApplicationForm) {
@@ -13,7 +13,15 @@ templ AllApplicationsList(applications []types.ApplicationForm) {
 				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Všechny přihlášky</h2>
 			</div>
 			<div class="p-3">
-				<input type="text" class="w-full p-2 bg-neutral-800 text-white" placeholder="Hledat..."/>
+				<input
+					type="text"
+					name="search"
+					class="w-full p-2 bg-neutral-800 text-white"
+					placeholder="Hledat..."
+					hx-get="/prihlasky-hledat"
+					hx-trigger="keyup changed delay:500"
+					hx-target="#applicationsTable"
+				/>
 			</div>
 			<div id="applicationsTable">
 				if len(applications) == 0 {
@@ -37,10 +45,10 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 		</colgroup>
 		<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
 			<tr>
-				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Kurz</th>
-				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Účastník</th>
-				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Kdy</th>
-				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Cena</th>
+				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Účastník</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Kurz</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Rodné číslo</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Přihlášeno</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Zaplaceno</th>
 			</tr>
 		</thead>
@@ -51,16 +59,16 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 						<div class="flex flex-row flex-wrap">
 							<div class="flex-grow">
 								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
-									{ application.CourseName }
-								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
 									{ application.LastName + " " + application.FirstName }
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white">
-									{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
+								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+									{ application.CourseName }
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
-									{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+									{ utils.StringFromStringPointer(application.PersonalID) }
+								</div>
+								<div class="truncate text-sm font-medium leading-6 text-white">
+									{ utils.StringFromDateTimePointer(application.CreatedDate) }
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
 									<span>Zaplaceno:&nbsp;</span>
@@ -76,28 +84,28 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-start gap-x-4">
 							<div class="truncate text-sm font-medium leading-6 text-white text-balance">
+								{ application.LastName + " " + application.FirstName }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-start justify-center gap-x-4">
+							<div class="truncate text-sm w-full font-medium leading-6 text-white text-wrap">
 								{ application.CourseName }
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center justify-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
-								{ application.LastName + " " + application.FirstName }
-							</div>
-						</div>
-					</td>
-					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
-						<div class="flex items-center justify-center gap-x-4">
 							<div class="truncate text-sm font-medium leading-6 text-white">
-								{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
+								{ utils.StringFromStringPointer(application.PersonalID) }
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center gap-x-4">
 							<div class="truncate text-sm font-medium leading-6 text-white">
-								{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+								{ utils.StringFromDateTimePointer(application.CreatedDate) }
 							</div>
 						</div>
 					</td>
