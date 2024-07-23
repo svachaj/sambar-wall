@@ -22,6 +22,7 @@ type ICoursesHandler interface {
 	ProcessApplicationForm(c echo.Context) error
 	MyApplicationsPage(c echo.Context) error
 	GetAllApplicationForms(c echo.Context) error
+	SearchInApplications(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -202,4 +203,20 @@ func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
+}
+
+func (h *CoursesHandler) SearchInApplications(c echo.Context) error {
+
+	searchText := c.QueryParam("search")
+	applications, err := h.service.GetAllApplicationForms(searchText)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all applications")
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	if len(applications) == 0 {
+		return utils.HTML(c, coursesTemplates.AllApplicationsNoApplications())
+	} else {
+		return utils.HTML(c, coursesTemplates.AllApplicationsTable(applications))
+	}
 }
