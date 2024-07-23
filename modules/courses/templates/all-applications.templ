@@ -12,11 +12,16 @@ templ AllApplicationsList(applications []types.ApplicationForm) {
 			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
 				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Všechny přihlášky</h2>
 			</div>
-			if len(applications) == 0 {
-				@AllApplicationsNoApplications()
-			} else {
-				@AllApplicationsTable(applications)
-			}
+			<div class="p-3">
+				<input type="text" class="w-full p-2 bg-neutral-800 text-white" placeholder="Hledat..."/>
+			</div>
+			<div id="applicationsTable">
+				if len(applications) == 0 {
+					@AllApplicationsNoApplications()
+				} else {
+					@AllApplicationsTable(applications)
+				}
+			</div>
 		</div>
 	</div>
 }
