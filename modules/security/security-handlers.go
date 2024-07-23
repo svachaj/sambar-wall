@@ -69,7 +69,7 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 	}
 
 	coursesListComponent := coursesTemplates.CoursesList(courses, false)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false, false)
 
 	return utils.HTML(c, coursesPage)
 }
@@ -134,7 +134,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	email := strings.ToLower(step2Form.FormFields[models.LOGIN_FORM_EMAIL].Value)
 	confirmationCode := step2Form.FormFields[models.LOGIN_FORM_CONFIRMATION_CODE].Value
 
-	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
+	userId, roles, err := h.securityService.FinalizeLogin(email, confirmationCode)
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
@@ -152,6 +152,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 
 	authSession.Values[constants.AUTH_USER_USERNAME] = email
 	authSession.Values[constants.AUTH_USER_ID] = userId
+	authSession.Values[constants.AUTH_USER_ROLES] = roles
 	returnUrlInterf := authSession.Values[constants.AUTH_RETURN_URL]
 	returnUrl := ""
 	if returnUrlInterf != nil {
@@ -161,7 +162,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	authSession.Save(c.Request(), c.Response())
 
 	ipAddress := c.RealIP()
-	log.Info().Msgf("User %v signed in from IP %v", email, ipAddress)
+	log.Info().Msgf("User %v roles(%v) signed in from IP %v", email, roles, ipAddress)
 
 	// if user is authenticated, we want to retarget to the courses page
 
@@ -185,7 +186,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 	email := strings.ToLower(params[0])
 	confirmationCode := params[1]
 
-	userId, err := h.securityService.FinalizeLogin(email, confirmationCode)
+	userId, roles, err := h.securityService.FinalizeLogin(email, confirmationCode)
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
@@ -207,11 +208,12 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	authSession.Values[constants.AUTH_USER_USERNAME] = email
 	authSession.Values[constants.AUTH_USER_ID] = userId
+	authSession.Values[constants.AUTH_USER_ROLES] = roles
 
 	authSession.Save(c.Request(), c.Response())
 
 	ipAddress := c.RealIP()
-	log.Info().Msgf("User %v signed in from IP %v", email, ipAddress)
+	log.Info().Msgf("User %v roles(%v) signed in from IP %v", email, roles, ipAddress)
 	// if user is authenticated, we want to retarget to the courses page
 
 	if returnUrl != "" {

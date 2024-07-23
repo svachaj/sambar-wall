@@ -2,10 +2,10 @@ package agreementTemplates
 
 import (
 	"github.com/svachaj/sambar-wall/modules/agreement/models"
-	"github.com/svachaj/sambar-wall/modules/layouts"
-	"github.com/svachaj/sambar-wall/modules/constants"
-	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	"github.com/svachaj/sambar-wall/modules/constants"
+	"github.com/svachaj/sambar-wall/modules/layouts"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
 
 templ Step1Form(agreementForm baseTypes.Form, toast templ.Component) {
@@ -38,7 +38,7 @@ templ Step2Form(agreementForm baseTypes.Form, toast templ.Component) {
 }
 
 templ AgreementPage() {
-	@layouts.BaseLayout(false) {
+	@layouts.BaseLayout(false, false) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
 			@Step1Form(models.AgreementFormStep1InitModel(), nil)
 		</div>

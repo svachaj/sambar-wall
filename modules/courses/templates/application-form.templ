@@ -11,7 +11,7 @@ import (
 )
 
 templ ApplicationFormPage(course_id string, courseInfo dbTypes.Course) {
-	@layouts.BaseLayout(true) {
+	@layouts.BaseLayout(true, false) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
 			@ApplicationForm(models.ApplicationFormModel(course_id), courseInfo, nil)
 		</div>

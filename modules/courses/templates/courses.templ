@@ -1,11 +1,9 @@
 package courses
 
-import (
-	"github.com/svachaj/sambar-wall/modules/layouts"
-)
+import "github.com/svachaj/sambar-wall/modules/layouts"
 
-templ CoursesPage(cmp templ.Component, isAuthenticated bool) {
-	@layouts.BaseLayout(isAuthenticated) {
+templ CoursesPage(cmp templ.Component, isAuthenticated bool, isAdmin bool) {
+	@layouts.BaseLayout(isAuthenticated, isAdmin) {
 		@cmp
 	}
 }

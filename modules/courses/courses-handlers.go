@@ -40,10 +40,10 @@ func (h *CoursesHandler) GetCoursesList(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	isAuthenticated, _, _ := middlewares.IsAuthenticated(&c)
+	isAuthenticated, _, _, roles := middlewares.IsAuthenticated(&c)
 
 	coursesListComponent := coursesTemplates.CoursesList(courses, isAuthenticated)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN))
 
 	return utils.HTML(c, coursesPage)
 }
@@ -64,7 +64,7 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 	if !capacityOK {
-		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true))
+		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true, false))
 	}
 
 	courseInfo := h.service.GetCourseInfo(courseId)
@@ -175,6 +175,7 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
 	userId := authSession.Values[constants.AUTH_USER_ID].(int)
+	roles := authSession.Values[constants.AUTH_USER_ROLES].([]string)
 
 	applications, err := h.service.GetApplicationsByUserId(userId)
 	if err != nil {
@@ -183,19 +184,12 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 	}
 
 	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
-	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent)
+	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN))
 
 	return utils.HTML(c, applicationsPage)
 }
 
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
-
-	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	userName := authSession.Values[constants.AUTH_USER_USERNAME].(string)
-
-	if userName != "anna@stenakladno.cz" && userName != "j.svacha@seznam.cz" {
-		return utils.HTML(c, httperrors.ErrorPage(httperrors.NotFoundComponent()))
-	}
 
 	searchText := c.QueryParam("searchText")
 	applications, err := h.service.GetAllApplicationForms(searchText)
@@ -204,8 +198,8 @@ func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
-	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent)
+	applicationsListComponent := coursesTemplates.AllApplicationsList(applications)
+	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
 }
