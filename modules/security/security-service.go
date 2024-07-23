@@ -14,7 +14,7 @@ type ISecurityService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string, host string) error
-	FinalizeLogin(email, confirmationCode string) (userId int, err error)
+	FinalizeLogin(email, confirmationCode string) (userId int, roles []string, err error)
 }
 
 type SecurityService struct {
@@ -67,7 +67,7 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 	return s.emailService.SendEmail(subject, body, email)
 }
 
-func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId int, err error) {
+func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId int, roles []string, err error) {
 
 	// check confirmation code
 	var count int
@@ -75,11 +75,11 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 	err = s.db.Get(&count, query)
 
 	if err != nil {
-		return -1, err
+		return -1, roles, err
 	}
 
 	if count == 0 {
-		return -1, fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
+		return -1, roles, fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
 	}
 
 	// we want to create a new user with the email if it does not exist
@@ -94,8 +94,17 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 	err = s.db.Get(&userId, query)
 
 	if err != nil {
-		return -1, err
+		return -1, roles, err
 	}
+
+	// get user roles (codes)
+	query = fmt.Sprintf(`SELECT tsr.Code 
+						from t_system_user tsu
+						left join t_system_role_user tsru on tsu.ID = tsru.UserID
+						left join t_system_role tsr on tsr.ID = tsru.RoleId
+						where tsu.ID = %v`, userId)
+
+	_ = s.db.Select(&roles, query)
 
 	// set last logon date
 	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", strings.ToLower(email))
@@ -105,7 +114,7 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", strings.ToLower(email))
 	_, _ = s.db.Exec(query)
 
-	return userId, nil
+	return userId, roles, nil
 }
 
 const AGREEMENT_ERROR_BAD_CONFIRMATION_CODE = "Neplatný přihlašovací kód"

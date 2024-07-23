@@ -8,7 +8,7 @@ See go mod file for the version of Go used in this project.
 
 ### Makefile command to install all the other tools needed for the project
 
-`make install-tools`
+`make install-tools` (for Linux x64)
 
 ### [TEMPL](https://templ.guide/) - Template Engine
 

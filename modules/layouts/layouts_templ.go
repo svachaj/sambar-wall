@@ -8,7 +8,7 @@ package layouts
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func BaseLayout(isAuthenticated bool) templ.Component {
+func BaseLayout(isAuthenticated bool, isAdmin bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -49,7 +49,7 @@ func BaseLayout(isAuthenticated bool) templ.Component {
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = AuthenticatedLayout().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = AuthenticatedLayout(isAdmin).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -85,7 +85,7 @@ func BaseLayout(isAuthenticated bool) templ.Component {
 	})
 }
 
-func BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool) templ.Component {
+func BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool, isAdmin bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -121,7 +121,7 @@ func BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool) templ.Co
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = BaseLayout(isAuthenticated).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = BaseLayout(isAuthenticated, isAdmin).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -163,7 +163,7 @@ func AnonymousLayout() templ.Component {
 	})
 }
 
-func AuthenticatedLayout() templ.Component {
+func AuthenticatedLayout(isAdmin bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -181,7 +181,17 @@ func AuthenticatedLayout() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"bg-neutral-800 sticky top-0 border-b-orange-400 box-border shadow-xl z-20\"><nav class=\"bg-gray-800 p-2 lg:px-8\" x-data=\"{mobileMenuOpen: false}\"><div class=\"mx-auto max-w-7xl px-2 sm:px-6 lg:px-8\"><div class=\"relative flex h-16 items-center justify-between\"><div class=\"absolute inset-y-0 left-0 flex items-center sm:hidden\"><!-- Mobile menu button--><button @click=\"mobileMenuOpen = !mobileMenuOpen\" type=\"button\" class=\"relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white\" aria-controls=\"mobile-menu\" aria-expanded=\"false\"><span class=\"absolute -inset-0.5\"></span> <span class=\"sr-only\">Open main menu</span><!--Icon when menu is closed.Menu open: \"hidden\", Menu closed: \"block\"--><svg class=\"block h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5\"></path></svg><!--Icon when menu is open.Menu open: \"block\", Menu closed: \"hidden\"--><svg x-show=\"mobileMenuOpen\" class=\"hidden h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><div class=\"flex flex-1 items-center justify-center sm:items-stretch sm:justify-start\"><div class=\"flex flex-shrink-0 items-center\"><a href=\"/\" class=\"-m-1.5 p-1.5\"><img class=\"h-8 w-auto\" src=\"/static/assets/logo.png\" alt=\"Your Company\"></a></div><div class=\"hidden flex-auto sm:ml-6 sm:block\"><div class=\"flex justify-center pr-20 space-x-4\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" --><a href=\"/moje-prihlasky\" class=\"rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></div><div class=\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\"><button hx-get=\"/sign-out\" hx-target=\"body\" hx-replace-url=\"/\" class=\"text-sm font-semibold leading-6 text-white  hover:text-primary-400 hover:underline\"><span><svg data-slot=\"icon\" aria-hidden=\"true\" fill=\"none\" stroke-width=\"1.5\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" class=\"w-6 h-6\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></span></button><!-- Profile dropdown --></div></div></div><!-- Mobile menu, show/hide based on menu state. --><div x-show=\"mobileMenuOpen\" class=\"sm:hidden\"><div class=\"space-y-1 px-2 pb-3 pt-2\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" --><a @click=\"mobileMenuOpen = false\" href=\"/moje-prihlasky\" class=\"block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></nav></header><main class=\" lg:px-5 py-5 px-1 animate-show-smooth-1s\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"bg-neutral-800 sticky top-0 border-b-orange-400 box-border shadow-xl z-20\"><nav class=\"bg-gray-800 p-2 lg:px-8\" x-data=\"{mobileMenuOpen: false}\"><div class=\"mx-auto max-w-7xl px-2 sm:px-6 lg:px-8\"><div class=\"relative flex h-16 items-center justify-between\"><div class=\"absolute inset-y-0 left-0 flex items-center sm:hidden\"><!-- Mobile menu button--><button @click=\"mobileMenuOpen = !mobileMenuOpen\" type=\"button\" class=\"relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white\" aria-controls=\"mobile-menu\" aria-expanded=\"false\"><span class=\"absolute -inset-0.5\"></span> <span class=\"sr-only\">Open main menu</span><!--Icon when menu is closed.Menu open: \"hidden\", Menu closed: \"block\"--><svg class=\"block h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5\"></path></svg><!--Icon when menu is open.Menu open: \"block\", Menu closed: \"hidden\"--><svg x-show=\"mobileMenuOpen\" class=\"hidden h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><div class=\"flex flex-1 items-center justify-center sm:items-stretch sm:justify-start\"><div class=\"flex flex-shrink-0 items-center\"><a href=\"/\" class=\"-m-1.5 p-1.5\"><img class=\"h-8 w-auto\" src=\"/static/assets/logo.png\" alt=\"Your Company\"></a></div><div class=\"hidden flex-auto sm:ml-6 sm:block\"><div class=\"flex justify-center pr-20 space-x-4\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isAdmin {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/prihlasky\" class=\"rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Všechny přihlášky</a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/moje-prihlasky\" class=\"rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></div><div class=\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\"><button hx-get=\"/sign-out\" hx-target=\"body\" hx-replace-url=\"/\" class=\"text-sm font-semibold leading-6 text-white  hover:text-primary-400 hover:underline\"><span><svg data-slot=\"icon\" aria-hidden=\"true\" fill=\"none\" stroke-width=\"1.5\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" class=\"w-6 h-6\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></span></button><!-- Profile dropdown --></div></div></div><!-- Mobile menu, show/hide based on menu state. --><div x-show=\"mobileMenuOpen\" class=\"sm:hidden\"><div class=\"space-y-1 px-2 pb-3 pt-2\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" --><a @click=\"mobileMenuOpen = false\" href=\"/moje-prihlasky\" class=\"block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></nav></header><main class=\" lg:px-5 py-5 px-1 animate-show-smooth-1s\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
