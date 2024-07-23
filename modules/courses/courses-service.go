@@ -346,11 +346,8 @@ tc.TimeFrom as timeFrom,
 tc.TimeTo as timeTo,
 tcag.Name1 as ageGroup,
 tc.Price as price
-FROM t_course_application_form tcaf
-LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+FROM t_course tc 
 LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
-LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
-LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
 WHERE tc.ID = @p1
