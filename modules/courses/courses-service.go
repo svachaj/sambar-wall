@@ -251,6 +251,8 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 		body += "<p style=\"margin-bottom: 5px;\">Číslo účtu: " + s.accountNumber + "</p>\n\n"
 		body += "<p style=\"margin-bottom: 20px;\">Variabilní symbol: " + applFormIdString + "</p>\n\n"
 
+		body += "<p style=\"margin-bottom: 20px;\">Prosíme, za každou přihlášku proveďte platbu samostatně. Nezapomeňte uvést variabilní symbol, pro správné spárování platby.</p>\n\n"
+
 	}
 
 	body += "<p style=\"margin-bottom: 20px;\">Shrnutí přihlášky:</p>\n\n"
