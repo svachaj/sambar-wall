@@ -22,6 +22,7 @@ type ICoursesService interface {
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
 	GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error)
+	SetApplicationFormPaid(applicationFormId int, paid bool) error
 }
 
 type CoursesService struct {
@@ -400,4 +401,78 @@ ORDER BY tcaf.CreatedDate DESC;
 	}
 
 	return applicationForms, nil
+}
+
+// SetApplicationFormPaid implements ICoursesService.
+func (s *CoursesService) SetApplicationFormPaid(applicationFormId int, paid bool) error {
+	_, err := s.db.Exec(`
+		UPDATE t_course_application_form 
+		SET Paid = @p2
+		WHERE ID = @p1
+		`, applicationFormId, paid)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to update application form Paid info. Application form id:" + strconv.Itoa(applicationFormId))
+		return err
+	}
+
+	// try to send confirmation email
+	if paid {
+		// get application form detail
+		applicationForm := types.ApplicationForm{}
+
+		err := s.db.Get(&applicationForm, `
+	SELECT 
+tcaf.ID as id, 
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tcaf.Email as email
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
+WHERE tcaf.ID = @p1;
+	`, applicationFormId)
+
+		if err != nil {
+			log.Err(err).Msg("Fail to send payment confirmation email due to get application form detail. Application form ID:" + strconv.Itoa(applicationFormId))
+			return err
+		}
+
+		subject := "Potvrzení o zaplacení kurzu"
+		body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+		body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+		//body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Platba za kurz proběhla úspěšně.</p>\n\n"
+
+		applFormIdString := strconv.Itoa(applicationFormId)
+
+		body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
+		body += "<strong>Jméno:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+
+		body += "<br><br>\n\n"
+
+		body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+		body += "Lezecká Stěna Kladno</p>\n"
+		body += "</div>\n"
+
+		err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
+		if err != nil {
+			log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
+		}
+	}
+
+	return nil
 }

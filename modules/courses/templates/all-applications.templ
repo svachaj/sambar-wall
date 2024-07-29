@@ -72,11 +72,7 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
 									<span>Zaplaceno:&nbsp;</span>
-									if application.Paid {
-										<span class="text-green-500">ANO</span>
-									} else {
-										<span class="text-red-600">Ne</span>
-									}
+									@ApplicationPaidInfo(application.Paid, utils.StringFromInt(application.ID))
 								</div>
 							</div>
 						</div>
@@ -111,12 +107,8 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white">
-								if application.Paid {
-									<span class="text-green-500">ANO</span>
-								} else {
-									<span class="text-red-600">Ne</span>
-								}
+							<div class="truncate text-sm font-medium leading-6 text-white cursor-pointer">
+								@ApplicationPaidInfo(application.Paid, utils.StringFromInt(application.ID))
 							</div>
 						</div>
 					</td>
@@ -135,5 +127,26 @@ templ AllApplicationsNoApplications() {
 templ AllApplicationsPage(cmp templ.Component) {
 	@layouts.BaseLayout(true, true) {
 		@cmp
+	}
+}
+
+templ ApplicationPaidInfo(paid bool, applicationID string) {
+	<div
+		hx-put={ "/prihlaska/" + applicationID + "?paid=" + utils.StringifyBool(!paid) }
+		hx-trigger="click"
+		hx-swap="outerHTML"
+	>
+		if paid {
+			<span class="text-green-500">ANO</span>
+		} else {
+			<span class="text-red-600">Ne</span>
+		}
+	</div>
+}
+
+templ ApplicationPaidInfoWithToast(paid bool, applicationID string, toast templ.Component) {
+	@ApplicationPaidInfo(paid, applicationID)
+	if toast != nil {
+		@toast
 	}
 }

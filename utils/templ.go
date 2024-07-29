@@ -97,3 +97,11 @@ func StringFromDateTimePointer(t *time.Time) string {
 func StringFromDateTime(t time.Time) string {
 	return t.Format("2.1.2006")
 }
+
+func StringifyBool(value bool) string {
+	if value {
+		return "true"
+	} else {
+		return "false"
+	}
+}

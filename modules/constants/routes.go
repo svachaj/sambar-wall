@@ -21,6 +21,7 @@ const (
 	ROUTE_COURSES_APPLICATION_FORM      = "/prihlaska"
 	ROUTE_COURSES_MY_APPLICATIONS       = "/moje-prihlasky"
 
-	ROUTE_COURSES_APPLICATION_FORMS        = "/prihlasky"
-	ROUTE_COURSES_APPLICATION_FORMS_SEARCH = "/prihlasky-hledat"
+	ROUTE_COURSES_APPLICATION_FORMS         = "/prihlasky"
+	ROUTE_COURSES_APPLICATION_FORMS_SEARCH  = "/prihlasky-hledat"
+	ROUTE_COURSES_APPLICATION_FORM_SET_PAID = "/prihlaska/:id"
 )

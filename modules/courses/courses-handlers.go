@@ -13,6 +13,7 @@ import (
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -23,6 +24,7 @@ type ICoursesHandler interface {
 	MyApplicationsPage(c echo.Context) error
 	GetAllApplicationForms(c echo.Context) error
 	SearchInApplications(c echo.Context) error
+	SetApplicationFormPaid(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -219,4 +221,29 @@ func (h *CoursesHandler) SearchInApplications(c echo.Context) error {
 	} else {
 		return utils.HTML(c, coursesTemplates.AllApplicationsTable(applications))
 	}
+}
+
+func (h *CoursesHandler) SetApplicationFormPaid(c echo.Context) error {
+	applicationFormIdParam := c.Param("id")
+	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
+	if err != nil {
+		log.Err(err).Msg("Can not parse application form id:" + applicationFormIdParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	paidParam := c.QueryParam("paid")
+	paid, err := strconv.ParseBool(paidParam)
+
+	if err != nil {
+		log.Err(err).Msg("Can not parse paid param:" + paidParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	err = h.service.SetApplicationFormPaid(applicationFormId, paid)
+	if err != nil {
+		log.Err(err).Msg("Can not set paid on application form:" + applicationFormIdParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(!paid, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(paid, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
 }
