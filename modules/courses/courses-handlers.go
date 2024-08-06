@@ -194,14 +194,14 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 
-	searchText := c.QueryParam("searchText")
+	searchText := c.QueryParam("search")
 	applications, err := h.service.GetAllApplicationForms(searchText)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all applications")
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	applicationsListComponent := coursesTemplates.AllApplicationsList(applications)
+	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText)
 	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
@@ -216,6 +216,13 @@ func (h *CoursesHandler) SearchInApplications(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
+	// add htmx push url to the search form
+	if searchText == "" {
+		c.Response().Header().Set("HX-Push-Url", "/prihlasky")
+	} else {
+		c.Response().Header().Set("HX-Push-Url", "/prihlasky?search="+searchText)
+	}
+
 	if len(applications) == 0 {
 		return utils.HTML(c, coursesTemplates.AllApplicationsNoApplications())
 	} else {
@@ -228,7 +235,7 @@ func (h *CoursesHandler) SetApplicationFormPaid(c echo.Context) error {
 	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
 	if err != nil {
 		log.Err(err).Msg("Can not parse application form id:" + applicationFormIdParam)
-		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
 	}
 
 	paidParam := c.QueryParam("paid")
@@ -236,14 +243,14 @@ func (h *CoursesHandler) SetApplicationFormPaid(c echo.Context) error {
 
 	if err != nil {
 		log.Err(err).Msg("Can not parse paid param:" + paidParam)
-		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
 	}
 
 	err = h.service.SetApplicationFormPaid(applicationFormId, paid)
 	if err != nil {
 		log.Err(err).Msg("Can not set paid on application form:" + applicationFormIdParam)
-		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(!paid, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(!paid, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
 	}
 
-	return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(paid, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
+	return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(paid, applicationFormIdParam, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
 }

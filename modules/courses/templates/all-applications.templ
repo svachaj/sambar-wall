@@ -6,7 +6,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
-templ AllApplicationsList(applications []types.ApplicationForm) {
+templ AllApplicationsList(applications []types.ApplicationForm, searchQuery string) {
 	<div class="w-full flex flex-col items-center justify-center px-2">
 		<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
 			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
@@ -18,7 +18,8 @@ templ AllApplicationsList(applications []types.ApplicationForm) {
 					name="search"
 					class="w-full p-2 bg-neutral-800 text-white"
 					placeholder="Hledat..."
-					hx-get="/prihlasky-hledat"
+					value={ searchQuery }
+					hx-get={ "/prihlasky-hledat" }
 					hx-trigger="keyup changed delay:500"
 					hx-target="#applicationsTable"
 				/>
@@ -40,6 +41,7 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 			<col class="w-fit"/>
 			<col class="w-fit"/>
 			<col class="w-24"/>
+			<col class="w-24"/>
 			<col class="lg:w-1/12"/>
 			<col class="lg:w-1/12"/>
 		</colgroup>
@@ -47,6 +49,7 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 			<tr>
 				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center">Účastník</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Kurz</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Termín</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Rodné číslo</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Přihlášeno</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center">Zaplaceno</th>
@@ -58,20 +61,25 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 					<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
 						<div class="flex flex-row flex-wrap">
 							<div class="flex-grow">
-								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
-									{ application.LastName + " " + application.FirstName }
+								<div class="truncate text-sm font-bold leading-6 text-white text-wrap">
+									<a href={ templ.URL("/prihlaska-edit/" + utils.StringFromInt(application.ID)) }>
+										{ application.LastName + " " + application.FirstName }
+									</a>
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+								<div class="truncate text-xs font-medium leading-6 text-white text-wrap">
 									{ application.CourseName }
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white">
-									{ utils.StringFromStringPointer(application.PersonalID) }
+								<div class="truncate text-xs font-medium leading-6 text-white text-wrap">
+									{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
-									{ utils.StringFromDateTimePointer(application.CreatedDate) }
+									<span>RČ:&nbsp; </span>{ utils.StringFromStringPointer(application.PersonalID) }
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
-									<span>Zaplaceno:&nbsp;</span>
+									<span>Přihlášeno:&nbsp; </span>{ utils.StringFromDateTimePointer(application.CreatedDate) }
+								</div>
+								<div class="flex flex-row truncate text-sm font-medium leading-6 text-white">
+									<span>Zaplaceno:&nbsp; </span>
 									@ApplicationPaidInfo(application.Paid, utils.StringFromInt(application.ID))
 								</div>
 							</div>
@@ -80,14 +88,23 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-start gap-x-4">
 							<div class="truncate text-sm font-medium leading-6 text-white text-balance">
-								{ application.LastName + " " + application.FirstName }
+								<a class="text-pink-400 hover:text-pink-600 underline underline-offset-2" href={ templ.URL("/prihlaska-edit/" + utils.StringFromInt(application.ID)) }>
+									{ application.LastName + " " + application.FirstName }
+								</a>
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-start justify-center gap-x-4">
-							<div class="truncate text-sm w-full font-medium leading-6 text-white text-wrap">
+							<div class="truncate text-xs w-full font-medium leading-6 text-white text-wrap">
 								{ application.CourseName }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
+						<div class="flex items-start justify-center gap-x-4">
+							<div class="truncate text-xs w-full font-medium leading-6 text-white break-words">
+								{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
 							</div>
 						</div>
 					</td>
@@ -132,14 +149,15 @@ templ AllApplicationsPage(cmp templ.Component) {
 
 templ ApplicationPaidInfo(paid bool, applicationID string) {
 	<div
+		class="cursor-pointer underline-offset-2"
 		hx-put={ "/prihlaska/" + applicationID + "?paid=" + utils.StringifyBool(!paid) }
 		hx-trigger="click"
 		hx-swap="outerHTML"
 	>
 		if paid {
-			<span class="text-green-500">ANO</span>
+			<span class="text-green-500 hover:underline">ANO</span>
 		} else {
-			<span class="text-red-600">Ne</span>
+			<span class="text-red-600 hover:underline">Ne</span>
 		}
 	</div>
 }
