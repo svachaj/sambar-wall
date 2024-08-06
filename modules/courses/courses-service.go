@@ -454,13 +454,14 @@ WHERE tcaf.ID = @p1;
 		subject := "Potvrzení o zaplacení kurzu"
 		body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
 		body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
-		//body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
-		body += "<p style=\"margin-bottom: 20px;\">Platba za kurz proběhla úspěšně.</p>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
 
 		applFormIdString := strconv.Itoa(applicationFormId)
 
 		body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
-		body += "<strong>Jméno:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+		body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+		body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
+		body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
 
 		body += "<br><br>\n\n"
 
