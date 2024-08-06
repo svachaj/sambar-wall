@@ -1,7 +1,11 @@
 package models
 
 import (
+	"strconv"
+
+	"github.com/svachaj/sambar-wall/db/types"
 	baseTypes "github.com/svachaj/sambar-wall/modules/types"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 const APPLICATION_FORM = "applicationForm"
@@ -75,6 +79,72 @@ func ApplicationFormModel(courseId string) baseTypes.Form {
 				Link:        "https://www.stenakladno.cz/provozni-rad",
 				FormId:      APPLICATION_FORM,
 				Validations: baseTypes.Validations(baseTypes.Required())},
+		},
+	}
+}
+
+const APPLICATION_FORM_EDIT = "applicationFormEdit"
+const APPLICATION_FORM_ID = "applicationFormId"
+const APPLICATION_FORM_PAID = "paid"
+
+func ApplicationFormEditModel(applicationForm types.ApplicationForm) baseTypes.Form {
+	return baseTypes.Form{
+		FormFields: map[string]baseTypes.FormField{
+			APPLICATION_FORM_ID: {
+				ID:        APPLICATION_FORM_ID,
+				Label:     "ID prihlasky",
+				FieldType: "hidden",
+				FormId:    APPLICATION_FORM_EDIT,
+				Value:     strconv.Itoa(applicationForm.ID)},
+			APPLICATION_FORM_FIRST_NAME: {
+				ID:          APPLICATION_FORM_FIRST_NAME,
+				Label:       "Jméno účastníka",
+				FieldType:   "text",
+				Validations: baseTypes.Validations(baseTypes.Required()),
+				Value:       applicationForm.FirstName,
+				FormId:      APPLICATION_FORM_EDIT},
+			APPLICATION_FORM_LAST_NAME: {
+				ID:          APPLICATION_FORM_LAST_NAME,
+				Label:       "Příjmení účastníka",
+				FieldType:   "text",
+				Value:       applicationForm.LastName,
+				FormId:      APPLICATION_FORM_EDIT,
+				Validations: baseTypes.Validations(baseTypes.Required())},
+			APPLICATION_FORM_PERSONAL_ID: {
+				ID:          APPLICATION_FORM_PERSONAL_ID,
+				Label:       "Rodné číslo účastníka",
+				Placeholder: "10 čísel bez lomítka (9 pro 1953 a starší)",
+				FieldType:   "number",
+				Value:       *applicationForm.PersonalID,
+				FormId:      APPLICATION_FORM_EDIT,
+				Validations: baseTypes.Validations(baseTypes.Required(), baseTypes.MinLength(9), baseTypes.MaxLength(10))},
+			APPLICATION_FORM_HEALTH_STATE: {
+				ID:        APPLICATION_FORM_HEALTH_STATE,
+				Label:     "Zdravotní stav",
+				FieldType: "text",
+				Value:     *applicationForm.HealthState,
+				FormId:    APPLICATION_FORM_EDIT},
+			APPLICATION_FORM_PHONE: {
+				ID:          APPLICATION_FORM_PHONE,
+				Label:       "Telefonní číslo zákonného zástupce",
+				FieldType:   "text",
+				Value:       *applicationForm.Phone,
+				FormId:      APPLICATION_FORM_EDIT,
+				Validations: baseTypes.Validations(baseTypes.Required())},
+			APPLICATION_FORM_PARENT_NAME: {
+				ID:          APPLICATION_FORM_PARENT_NAME,
+				Label:       "Jméno a příjmení zákonného zástupce",
+				FieldType:   "text",
+				Value:       *applicationForm.ParentName,
+				FormId:      APPLICATION_FORM_EDIT,
+				Validations: baseTypes.Validations(baseTypes.Required())},
+			APPLICATION_FORM_PAID: {
+				ID:        APPLICATION_FORM_PAID,
+				Value:     utils.StringFromBoolForEditCheckbox(applicationForm.Paid),
+				Label:     "Zaplaceno",
+				FieldType: "checkbox",
+				FormId:    APPLICATION_FORM_EDIT,
+			},
 		},
 	}
 }

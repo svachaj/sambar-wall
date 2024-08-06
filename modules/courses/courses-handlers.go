@@ -25,6 +25,7 @@ type ICoursesHandler interface {
 	GetAllApplicationForms(c echo.Context) error
 	SearchInApplications(c echo.Context) error
 	SetApplicationFormPaid(c echo.Context) error
+	GetApplicationFormEditPage(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -253,4 +254,22 @@ func (h *CoursesHandler) SetApplicationFormPaid(c echo.Context) error {
 	}
 
 	return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(paid, applicationFormIdParam, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
+}
+
+func (h *CoursesHandler) GetApplicationFormEditPage(c echo.Context) error {
+	applicationFormIdParam := c.Param("id")
+	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
+	if err != nil {
+		log.Err(err).Msg("Can not parse application form id:" + applicationFormIdParam)
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	applicationForm, err := h.service.GetApplicationFormById(applicationFormId)
+	if err != nil {
+		log.Err(err).Msg("Can not get application form by id:" + applicationFormIdParam)
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	applicationFormEditPage := coursesTemplates.ApplicationFormEditPage(applicationForm)
+	return utils.HTML(c, applicationFormEditPage)
 }

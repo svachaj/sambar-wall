@@ -16,10 +16,12 @@ const (
 
 	ROUTE_USER_ACCOUNT = "/ucet"
 
-	ROUTE_COURSES                       = "/kurzy"
-	ROUTE_COURSES_APPLICATION_FORM_PAGE = "/prihlaska/:id"
-	ROUTE_COURSES_APPLICATION_FORM      = "/prihlaska"
-	ROUTE_COURSES_MY_APPLICATIONS       = "/moje-prihlasky"
+	ROUTE_COURSES                          = "/kurzy"
+	ROUTE_COURSES_APPLICATION_FORM_PAGE    = "/prihlaska/:id"
+	ROUTE_COURSES_APPLICATION_FORM         = "/prihlaska"
+	ROUTE_COURSES_APPLICATION_FORM_EDIT    = "/prihlaska-edit"
+	ROUTE_COURSES_APPLICATION_FORM_EDIT_ID = "/prihlaska-edit/:id"
+	ROUTE_COURSES_MY_APPLICATIONS          = "/moje-prihlasky"
 
 	ROUTE_COURSES_APPLICATION_FORMS         = "/prihlasky"
 	ROUTE_COURSES_APPLICATION_FORMS_SEARCH  = "/prihlasky-hledat"
