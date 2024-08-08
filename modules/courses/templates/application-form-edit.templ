@@ -28,6 +28,7 @@ templ ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData ty
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_HEALTH_STATE])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PHONE])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_EMAIL])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PAID])
 		<div class="flex flex-row gap-2">
 			@formComponents.CancleButton("Zrušit", constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL)

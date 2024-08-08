@@ -171,6 +171,14 @@ func ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData typ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_EMAIL]).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PAID]).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -232,7 +240,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 44, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 45, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -245,7 +253,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseDays + " (" + courseInfo.CourseTimeFrom.Format("15:04") + " - " + courseInfo.CourseTimeTo.Format("15:04") + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 45, Col: 218}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 46, Col: 218}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -258,7 +266,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseAgeGroup)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 46, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 47, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

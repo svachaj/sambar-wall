@@ -205,7 +205,7 @@ func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText)
+	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText, nil)
 	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
@@ -294,8 +294,6 @@ func (h *CoursesHandler) UpdateApplicationForm(c echo.Context) error {
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	log.Info().Msg("backUrl: " + params.Get("backUrl"))
-
 	applicationForm := types.ApplicationForm{ID: applicationFormId}
 	applicationFormModel := models.ApplicationFormEditModel(applicationForm)
 
@@ -306,60 +304,44 @@ func (h *CoursesHandler) UpdateApplicationForm(c echo.Context) error {
 		return utils.HTML(c, applicationFormEditPage)
 	}
 
-	// // get values from the form
-	// firstName := applicationForm.FormFields[models.APPLICATION_FORM_FIRST_NAME].Value
-	// lastName := applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME].Value
-	// phone := applicationForm.FormFields[models.APPLICATION_FORM_PHONE].Value
-	// parentName := applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
-	// healthState := applicationForm.FormFields[models.APPLICATION_FORM_HEALTH_STATE].Value
-	// personalId := applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
+	// get values from the form
+	firstName := applicationFormModel.FormFields[models.APPLICATION_FORM_FIRST_NAME].Value
+	lastName := applicationFormModel.FormFields[models.APPLICATION_FORM_LAST_NAME].Value
+	phone := applicationFormModel.FormFields[models.APPLICATION_FORM_PHONE].Value
+	parentName := applicationFormModel.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
+	healthState := applicationFormModel.FormFields[models.APPLICATION_FORM_HEALTH_STATE].Value
+	personalId := applicationFormModel.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
+	paid := applicationFormModel.FormFields[models.APPLICATION_FORM_PAID].Value
 
-	// // get username from the session
-	// authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	// userEmail := authSession.Values[constants.AUTH_USER_USERNAME].(string)
-	// userId := authSession.Values[constants.AUTH_USER_ID].(int)
+	err = h.service.UpdateApplicationForm(applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid == "on")
 
-	// push backUrl
-	backUrl := params.Get("backUrl")
-	searchParam := ""
-	if backUrl == "" {
-		backUrl = "/prihlasky"
-	} else {
-		// try to get search param from the backUrl
-		searchParam, _ = utils.GetQueryParamFromUrl(backUrl, "search")
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to update application form")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
-	c.Response().Header().Set("HX-Push-Url", backUrl)
+
+	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
 
 	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
-		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam))
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, toasts.SuccessToast(constants.SUCCESSFULLY_UPDATED)))
 }
 
 func (h *CoursesHandler) CancelApplicationFormEdit(c echo.Context) error {
 
-	params, _ := c.FormParams()
-	// push backUrl
-	backUrl := params.Get("backUrl")
-	searchParam := ""
-	if backUrl == "" {
-		backUrl = "/prihlasky"
-	} else {
-		// try to get search param from the backUrl
-		searchParam, _ = utils.GetQueryParamFromUrl(backUrl, "search")
-	}
-	c.Response().Header().Set("HX-Push-Url", backUrl)
+	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
 
 	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
-		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam))
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, nil))
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
-func AllApplicationsList(applications []types.ApplicationForm, searchQuery string) templ.Component {
+func AllApplicationsList(applications []types.ApplicationForm, searchQuery string, toast templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -77,6 +77,12 @@ func AllApplicationsList(applications []types.ApplicationForm, searchQuery strin
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		if toast != nil {
+			templ_7745c5c3_Err = toast.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		return templ_7745c5c3_Err
 	})
 }
@@ -120,7 +126,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(application.LastName + " " + application.FirstName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 66, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 69, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +139,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 70, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 73, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -146,7 +152,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - " + application.CourseTimeTo.Format("15:04") + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 73, Col: 141}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 76, Col: 141}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -159,7 +165,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(application.PersonalID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 76, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 79, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -172,7 +178,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromDateTimePointer(application.CreatedDate))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 79, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 82, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -202,7 +208,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(application.LastName + " " + application.FirstName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 92, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 95, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -215,7 +221,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 100, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 103, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -228,7 +234,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - " + application.CourseTimeTo.Format("15:04") + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 107, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 110, Col: 140}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -241,7 +247,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(application.PersonalID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 114, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 117, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -254,7 +260,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromDateTimePointer(application.CreatedDate))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 121, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 124, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -376,7 +382,7 @@ func ApplicationPaidInfo(paid bool, applicationID string) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs("/prihlaska/" + applicationID + "?paid=" + utils.StringifyBool(!paid))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 153, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/all-applications.templ`, Line: 156, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {

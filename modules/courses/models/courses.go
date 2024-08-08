@@ -86,6 +86,7 @@ func ApplicationFormModel(courseId string) baseTypes.Form {
 const APPLICATION_FORM_EDIT = "applicationFormEdit"
 const APPLICATION_FORM_ID = "applicationFormId"
 const APPLICATION_FORM_PAID = "paid"
+const APPLICATION_FORM_EMAIL = "email"
 
 func ApplicationFormEditModel(applicationForm types.ApplicationForm) baseTypes.Form {
 	return baseTypes.Form{
@@ -138,6 +139,14 @@ func ApplicationFormEditModel(applicationForm types.ApplicationForm) baseTypes.F
 				Value:       utils.StringFromStringPointer(applicationForm.ParentName),
 				FormId:      APPLICATION_FORM_EDIT,
 				Validations: baseTypes.Validations(baseTypes.Required())},
+			APPLICATION_FORM_EMAIL: {
+				ID:        APPLICATION_FORM_EMAIL,
+				Label:     "Email",
+				FieldType: "text",
+				Value:     utils.StringFromStringPointer(applicationForm.Email),
+				FormId:    APPLICATION_FORM_EDIT,
+				Disabled:  true,
+			},
 			APPLICATION_FORM_PAID: {
 				ID:        APPLICATION_FORM_PAID,
 				Value:     utils.StringFromBoolForEditCheckbox(applicationForm.Paid),

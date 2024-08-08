@@ -525,13 +525,24 @@ func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId
 	SET 
 	PersonalId = @p2,
 	ParentName = @p3,
-	HealthState = @p4,
-	FirstName = @p5,
-	LastName = @p6,
+	HealthState = @p4,	
 	Phone = @p7,
 	Paid = @p8,
 	UpdatedDate = GETDATE()
-	WHERE ID = @p1
+	WHERE ID = @p1;
+-- Update t_system_user_participant
+	UPDATE sup
+	SET 
+    sup.FirstName = @p5,
+    sup.LastName = @p6
+	FROM 
+    t_system_user_participant sup
+	INNER JOIN 
+    t_course_application_form caf
+	ON 
+    sup.ID = caf.ID_participant
+	WHERE 
+    caf.ID = @p1;
 	`, applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid)
 
 	if err != nil {
