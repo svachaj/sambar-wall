@@ -68,7 +68,7 @@ func Step1Form(agreementForm baseTypes.Form, toast templ.Component) templ.Compon
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_AGREEMENT_CHECK_EMAIL, "outerHTML", agreementForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_AGREEMENT_CHECK_EMAIL, "outerHTML", "", agreementForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +190,7 @@ func Step2Form(agreementForm baseTypes.Form, toast templ.Component) templ.Compon
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_AGREEMENT_FINALIZE, "outerHTML", agreementForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_AGREEMENT_FINALIZE, "outerHTML", "", agreementForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

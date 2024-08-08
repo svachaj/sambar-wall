@@ -3,6 +3,7 @@ package middlewares
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	dbTypes "github.com/svachaj/sambar-wall/db/types"
 	agreementModels "github.com/svachaj/sambar-wall/modules/agreement/models"
 	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
 	coursesModels "github.com/svachaj/sambar-wall/modules/courses/models"
@@ -54,4 +55,5 @@ var Forms map[string]types.Form = map[string]types.Form{
 	securityModels.LOGIN_FORM_STEP1:      securityModels.SignInStep1InitModel(),
 	securityModels.LOGIN_FORM_STEP2:      securityModels.SignInStep2InitModel(),
 	coursesModels.APPLICATION_FORM:       coursesModels.ApplicationFormModel("0"),
+	coursesModels.APPLICATION_FORM_EDIT:  coursesModels.ApplicationFormEditModel(dbTypes.ApplicationForm{}),
 }

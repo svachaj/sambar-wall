@@ -17,7 +17,7 @@ import (
 	baseTypes "github.com/svachaj/sambar-wall/modules/types"
 )
 
-func ApplicationFormEditPage(applicationForm types.ApplicationForm) templ.Component {
+func ApplicationFormEditPage(applicationForm types.ApplicationForm, backUrl string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -51,7 +51,7 @@ func ApplicationFormEditPage(applicationForm types.ApplicationForm) templ.Compon
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ApplicationFormEdit(models.ApplicationFormEditModel(applicationForm), applicationForm, nil).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ApplicationFormEdit(models.ApplicationFormEditModel(applicationForm), applicationForm, backUrl, nil).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +69,7 @@ func ApplicationFormEditPage(applicationForm types.ApplicationForm) templ.Compon
 	})
 }
 
-func ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData types.ApplicationForm, toast templ.Component) templ.Component {
+func ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData types.ApplicationForm, backUrl string, toast templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -175,7 +175,11 @@ func ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData typ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"flex flex-row gap-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = formComponents.CancleButton("Zrušit", constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -183,9 +187,13 @@ func ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData typ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT, "outerHTML", applicationForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT, "outerHTML show:window:top", backUrl, applicationForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -224,7 +232,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 41, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 44, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -237,7 +245,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseDays + " (" + courseInfo.CourseTimeFrom.Format("15:04") + " - " + courseInfo.CourseTimeTo.Format("15:04") + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 42, Col: 218}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 45, Col: 218}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -250,7 +258,7 @@ func ApplicationFormInfoCard(courseInfo types.ApplicationForm) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.CourseAgeGroup)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 43, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form-edit.templ`, Line: 46, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

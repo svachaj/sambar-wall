@@ -25,4 +25,8 @@ func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 	e.PUT(constants.ROUTE_COURSES_APPLICATION_FORM_SET_PAID, h.SetApplicationFormPaid, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 
 	e.GET(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_ID, h.GetApplicationFormEditPage, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
+
+	e.POST(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT, h.UpdateApplicationForm, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
+
+	e.POST(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL, h.CancelApplicationFormEdit, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 }
