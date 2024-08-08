@@ -7,12 +7,14 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	"github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/middlewares"
 	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/courses/models"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -23,6 +25,10 @@ type ICoursesHandler interface {
 	MyApplicationsPage(c echo.Context) error
 	GetAllApplicationForms(c echo.Context) error
 	SearchInApplications(c echo.Context) error
+	SetApplicationFormPaid(c echo.Context) error
+	GetApplicationFormEditPage(c echo.Context) error
+	UpdateApplicationForm(c echo.Context) error
+	CancelApplicationFormEdit(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -192,14 +198,14 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 
-	searchText := c.QueryParam("searchText")
+	searchText := c.QueryParam("search")
 	applications, err := h.service.GetAllApplicationForms(searchText)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all applications")
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	applicationsListComponent := coursesTemplates.AllApplicationsList(applications)
+	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText, nil)
 	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
@@ -214,9 +220,128 @@ func (h *CoursesHandler) SearchInApplications(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
+	// add htmx push url to the search form
+	if searchText == "" {
+		c.Response().Header().Set("HX-Push-Url", "/prihlasky")
+	} else {
+		c.Response().Header().Set("HX-Push-Url", "/prihlasky?search="+searchText)
+	}
+
 	if len(applications) == 0 {
 		return utils.HTML(c, coursesTemplates.AllApplicationsNoApplications())
 	} else {
 		return utils.HTML(c, coursesTemplates.AllApplicationsTable(applications))
 	}
+}
+
+func (h *CoursesHandler) SetApplicationFormPaid(c echo.Context) error {
+	applicationFormIdParam := c.Param("id")
+	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
+	if err != nil {
+		log.Err(err).Msg("Can not parse application form id:" + applicationFormIdParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	paidParam := c.QueryParam("paid")
+	paid, err := strconv.ParseBool(paidParam)
+
+	if err != nil {
+		log.Err(err).Msg("Can not parse paid param:" + paidParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(false, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	err = h.service.SetApplicationFormPaid(applicationFormId, paid)
+	if err != nil {
+		log.Err(err).Msg("Can not set paid on application form:" + applicationFormIdParam)
+		return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(!paid, applicationFormIdParam, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	return utils.HTML(c, coursesTemplates.ApplicationPaidInfoWithToast(paid, applicationFormIdParam, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
+}
+
+func (h *CoursesHandler) GetApplicationFormEditPage(c echo.Context) error {
+
+	backUrl := c.Request().Referer()
+	if backUrl == "" {
+		backUrl = "/prihlasky"
+	}
+
+	applicationFormIdParam := c.Param("id")
+	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
+	if err != nil {
+		log.Err(err).Msg("Can not parse application form id:" + applicationFormIdParam)
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	applicationForm, err := h.service.GetApplicationFormById(applicationFormId)
+	if err != nil {
+		log.Err(err).Msg("Can not get application form by id:" + applicationFormIdParam)
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	applicationFormEditPage := coursesTemplates.ApplicationFormEditPage(applicationForm, backUrl)
+	return utils.HTML(c, applicationFormEditPage)
+}
+
+func (h *CoursesHandler) UpdateApplicationForm(c echo.Context) error {
+
+	// validate form
+	params, _ := c.FormParams()
+	applicationFormIdString := params.Get(models.APPLICATION_FORM_ID)
+	applicationFormId, err := strconv.Atoi(applicationFormIdString)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to convert applicationFormId to int")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	applicationForm := types.ApplicationForm{ID: applicationFormId}
+	applicationFormModel := models.ApplicationFormEditModel(applicationForm)
+
+	isValid := applicationFormModel.ValidateFields(params)
+
+	if !isValid {
+		applicationFormEditPage := coursesTemplates.ApplicationFormEditPage(applicationForm, "")
+		return utils.HTML(c, applicationFormEditPage)
+	}
+
+	// get values from the form
+	firstName := applicationFormModel.FormFields[models.APPLICATION_FORM_FIRST_NAME].Value
+	lastName := applicationFormModel.FormFields[models.APPLICATION_FORM_LAST_NAME].Value
+	phone := applicationFormModel.FormFields[models.APPLICATION_FORM_PHONE].Value
+	parentName := applicationFormModel.FormFields[models.APPLICATION_FORM_PARENT_NAME].Value
+	healthState := applicationFormModel.FormFields[models.APPLICATION_FORM_HEALTH_STATE].Value
+	personalId := applicationFormModel.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
+	paid := applicationFormModel.FormFields[models.APPLICATION_FORM_PAID].Value
+
+	err = h.service.UpdateApplicationForm(applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid == "on")
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to update application form")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
+
+	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all application forms")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, toasts.SuccessToast(constants.SUCCESSFULLY_UPDATED)))
+}
+
+func (h *CoursesHandler) CancelApplicationFormEdit(c echo.Context) error {
+
+	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
+
+	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all application forms")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, nil))
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/svachaj/sambar-wall/modules/courses"
 	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	"github.com/svachaj/sambar-wall/modules/security"
+	paymentcheckservice "github.com/svachaj/sambar-wall/services/payment-check-service"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -48,6 +49,17 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	security.MapSecurityRoutes(e, securityHandlers)
 	log.Info().Msg("Module Security Initialized and Routes Mapped Successfully.")
 
+	if settings.StartPaymentsCheckingService {
+		paymentsCheckService := paymentcheckservice.NewPaymentService(emailService, settings.ImapAddress, settings.ImapUsername, settings.ImapPassword)
+		if paymentsCheckService != nil {
+			err = paymentsCheckService.StartCheckingPayments()
+			if err != nil {
+				log.Err(err).Msg("Fail to start checking pamyents")
+			} else {
+				log.Info().Msg("Autochecking payments service initalized successfully.")
+			}
+		}
+	}
 	// validation handlers
 	e.POST("/validate-form-field", middlewares.ValidateFormField)
 

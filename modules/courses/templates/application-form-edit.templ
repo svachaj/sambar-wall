@@ -1,0 +1,49 @@
+package courses
+
+import (
+	types "github.com/svachaj/sambar-wall/db/types"
+	formComponents "github.com/svachaj/sambar-wall/modules/components/forms"
+	"github.com/svachaj/sambar-wall/modules/constants"
+	"github.com/svachaj/sambar-wall/modules/courses/models"
+	"github.com/svachaj/sambar-wall/modules/layouts"
+	baseTypes "github.com/svachaj/sambar-wall/modules/types"
+)
+
+templ ApplicationFormEditPage(applicationForm types.ApplicationForm, backUrl string) {
+	@layouts.BaseLayout(true, true) {
+		<div class="w-full flex flex-col items-center justify-center px-2">
+			@ApplicationFormEdit(models.ApplicationFormEditModel(applicationForm), applicationForm, backUrl, nil)
+		</div>
+	}
+}
+
+templ ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData types.ApplicationForm, backUrl string, toast templ.Component) {
+	@formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM_EDIT, "outerHTML show:window:top", backUrl, applicationForm.Errors) {
+		@formComponents.H1("Editace přihlášky")
+		@ApplicationFormInfoCard(applicationFormData)
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_ID])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_FIRST_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_LAST_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PERSONAL_ID])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_HEALTH_STATE])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PARENT_NAME])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PHONE])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_EMAIL])
+		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PAID])
+		<div class="flex flex-row gap-2">
+			@formComponents.CancleButton("Zrušit", constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL)
+			@formComponents.SubmitButton("Uložit")
+		</div>
+	}
+	if toast != nil {
+		@toast
+	}
+}
+
+templ ApplicationFormInfoCard(courseInfo types.ApplicationForm) {
+	<div class="rounded-lg bg-neutral-700 shadow-lg lg:px-4 px-1 lg:py-4 py-2 lg:mt-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center">
+		<div class="sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center">{ courseInfo.CourseName }</div>
+		<div class="sm:text-base text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center">{ courseInfo.CourseDays + " (" + courseInfo.CourseTimeFrom.Format("15:04") + " - " + courseInfo.CourseTimeTo.Format("15:04") + ")" }</div>
+		<div class="sm:text-base text-sm text-cyan-200 pt-2 sm:w-10/12 font-bold text-center">{ courseInfo.CourseAgeGroup }</div>
+	</div>
+}

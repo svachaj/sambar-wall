@@ -33,6 +33,12 @@ func LoadConfiguraion() (*Config, error) {
 	config.SmtpUser = os.Getenv("SMTP_USER")
 	config.SmtpPassword = os.Getenv("SMTP_PASSWORD")
 
+	config.StartPaymentsCheckingService = parseBoolWithDefault(os.Getenv("PAYMENTS_CRON"), false)
+
+	config.ImapAddress = os.Getenv("IMAP_ADDRESS")
+	config.ImapUsername = os.Getenv("IMAP_USERNAME")
+	config.ImapPassword = os.Getenv("IMAP_PASSWORD")
+
 	return &config, nil
 }
 
@@ -43,6 +49,17 @@ func parseIntWithDefaultValue(inputString string, defaultValue int) (result int)
 		result = defaultValue
 	} else {
 		result = int(pint)
+	}
+
+	return result
+}
+
+func parseBoolWithDefault(inputString string, defaultValue bool) (result bool) {
+
+	if inputString == "1" {
+		result = true
+	} else {
+		result = defaultValue
 	}
 
 	return result
@@ -70,6 +87,12 @@ type Config struct {
 	SmtpPort     int
 	SmtpUser     string
 	SmtpPassword string
+
+	StartPaymentsCheckingService bool
+
+	ImapAddress  string
+	ImapUsername string
+	ImapPassword string
 }
 
 const APP_ENV_PRODUCTION = "" // empty string or other string then localhost or test means production

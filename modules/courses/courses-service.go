@@ -22,6 +22,9 @@ type ICoursesService interface {
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
 	GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error)
+	SetApplicationFormPaid(applicationFormId int, paid bool) error
+	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
+	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error
 }
 
 type CoursesService struct {
@@ -391,7 +394,7 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
-WHERE @p1 = '' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1)
+WHERE @p1 = '' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  
 ORDER BY tcaf.CreatedDate DESC;
 	`, "%"+searchText+"%")
 
@@ -400,4 +403,152 @@ ORDER BY tcaf.CreatedDate DESC;
 	}
 
 	return applicationForms, nil
+}
+
+// SetApplicationFormPaid implements ICoursesService.
+func (s *CoursesService) SetApplicationFormPaid(applicationFormId int, paid bool) error {
+	_, err := s.db.Exec(`
+		UPDATE t_course_application_form 
+		SET Paid = @p2
+		WHERE ID = @p1
+		`, applicationFormId, paid)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to update application form Paid info. Application form id:" + strconv.Itoa(applicationFormId))
+		return err
+	}
+
+	// try to send confirmation email
+	if paid {
+		// get application form detail
+		applicationForm := types.ApplicationForm{}
+
+		err := s.db.Get(&applicationForm, `
+	SELECT 
+tcaf.ID as id, 
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tcaf.Email as email
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
+WHERE tcaf.ID = @p1;
+	`, applicationFormId)
+
+		if err != nil {
+			log.Err(err).Msg("Fail to send payment confirmation email due to get application form detail. Application form ID:" + strconv.Itoa(applicationFormId))
+			return err
+		}
+
+		subject := "Potvrzení o zaplacení kurzu"
+		body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+		body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
+
+		applFormIdString := strconv.Itoa(applicationFormId)
+
+		body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
+		body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+		body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
+		body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
+
+		body += "<br><br>\n\n"
+
+		body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+		body += "Lezecká Stěna Kladno</p>\n"
+		body += "</div>\n"
+
+		err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
+		if err != nil {
+			log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
+		}
+	}
+
+	return nil
+}
+
+func (s *CoursesService) GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error) {
+	applicationForm := types.ApplicationForm{}
+
+	err := s.db.Get(&applicationForm, `
+	SELECT
+tcaf.ID as id,
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tcaf.HealthState as healthState,
+tcaf.ParentName as parentName,
+tcaf.Phone as phone,
+tsup.BirthYear as birthYear,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tsu.Email as email
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
+WHERE tcaf.ID = @p1;
+	`, applicationFormId)
+
+	if err != nil {
+		return types.ApplicationForm{}, err
+	}
+
+	return applicationForm, nil
+}
+
+func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error {
+	_, err := s.db.Exec(`
+	UPDATE t_course_application_form 
+	SET 
+	PersonalId = @p2,
+	ParentName = @p3,
+	HealthState = @p4,	
+	Phone = @p7,
+	Paid = @p8,
+	UpdatedDate = GETDATE()
+	WHERE ID = @p1;
+-- Update t_system_user_participant
+	UPDATE sup
+	SET 
+    sup.FirstName = @p5,
+    sup.LastName = @p6
+	FROM 
+    t_system_user_participant sup
+	INNER JOIN 
+    t_course_application_form caf
+	ON 
+    sup.ID = caf.ID_participant
+	WHERE 
+    caf.ID = @p1;
+	`, applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to update application form. Application form id:" + strconv.Itoa(applicationFormId))
+		return err
+	}
+
+	return nil
 }

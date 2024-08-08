@@ -41,5 +41,6 @@ type ApplicationForm struct {
 	CoursePrice    float64    `json:"coursePrice" db:"coursePrice"`
 	Email          *string    `json:"email" db:"email"`
 	Phone          *string    `json:"phone" db:"phone"`
+	ParentName     *string    `json:"parentName" db:"parentName"`
 	CreatedDate    *time.Time `json:"createdDate" db:"createdDate"`
 }

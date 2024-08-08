@@ -46,6 +46,13 @@ func StringFromBoolForCheckbox(b bool) string {
 	return ""
 }
 
+func StringFromBoolForEditCheckbox(b bool) string {
+	if b {
+		return "on"
+	}
+	return "off"
+}
+
 func StringFromFloat64(f float64) string {
 	return strconv.FormatFloat(f, 'f', -1, 64)
 }
@@ -96,4 +103,12 @@ func StringFromDateTimePointer(t *time.Time) string {
 
 func StringFromDateTime(t time.Time) string {
 	return t.Format("2.1.2006")
+}
+
+func StringifyBool(value bool) string {
+	if value {
+		return "true"
+	} else {
+		return "false"
+	}
 }

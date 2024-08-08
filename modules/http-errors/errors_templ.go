@@ -124,7 +124,7 @@ func InternalServerErrorSimple() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8\"><h1 class=\"mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl\">Omlouváme se, něco se pokazilo</h1><p class=\"mt-4 mb-10 text-base text-white/70 sm:mt-6\">Zkus to prosím znovu.</p><a href=\"/\" class=\"mt-20 text-sm font-semibold leading-7 text-primary-700 underline hover:text-primary-400\">Zpět na úvodní stránku</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mx-auto max-w-7xl px-6 py-32 text-center sm:py-40 lg:px-8\"><h1 class=\"mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl\">Omlouváme se, něco se pokazilo</h1><p class=\"mt-4 mb-10 text-base text-white/70 sm:mt-6\">Zkus to prosím znovu.</p><a href=\"javascript:location.reload()\" hx-boost=\"false\" class=\"mt-20 text-sm font-semibold leading-7 text-primary-700 underline hover:text-primary-400\">Zkusit znovu</a><br><a href=\"/\" class=\"mt-20 text-sm font-semibold leading-7 text-primary-700 underline hover:text-primary-400\">Zpět na úvodní stránku</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
