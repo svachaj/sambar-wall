@@ -110,7 +110,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			return templ_7745c5c3_Err
 		}
 		for _, application := range applications {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\"><div class=\"truncate text-sm font-bold leading-6 text-white text-wrap\"><a href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\"><div class=\"truncate text-base font-bold leading-6 text-white text-wrap max-w-[280px] extraSmall:max-w-full\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,7 +119,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-pink-400 hover:text-pink-600 underline underline-offset-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -132,7 +132,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"truncate text-xs font-medium leading-6 text-white text-wrap\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"truncate text-xs font-medium leading-6 text-white text-wrap max-w-[280px] extraSmall:max-w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -145,7 +145,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-xs font-medium leading-6 text-white text-wrap\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-xs font-medium leading-6 text-white text-wrap max-w-[280px] extraSmall:max-w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -158,7 +158,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-sm font-medium leading-6 text-white\"><span>RČ:&nbsp; </span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-xs font-medium leading-6 text-white\"><span>RČ:&nbsp; </span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -171,7 +171,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-sm font-medium leading-6 text-white\"><span>Přihlášeno:&nbsp; </span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"truncate text-xs font-medium leading-6 text-white\"><span>Přihlášeno:&nbsp; </span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -184,7 +184,7 @@ func AllApplicationsTable(applications []types.ApplicationForm) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex flex-row truncate text-sm font-medium leading-6 text-white\"><span>Zaplaceno:&nbsp; </span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex flex-row truncate text-xs font-medium leading-6 text-white\"><span>Zaplaceno:&nbsp; </span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
