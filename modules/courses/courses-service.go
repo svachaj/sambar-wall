@@ -3,6 +3,7 @@ package courses
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
@@ -207,6 +208,7 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	err := s.db.Get(&course, `
 	SELECT 
 		tct.Name1 as name, 
+		tct.Code as code,
 		tct.Description1 as description ,
 		tc.Price as price,
 		tc.TimeFrom as timeFrom,
@@ -238,7 +240,7 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	applFormIdString := strconv.Itoa(applicationFormId)
 	var png []byte
 
-	if s.generatePaymentInfo {
+	if s.generatePaymentInfo && strings.Contains(course.Code, "K") {
 		// The data to encode as a QR code (e.g., payment information)
 		paymentInfo := fmt.Sprintf("SPD*1.0*ACC:%v*AM:%v*CC:CZK*RF:%v*X-VS:%v*PT:IP*MSG:Platba za kurz - %v %v", s.accountIBAN, price, applicationFormId, applicationFormId, firstName+" "+lastName, birthYear)
 		// Generate the QR code
@@ -275,7 +277,7 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	body += "Lezecká Stěna Kladno</p>\n"
 	body += "</div>\n"
 
-	if s.generatePaymentInfo {
+	if s.generatePaymentInfo && strings.Contains(course.Code, "K") {
 		err = s.emailService.SendEmailWithImage(subject, body, email, png, applFormIdString+"qr.png")
 	} else {
 		err = s.emailService.SendEmail(subject, body, email)
@@ -313,6 +315,7 @@ tcaf.Paid as paid,
 tcaf.PersonalId as personalId,
 tc.ID as courseId,
 tct.Name1 as courseName,
+tct.Code as courseCode,
 tcd.Name1 as courseDays,
 tc.TimeFrom as courseTimeFrom,
 tc.TimeTo as courseTimeTo,
@@ -345,6 +348,7 @@ func (s *CoursesService) GetCourseInfo(id int) types.Course {
 	SELECT TOP 1
 tc.ID as id, 
 tct.Name1 as name,
+tct.Code as code,
 tct.Description1 as description,
 tcd.Name1 as days,
 tc.TimeFrom as timeFrom,
@@ -378,6 +382,7 @@ tcaf.HealthState as healthState,
 tsup.BirthYear as birthYear,
 tc.ID as courseId,
 tct.Name1 as courseName,
+tct.Code as courseCode,
 tcd.Name1 as courseDays,
 tc.TimeFrom as courseTimeFrom,
 tc.TimeTo as courseTimeTo,
@@ -430,6 +435,7 @@ tcaf.Paid as paid,
 tcaf.PersonalId as personalId,
 tc.ID as courseId,
 tct.Name1 as courseName,
+tct.Code as courseCode,
 tcd.Name1 as courseDays,
 tc.TimeFrom as courseTimeFrom,
 tc.TimeTo as courseTimeTo,
@@ -453,27 +459,30 @@ WHERE tcaf.ID = @p1;
 			return err
 		}
 
-		subject := "Potvrzení o zaplacení kurzu"
-		body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
-		body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
-		body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
+		if strings.Contains(applicationForm.CourseCode, "K") {
 
-		applFormIdString := strconv.Itoa(applicationFormId)
+			subject := "Potvrzení o zaplacení kurzu"
+			body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+			body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+			body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
 
-		body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
-		body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
-		body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
-		body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
+			applFormIdString := strconv.Itoa(applicationFormId)
 
-		body += "<br><br>\n\n"
+			body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
+			body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+			body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
+			body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
 
-		body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
-		body += "Lezecká Stěna Kladno</p>\n"
-		body += "</div>\n"
+			body += "<br><br>\n\n"
 
-		err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
-		if err != nil {
-			log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
+			body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+			body += "Lezecká Stěna Kladno</p>\n"
+			body += "</div>\n"
+
+			err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
+			if err != nil {
+				log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
+			}
 		}
 	}
 
@@ -494,6 +503,7 @@ tcaf.Phone as phone,
 tsup.BirthYear as birthYear,
 tc.ID as courseId,
 tct.Name1 as courseName,
+tct.Code as courseCode,
 tcd.Name1 as courseDays,
 tc.TimeFrom as courseTimeFrom,
 tc.TimeTo as courseTimeTo,
