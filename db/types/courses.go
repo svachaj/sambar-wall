@@ -5,6 +5,7 @@ import "time"
 type Course struct {
 	ID                int       `json:"id" db:"id"`
 	Name              string    `json:"name" db:"name"`
+	Code              string    `json:"code" db:"code"`
 	Description       string    `json:"description" db:"description"`
 	Days              string    `json:"days" db:"days"`
 	AgeGroup          string    `json:"ageGroup" db:"ageGroup"`
@@ -34,6 +35,7 @@ type ApplicationForm struct {
 	Paid           bool       `json:"gdpr" db:"paid"`
 	CourseID       int        `json:"courseId" db:"courseId"`
 	CourseName     string     `json:"courseName" db:"courseName"`
+	CourseCode     string     `json:"courseCode" db:"courseCode"`
 	CourseDays     string     `json:"courseDays" db:"courseDays"`
 	CourseTimeFrom time.Time  `json:"courseTimeFrom" db:"courseTimeFrom"`
 	CourseTimeTo   time.Time  `json:"courseTimeTo" db:"courseTimeTo"`

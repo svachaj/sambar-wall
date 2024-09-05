@@ -191,7 +191,17 @@ func AuthenticatedLayout(isAdmin bool) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/moje-prihlasky\" class=\"rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></div><div class=\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\"><button hx-get=\"/sign-out\" hx-target=\"body\" hx-replace-url=\"/\" class=\"text-sm font-semibold leading-6 text-white  hover:text-primary-400 hover:underline\"><span><svg data-slot=\"icon\" aria-hidden=\"true\" fill=\"none\" stroke-width=\"1.5\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" class=\"w-6 h-6\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></span></button><!-- Profile dropdown --></div></div></div><!-- Mobile menu, show/hide based on menu state. --><div x-show=\"mobileMenuOpen\" class=\"sm:hidden\"><div class=\"space-y-1 px-2 pb-3 pt-2\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" --><a @click=\"mobileMenuOpen = false\" href=\"/moje-prihlasky\" class=\"block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></nav></header><main class=\" lg:px-5 py-5 px-1 animate-show-smooth-1s\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/moje-prihlasky\" class=\"rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></div><div class=\"absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0\"><button hx-get=\"/sign-out\" hx-target=\"body\" hx-replace-url=\"/\" class=\"text-sm font-semibold leading-6 text-white  hover:text-primary-400 hover:underline\"><span><svg data-slot=\"icon\" aria-hidden=\"true\" fill=\"none\" stroke-width=\"1.5\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" class=\"w-6 h-6\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></span></button><!-- Profile dropdown --></div></div></div><!-- Mobile menu, show/hide based on menu state. --><div x-show=\"mobileMenuOpen\" class=\"sm:hidden\"><div class=\"space-y-1 px-2 pb-3 pt-2\"><!-- Current: \"bg-gray-900 text-white\", Default: \"text-gray-300 hover:bg-gray-700 hover:text-white\" -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isAdmin {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a @click=\"mobileMenuOpen = false\" href=\"/prihlasky\" class=\"block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Všechny přihlášky</a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a @click=\"mobileMenuOpen = false\" href=\"/moje-prihlasky\" class=\"block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white\">Moje přihlášky</a></div></div></nav></header><main class=\" lg:px-5 py-5 px-1 animate-show-smooth-1s\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -22,6 +22,9 @@ module.exports = {
           "100%": { opacity: 1 },
         },
       },
+      screens: {
+        extraSmall: "360px",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],

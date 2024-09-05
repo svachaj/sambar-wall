@@ -30,7 +30,7 @@ templ ApplicationFormEdit(applicationForm baseTypes.Form, applicationFormData ty
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PHONE])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_EMAIL])
 		@formComponents.FormField(applicationForm.FormFields[models.APPLICATION_FORM_PAID])
-		<div class="flex flex-row gap-2">
+		<div class="flex flex-wrap flex-row gap-2 justify-center">
 			@formComponents.CancleButton("Zrušit", constants.ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL)
 			@formComponents.SubmitButton("Uložit")
 		</div>
