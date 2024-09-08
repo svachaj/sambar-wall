@@ -50,7 +50,7 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	log.Info().Msg("Module Security Initialized and Routes Mapped Successfully.")
 
 	if settings.StartPaymentsCheckingService {
-		paymentsCheckService := paymentcheckservice.NewPaymentService(emailService, settings.ImapAddress, settings.ImapUsername, settings.ImapPassword)
+		paymentsCheckService := paymentcheckservice.NewPaymentService(db, emailService, settings.ImapAddress, settings.ImapUsername, settings.ImapPassword)
 		if paymentsCheckService != nil {
 			err = paymentsCheckService.StartCheckingPayments()
 			if err != nil {
