@@ -373,6 +373,9 @@ GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tc.TimeFrom,tc.TimeTo, tcag
 func (s *CoursesService) GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error) {
 	applicationForms := []types.ApplicationForm{}
 
+	searchInt := 0
+	searchInt, _ = strconv.Atoi(searchText)
+
 	err := s.db.Select(&applicationForms, `
 	SELECT
 tcaf.ID as id,
@@ -399,9 +402,8 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
-WHERE @p1 = '' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  
-ORDER BY tcaf.CreatedDate DESC;
-	`, "%"+searchText+"%")
+WHERE (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  
+ORDER BY tcaf.CreatedDate DESC;`, "%"+searchText+"%", searchInt)
 
 	if err != nil {
 		return nil, err
@@ -459,31 +461,29 @@ WHERE tcaf.ID = @p1;
 			return err
 		}
 
-		if strings.Contains(applicationForm.CourseCode, "K") {
+		subject := "Potvrzení o zaplacení kurzu"
+		body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
+		body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
+		body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
 
-			subject := "Potvrzení o zaplacení kurzu"
-			body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
-			body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
-			body += "<p style=\"margin-bottom: 20px;\">Potvrzujeme úspěšné přijetí platby za kurz.</p>\n\n"
+		applFormIdString := strconv.Itoa(applicationFormId)
 
-			applFormIdString := strconv.Itoa(applicationFormId)
+		body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
+		body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
+		body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
+		body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
 
-			body += "<strong>Přihláška číslo:</strong> " + applFormIdString + "<br>\n"
-			body += "<strong>Jméno úšastníka:</strong> " + applicationForm.FirstName + " " + applicationForm.LastName + "<br>\n"
-			body += "<strong>Název kurzu:</strong> " + applicationForm.CourseName + "<br>\n"
-			body += "<strong>Termín kurzu:</strong> " + applicationForm.CourseDays + " (" + applicationForm.CourseTimeFrom.Format("15:04") + " - " + applicationForm.CourseTimeTo.Format("15:04") + ")" + "<br>\n"
+		body += "<br><br>\n\n"
 
-			body += "<br><br>\n\n"
+		body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
+		body += "Lezecká Stěna Kladno</p>\n"
+		body += "</div>\n"
 
-			body += "<p style=\"font-size: 14px; color: #555;\">S pozdravem,<br>\n"
-			body += "Lezecká Stěna Kladno</p>\n"
-			body += "</div>\n"
-
-			err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
-			if err != nil {
-				log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
-			}
+		err = s.emailService.SendEmail(subject, body, *applicationForm.Email)
+		if err != nil {
+			log.Err(err).Msg(fmt.Sprintf("Fail to send confirmation email of the payment. Application form: %v, email: %b", applFormIdString, applicationForm.Email))
 		}
+
 	}
 
 	return nil
