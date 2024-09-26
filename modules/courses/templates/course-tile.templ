@@ -38,7 +38,7 @@ templ CourseTile(course types.CourseType) {
 					<tr class="hover:bg-slate-800">
 						<td class="md:hidden table-cell py-4 pl-4 w-full text-white text-sm">
 							<div class="flex flex-row flex-wrap">
-								<div class="flex flex-col w-52">
+								<div class="flex flex-col ">
 									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }><span class="font-medium">{ course.Days }</span> ({ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") })</div>
 									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "flex flex-row gap-2 truncate leading-6", "flex flex-row truncate leading-6 gap-2 line-through decoration-neutral-400") }>
 										<div>{ course.AgeGroup }</div>

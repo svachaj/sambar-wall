@@ -63,7 +63,7 @@ func CourseTile(course types.CourseType) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, course := range course.Courses {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"md:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex flex-col w-52\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"hover:bg-slate-800\"><td class=\"md:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex flex-col \">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
