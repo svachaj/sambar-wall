@@ -171,3 +171,23 @@ templ ApplicationPaidInfoWithToast(paid bool, applicationID string, toast templ.
 		@toast
 	}
 }
+
+templ ApplicationsAdminPage() {
+	@layouts.BaseLayout(true, true) {
+		<div class="w-full flex flex-col items-center justify-center px-2">
+			<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
+				<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
+					<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Všechny přihlášky</h2>
+				</div>
+				<div class="p-3">
+					<button hx-post="/prihlasky-opakovat" class="bg-primary-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-primary-400 w-40">
+						<svg class="busy-indicator h-6 w-6 animate-spin mr-2" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+							<path clip-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" fill-rule="evenodd"></path>
+						</svg>
+						Poslat hromadně přihlášky znovu na pololetí
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+}

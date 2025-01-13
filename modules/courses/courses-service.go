@@ -26,6 +26,7 @@ type ICoursesService interface {
 	SetApplicationFormPaid(applicationFormId int, paid bool) error
 	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
 	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error
+	GetApplicationFormsWillContinue() ([]types.ApplicationForm, error)
 }
 
 type CoursesService struct {
@@ -77,8 +78,8 @@ func (s *CoursesService) GetCoursesList() ([]types.CourseType, error) {
 		FROM t_course tc 		
 		LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
 		LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
-		LEFT JOIN t_course_application_form tcaf on tc.ID = tcaf.ID_course
-		WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate() AND tc.IsActive = 1 AND tc.ID_typeOfCourse = @p1
+		LEFT JOIN t_course_application_form tcaf on tc.ID = tcaf.ID_course AND tcaf.IsActive = 1
+		WHERE tc.ValidFrom <= getdate() and tc.ValidTo >= getdate() AND tc.IsActive = 1 AND tc.ID_typeOfCourse = @p1 
 		GROUP BY tc.ID, tc.TimeFrom ,tc.TimeTo , tcd.Name1 , tcag.Name1, tc.Capacity, tcd.Code, tc.PartipicatnsCount ,tc.Price , tc.DurationMin
 		ORDER BY tcd.Code, tc.TimeFrom ;
 		`, courseType.ID)
@@ -98,7 +99,7 @@ func (s *CoursesService) CheckApplicationFormExists(courseId int, personalId str
 	err := s.db.Get(&count, `
 	SELECT count(*) 
 	FROM t_course_application_form 
-	WHERE ID_course = @p1 AND PersonalId = @p2
+	WHERE ID_course = @p1 AND PersonalId = @p2 AND IsActive = 1
 	`, courseId, personalId)
 
 	if err != nil {
@@ -146,7 +147,7 @@ func (s *CoursesService) CheckCourseCapacity(courseId int) (bool, error) {
 	err := s.db.Get(&capacity, `
 	SELECT tc.Capacity - count(tcaf.id) as capacity
 	FROM t_course tc 
-	LEFT JOIN t_course_application_form tcaf on tc.ID = tcaf.ID_course
+	LEFT JOIN t_course_application_form tcaf on tc.ID = tcaf.ID_course AND tcaf.IsActive = 1
 	WHERE tc.ID = @p1
 	GROUP BY tc.Capacity;
 	`, courseId)
@@ -176,7 +177,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	ID_UpdatedBy,
 	ID_CreatedBy,
 	GID,
-	EmailSent,Paid)
+	EmailSent,Paid,IsActive)
 	VALUES (
 	@p1,
 	@p2,
@@ -192,7 +193,7 @@ func (s *CoursesService) CreateApplicationForm(courseId int, participantId int, 
 	@p7,
 	@p7,
 	NEWID(),
-	0,0)
+	0,0,1)
 	SELECT SCOPE_IDENTITY()
 	`, courseId, participantId, personalId, parentName, phone, email, userId, healthState)
 
@@ -402,7 +403,7 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
-WHERE (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  
+WHERE tcaf.IsActive = 1 AND ( (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  )
 ORDER BY tcaf.CreatedDate DESC;`, "%"+searchText+"%", searchInt)
 
 	if err != nil {
@@ -561,4 +562,49 @@ func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId
 	}
 
 	return nil
+}
+
+func (s *CoursesService) GetApplicationFormsWillContinue() ([]types.ApplicationForm, error) {
+	applicationForms := []types.ApplicationForm{}
+
+	err := s.db.Select(&applicationForms, `
+	SELECT
+tcaf.ID as id,
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tcaf.HealthState as healthState,
+tsup.BirthYear as birthYear,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tct.Code as courseCode,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tsu.Email as email,
+tcaf.ParentName as parentName,
+tcaf.Phone as phone,
+tcaf.CreatedDate as createdDate,
+tcaf.WillContinue as willContinue,
+tcaf.IsActive as isActive,
+tcaf.ID_participant as participantId,
+tcaf.ID_CreatedBy as createdById
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
+WHERE tcaf.WillContinue = 1
+ORDER BY tcaf.CreatedDate DESC;`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return applicationForms, nil
 }

@@ -29,6 +29,8 @@ type ICoursesHandler interface {
 	GetApplicationFormEditPage(c echo.Context) error
 	UpdateApplicationForm(c echo.Context) error
 	CancelApplicationFormEdit(c echo.Context) error
+	BulkApplicationFormCreateWillContinue(c echo.Context) error
+	CoursesAdminPage(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -344,4 +346,51 @@ func (h *CoursesHandler) CancelApplicationFormEdit(c echo.Context) error {
 	}
 
 	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, nil))
+}
+
+func (h *CoursesHandler) BulkApplicationFormCreateWillContinue(c echo.Context) error {
+
+	// get all application forms that will continue
+	applicationForms, err := h.service.GetApplicationFormsWillContinue()
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get application forms that will continue")
+		return echo.ErrInternalServerError
+	}
+
+	succesCount, errorCount := 0, 0
+	// create a new application form for each application form that will continue
+	for _, applicationForm := range applicationForms {
+		if applicationForm.ParticipantID != nil && applicationForm.PersonalID != nil && applicationForm.ParentName != nil && applicationForm.Phone != nil && applicationForm.Email != nil && applicationForm.HealthState != nil && applicationForm.BirthYear != nil {
+			newAppId, err := h.service.CreateApplicationForm(applicationForm.CourseID, *applicationForm.ParticipantID, *applicationForm.PersonalID, *applicationForm.ParentName, *applicationForm.Phone, *applicationForm.Email, applicationForm.CreatedByID, *applicationForm.HealthState)
+
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to create application form")
+				errorCount++
+			} else {
+				// send an email to the user and the admin
+				err = h.service.SendApplicationFormEmail(newAppId, *applicationForm.Email, applicationForm.CourseID, applicationForm.FirstName, applicationForm.LastName, *applicationForm.ParentName, *applicationForm.Phone, strconv.Itoa(*applicationForm.BirthYear))
+
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to send application form email")
+					errorCount++
+				} else {
+					succesCount++
+				}
+			}
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"success": succesCount,
+		"error":   errorCount,
+	})
+
+}
+
+func (h *CoursesHandler) CoursesAdminPage(c echo.Context) error {
+
+	coursesPage := coursesTemplates.ApplicationsAdminPage()
+
+	return utils.HTML(c, coursesPage)
 }
