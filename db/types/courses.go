@@ -45,4 +45,8 @@ type ApplicationForm struct {
 	Phone          *string    `json:"phone" db:"phone"`
 	ParentName     *string    `json:"parentName" db:"parentName"`
 	CreatedDate    *time.Time `json:"createdDate" db:"createdDate"`
+	ParticipantID  *int       `json:"participantId" db:"participantId"`
+	IsActive       bool       `json:"isActive" db:"isActive"`
+	WillContinue   bool       `json:"willContinue" db:"willContinue"`
+	CreatedByID    int        `json:"createdById" db:"createdById"`
 }

@@ -26,6 +26,7 @@ type ICoursesService interface {
 	SetApplicationFormPaid(applicationFormId int, paid bool) error
 	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
 	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error
+	GetApplicationFormsWillContinue() ([]types.ApplicationForm, error)
 }
 
 type CoursesService struct {
@@ -561,4 +562,49 @@ func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId
 	}
 
 	return nil
+}
+
+func (s *CoursesService) GetApplicationFormsWillContinue() ([]types.ApplicationForm, error) {
+	applicationForms := []types.ApplicationForm{}
+
+	err := s.db.Select(&applicationForms, `
+	SELECT
+tcaf.ID as id,
+tcaf.Paid as paid,
+tcaf.PersonalId as personalId,
+tcaf.HealthState as healthState,
+tsup.BirthYear as birthYear,
+tc.ID as courseId,
+tct.Name1 as courseName,
+tct.Code as courseCode,
+tcd.Name1 as courseDays,
+tc.TimeFrom as courseTimeFrom,
+tc.TimeTo as courseTimeTo,
+tcag.Name1 as courseAgeGroup,
+tc.Price as coursePrice,
+tsup.FirstName as firstName,
+tsup.LastName as lastName,
+tsu.Email as email,
+tcaf.ParentName as parentName,
+tcaf.Phone as phone,
+tcaf.CreatedDate as createdDate,
+tcaf.WillContinue as willContinue,
+tcaf.IsActive as isActive,
+tcaf.ID_participant as participantId,
+tcaf.ID_CreatedBy as createdById
+FROM t_course_application_form tcaf
+LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
+LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
+LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
+WHERE tcaf.WillContinue = 1
+ORDER BY tcaf.CreatedDate DESC;`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return applicationForms, nil
 }

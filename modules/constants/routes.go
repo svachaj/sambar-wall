@@ -23,6 +23,7 @@ const (
 	ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL = "/prihlaska-edit-cancel"
 	ROUTE_COURSES_APPLICATION_FORM_EDIT_ID     = "/prihlaska-edit/:id"
 	ROUTE_COURSES_MY_APPLICATIONS              = "/moje-prihlasky"
+	ROUTE_COURSES_APPLICATION_FORMS_REUSE      = "/prihlasky-opakovat"
 
 	ROUTE_COURSES_APPLICATION_FORMS         = "/prihlasky"
 	ROUTE_COURSES_APPLICATION_FORMS_SEARCH  = "/prihlasky-hledat"
