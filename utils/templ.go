@@ -53,6 +53,13 @@ func StringFromBoolForEditCheckbox(b bool) string {
 	return "off"
 }
 
+func StringFromBoolPtrForEditCheckbox(b *bool) string {
+	if b != nil && *b {
+		return "on"
+	}
+	return "off"
+}
+
 func StringFromFloat64(f float64) string {
 	return strconv.FormatFloat(f, 'f', -1, 64)
 }

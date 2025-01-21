@@ -25,7 +25,7 @@ type ICoursesService interface {
 	GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error)
 	SetApplicationFormPaid(applicationFormId int, paid bool) error
 	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
-	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error
+	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid, isActive bool) error
 	GetApplicationFormsWillContinue() ([]types.ApplicationForm, error)
 }
 
@@ -512,7 +512,10 @@ tcag.Name1 as courseAgeGroup,
 tc.Price as coursePrice,
 tsup.FirstName as firstName,
 tsup.LastName as lastName,
-tsu.Email as email
+tsu.Email as email,
+tcaf.CreatedDate as createdDate,
+tcaf.WillContinue as willContinue,
+tcaf.IsActive as isActive
 FROM t_course_application_form tcaf
 LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
 LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
@@ -530,7 +533,7 @@ WHERE tcaf.ID = @p1;
 	return applicationForm, nil
 }
 
-func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid bool) error {
+func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid, isActive bool) error {
 	_, err := s.db.Exec(`
 	UPDATE t_course_application_form 
 	SET 
@@ -539,6 +542,7 @@ func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId
 	HealthState = @p4,	
 	Phone = @p7,
 	Paid = @p8,
+	IsActive = @p9,
 	UpdatedDate = GETDATE()
 	WHERE ID = @p1;
 -- Update t_system_user_participant
@@ -554,7 +558,7 @@ func (s *CoursesService) UpdateApplicationForm(applicationFormId int, personalId
     sup.ID = caf.ID_participant
 	WHERE 
     caf.ID = @p1;
-	`, applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid)
+	`, applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid, isActive)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to update application form. Application form id:" + strconv.Itoa(applicationFormId))

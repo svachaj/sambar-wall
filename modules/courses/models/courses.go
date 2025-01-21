@@ -87,6 +87,7 @@ const APPLICATION_FORM_EDIT = "applicationFormEdit"
 const APPLICATION_FORM_ID = "applicationFormId"
 const APPLICATION_FORM_PAID = "paid"
 const APPLICATION_FORM_EMAIL = "email"
+const APPLICATION_FORM_IS_ACTIVE = "isActive"
 
 func ApplicationFormEditModel(applicationForm types.ApplicationForm) baseTypes.Form {
 	return baseTypes.Form{
@@ -151,6 +152,13 @@ func ApplicationFormEditModel(applicationForm types.ApplicationForm) baseTypes.F
 				ID:        APPLICATION_FORM_PAID,
 				Value:     utils.StringFromBoolForEditCheckbox(applicationForm.Paid),
 				Label:     "Zaplaceno",
+				FieldType: "checkbox",
+				FormId:    APPLICATION_FORM_EDIT,
+			},
+			APPLICATION_FORM_IS_ACTIVE: {
+				ID:        APPLICATION_FORM_IS_ACTIVE,
+				Value:     utils.StringFromBoolPtrForEditCheckbox(applicationForm.IsActive),
+				Label:     "Aktivní",
 				FieldType: "checkbox",
 				FormId:    APPLICATION_FORM_EDIT,
 			},
