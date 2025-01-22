@@ -1,0 +1,12 @@
+{
+    "tasks": [
+        {
+            "label": "build all",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "buildall"
+            ],
+        }
+    ]
+}

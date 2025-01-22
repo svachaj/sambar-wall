@@ -13,7 +13,7 @@ See user documentation at https://templ.guide
 <a href="https://pkg.go.dev/github.com/a-h/templ"><img src="https://pkg.go.dev/badge/github.com/a-h/templ.svg" alt="Go Reference" /></a>
 <a href="https://xcfile.dev"><img src="https://xcfile.dev/badge.svg" alt="xc compatible" /></a>
 <a href="https://raw.githack.com/wiki/a-h/templ/coverage.html"><img src="https://github.com/a-h/templ/wiki/coverage.svg" alt="Go Coverage" /></a>
-<a href="https://goreportcard.com/report/github.com/a-h/templ"><img src="https://goreportcard.com/badge/github.com/a-h/templ" alt="Go Report Card" /></a<
+<a href="https://goreportcard.com/report/github.com/a-h/templ"><img src="https://goreportcard.com/badge/github.com/a-h/templ" alt="Go Report Card" /></a>
 </p>
 
 ## Tasks
@@ -26,12 +26,6 @@ Build a local version.
 go run ./get-version > .version
 cd cmd/templ
 go build
-```
-
-### nix-update-gomod2nix
-
-```sh
-gomod2nix
 ```
 
 ### install-snapshot
@@ -118,6 +112,13 @@ go tool cover -func coverage.out | grep total
 gotestsum --watch -- -coverprofile=coverage.out
 ```
 
+### test-fuzz
+
+```sh
+./parser/v2/fuzz.sh
+./parser/v2/goexpression/fuzz.sh
+```
+
 ### benchmark
 
 Run benchmarks.
@@ -137,8 +138,20 @@ go run ./cmd/templ fmt .
 
 ### lint
 
+Run the lint operations that are run as part of the CI.
+
 ```sh
 golangci-lint run --verbose
+```
+
+### ensure-generated
+
+Ensure that templ files have been generated with the local version of templ, and that those files have been added to git.
+
+Requires: generate
+
+```sh
+git diff --exit-code
 ```
 
 ### push-release-tag

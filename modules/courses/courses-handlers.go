@@ -314,8 +314,9 @@ func (h *CoursesHandler) UpdateApplicationForm(c echo.Context) error {
 	healthState := applicationFormModel.FormFields[models.APPLICATION_FORM_HEALTH_STATE].Value
 	personalId := applicationFormModel.FormFields[models.APPLICATION_FORM_PERSONAL_ID].Value
 	paid := applicationFormModel.FormFields[models.APPLICATION_FORM_PAID].Value
+	isActive := applicationFormModel.FormFields[models.APPLICATION_FORM_IS_ACTIVE].Value
 
-	err = h.service.UpdateApplicationForm(applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid == "on")
+	err = h.service.UpdateApplicationForm(applicationFormId, personalId, parentName, healthState, firstName, lastName, phone, paid == "on", isActive == "on")
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to update application form")

@@ -5,21 +5,16 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"html"
 	"html/template"
 	"io"
 	"net/http"
-	"os"
 	"reflect"
-	"runtime"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/a-h/templ/safehtml"
 )
@@ -257,11 +252,11 @@ func (css ComponentCSSClass) ClassName() string {
 // CSSID calculates an ID.
 func CSSID(name string, css string) string {
 	sum := sha256.Sum256([]byte(css))
-	hp := hex.EncodeToString(sum[:])[0:4]
+	hs := hex.EncodeToString(sum[:])[0:8] // NOTE: See issue #978. Minimum recommended hs length is 6.
 	// Benchmarking showed this was fastest, and with fewest allocations (1).
 	// Using strings.Builder (2 allocs).
 	// Using fmt.Sprintf (3 allocs).
-	return name + "_" + hp
+	return name + "_" + hs
 }
 
 // NewCSSMiddleware creates HTTP middleware that renders a global stylesheet of ComponentCSSClass
@@ -491,42 +486,7 @@ func RenderAttributes(ctx context.Context, w io.Writer, attributes Attributes) (
 	return nil
 }
 
-// Script handling.
-
-func safeEncodeScriptParams(escapeHTML bool, params []any) []string {
-	encodedParams := make([]string, len(params))
-	for i := 0; i < len(encodedParams); i++ {
-		enc, _ := json.Marshal(params[i])
-		if !escapeHTML {
-			encodedParams[i] = string(enc)
-			continue
-		}
-		encodedParams[i] = EscapeString(string(enc))
-	}
-	return encodedParams
-}
-
-// SafeScript encodes unknown parameters for safety for inside HTML attributes.
-func SafeScript(functionName string, params ...any) string {
-	encodedParams := safeEncodeScriptParams(true, params)
-	sb := new(strings.Builder)
-	sb.WriteString(functionName)
-	sb.WriteRune('(')
-	sb.WriteString(strings.Join(encodedParams, ","))
-	sb.WriteRune(')')
-	return sb.String()
-}
-
-// SafeScript encodes unknown parameters for safety for inline scripts.
-func SafeScriptInline(functionName string, params ...any) string {
-	encodedParams := safeEncodeScriptParams(false, params)
-	sb := new(strings.Builder)
-	sb.WriteString(functionName)
-	sb.WriteRune('(')
-	sb.WriteString(strings.Join(encodedParams, ","))
-	sb.WriteRune(')')
-	return sb.String()
-}
+// Context.
 
 type contextKeyType int
 
@@ -603,95 +563,6 @@ func getContext(ctx context.Context) (context.Context, *contextValue) {
 	return ctx, v
 }
 
-// ComponentScript is a templ Script template.
-type ComponentScript struct {
-	// Name of the script, e.g. print.
-	Name string
-	// Function to render.
-	Function string
-	// Call of the function in JavaScript syntax, including parameters, and
-	// ensures parameters are HTML escaped; useful for injecting into HTML
-	// attributes like onclick, onhover, etc.
-	//
-	// Given:
-	//    functionName("some string",12345)
-	// It would render:
-	//    __templ_functionName_sha(&#34;some string&#34;,12345))
-	//
-	// This is can be injected into HTML attributes:
-	//    <button onClick="__templ_functionName_sha(&#34;some string&#34;,12345))">Click Me</button>
-	Call string
-	// Call of the function in JavaScript syntax, including parameters. It
-	// does not HTML escape parameters; useful for directly calling in script
-	// elements.
-	//
-	// Given:
-	//    functionName("some string",12345)
-	// It would render:
-	//    __templ_functionName_sha("some string",12345))
-	//
-	// This is can be used to call the function inside a script tag:
-	//    <script>__templ_functionName_sha("some string",12345))</script>
-	CallInline string
-}
-
-var _ Component = ComponentScript{}
-
-func writeScriptHeader(ctx context.Context, w io.Writer) (err error) {
-	var nonceAttr string
-	if nonce := GetNonce(ctx); nonce != "" {
-		nonceAttr = " nonce=\"" + EscapeString(nonce) + "\""
-	}
-	_, err = fmt.Fprintf(w, `<script type="text/javascript"%s>`, nonceAttr)
-	return err
-}
-
-func (c ComponentScript) Render(ctx context.Context, w io.Writer) error {
-	err := RenderScriptItems(ctx, w, c)
-	if err != nil {
-		return err
-	}
-	if len(c.Call) > 0 {
-		if err = writeScriptHeader(ctx, w); err != nil {
-			return err
-		}
-		if _, err = io.WriteString(w, c.CallInline); err != nil {
-			return err
-		}
-		if _, err = io.WriteString(w, `</script>`); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// RenderScriptItems renders a <script> element, if the script has not already been rendered.
-func RenderScriptItems(ctx context.Context, w io.Writer, scripts ...ComponentScript) (err error) {
-	if len(scripts) == 0 {
-		return nil
-	}
-	_, v := getContext(ctx)
-	sb := new(strings.Builder)
-	for _, s := range scripts {
-		if !v.hasScriptBeenRendered(s.Name) {
-			sb.WriteString(s.Function)
-			v.addScript(s.Name)
-		}
-	}
-	if sb.Len() > 0 {
-		if err = writeScriptHeader(ctx, w); err != nil {
-			return err
-		}
-		if _, err = io.WriteString(w, sb.String()); err != nil {
-			return err
-		}
-		if _, err = io.WriteString(w, `</script>`); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 var bufferPool = sync.Pool{
 	New: func() any {
 		return new(bytes.Buffer)
@@ -764,92 +635,4 @@ func ToGoHTML(ctx context.Context, c Component) (s template.HTML, err error) {
 	}
 	s = template.HTML(b.String())
 	return
-}
-
-// WriteWatchModeString is used when rendering templates in development mode.
-// the generator would have written non-go code to the _templ.txt file, which
-// is then read by this function and written to the output.
-func WriteWatchModeString(w io.Writer, lineNum int) error {
-	_, path, _, _ := runtime.Caller(1)
-	if !strings.HasSuffix(path, "_templ.go") {
-		return errors.New("templ: WriteWatchModeString can only be called from _templ.go")
-	}
-	txtFilePath := strings.Replace(path, "_templ.go", "_templ.txt", 1)
-
-	literals, err := getWatchedStrings(txtFilePath)
-	if err != nil {
-		return fmt.Errorf("templ: failed to cache strings: %w", err)
-	}
-
-	if lineNum > len(literals) {
-		return errors.New("templ: failed to find line " + strconv.Itoa(lineNum) + " in " + txtFilePath)
-	}
-
-	unquoted, err := strconv.Unquote(`"` + literals[lineNum-1] + `"`)
-	if err != nil {
-		return err
-	}
-	_, err = io.WriteString(w, unquoted)
-	return err
-}
-
-var (
-	watchModeCache  = map[string]watchState{}
-	watchStateMutex sync.Mutex
-)
-
-type watchState struct {
-	modTime time.Time
-	strings []string
-}
-
-func getWatchedStrings(txtFilePath string) ([]string, error) {
-	watchStateMutex.Lock()
-	defer watchStateMutex.Unlock()
-
-	state, cached := watchModeCache[txtFilePath]
-	if !cached {
-		return cacheStrings(txtFilePath)
-	}
-
-	if time.Since(state.modTime) < time.Millisecond*100 {
-		return state.strings, nil
-	}
-
-	info, err := os.Stat(txtFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("templ: failed to stat %s: %w", txtFilePath, err)
-	}
-
-	if !info.ModTime().After(state.modTime) {
-		return state.strings, nil
-	}
-
-	return cacheStrings(txtFilePath)
-}
-
-func cacheStrings(txtFilePath string) ([]string, error) {
-	txtFile, err := os.Open(txtFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("templ: failed to open %s: %w", txtFilePath, err)
-	}
-	defer txtFile.Close()
-
-	info, err := txtFile.Stat()
-	if err != nil {
-		return nil, fmt.Errorf("templ: failed to stat %s: %w", txtFilePath, err)
-	}
-
-	all, err := io.ReadAll(txtFile)
-	if err != nil {
-		return nil, fmt.Errorf("templ: failed to read %s: %w", txtFilePath, err)
-	}
-
-	literals := strings.Split(string(all), "\n")
-	watchModeCache[txtFilePath] = watchState{
-		modTime: info.ModTime(),
-		strings: literals,
-	}
-
-	return literals, nil
 }
