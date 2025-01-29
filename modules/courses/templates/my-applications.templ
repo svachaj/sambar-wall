@@ -3,7 +3,7 @@ package courses
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/layouts"
-	"strconv"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 templ MyApplicationsList(applications []types.ApplicationForm) {
@@ -55,7 +55,7 @@ templ MyApplicationsTable(applications []types.ApplicationForm) {
 									{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
-									{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+									{ utils.FormatPrice(application.CoursePrice) } Kč
 								</div>
 								<div class="truncate text-sm font-medium leading-6 text-white">
 									<span>Zaplaceno:&nbsp;</span>
@@ -92,7 +92,7 @@ templ MyApplicationsTable(applications []types.ApplicationForm) {
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center gap-x-4">
 							<div class="truncate text-sm font-medium leading-6 text-white">
-								{ strconv.FormatFloat(application.CoursePrice, 'f', 2, 64) } Kč
+								{ utils.FormatPrice(application.CoursePrice) } Kč
 							</div>
 						</div>
 					</td>
