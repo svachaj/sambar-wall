@@ -167,9 +167,9 @@ func CourseTile(course types.CourseType) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(course.Price, 'f', 2, 64))
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(course.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 45, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 45, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -206,7 +206,7 @@ func CourseTile(course types.CourseType) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " volných míst </span> <span x-show=\"hoverButton\">Přihlásit se </span></button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " volných míst </span> <span x-show=\"hoverButton\">Přihlásit se  </span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -361,9 +361,9 @@ func CourseTile(course types.CourseType) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var27 string
-			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(course.Price, 'f', 2, 64))
+			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(course.Price))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 96, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/course-tile.templ`, Line: 96, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {

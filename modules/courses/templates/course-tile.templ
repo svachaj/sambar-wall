@@ -42,7 +42,7 @@ templ CourseTile(course types.CourseType) {
 									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "truncate leading-6", "line-through leading-6 decoration-neutral-400") }><span class="font-medium">{ course.Days }</span> ({ course.TimeFrom.Format("15:04") } - { course.TimeTo.Format("15:04") })</div>
 									<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "flex flex-row gap-2 truncate leading-6", "flex flex-row truncate leading-6 gap-2 line-through decoration-neutral-400") }>
 										<div>{ course.AgeGroup }</div>
-										<div class="font-medium">{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč </div>
+										<div class="font-medium">{ utils.FormatPrice(course.Price) } Kč </div>
 									</div>
 								</div>
 								<div class="flex-1 flex justify-center items-center px-1 py-1">
@@ -61,7 +61,7 @@ templ CourseTile(course types.CourseType) {
 													{ strconv.FormatInt(int64(course.Capacity - course.ApplicationsCount), 10) } volných míst 
 												</span>
 												<span x-show="hoverButton">
-													Přihlásit se 
+													Přihlásit se  
 												</span>
 											</button>
 										} else {
@@ -93,7 +93,7 @@ templ CourseTile(course types.CourseType) {
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">
 							<div class={ utils.ClassIf(course.ApplicationsCount < course.Capacity, "w-full text-center", "w-full text-center line-through decoration-neutral-400") }>
-								{ strconv.FormatFloat(course.Price, 'f', 2, 64) } Kč
+								{ utils.FormatPrice(course.Price) } Kč
 							</div>
 						</td>
 						<td class="hidden py-4 pl-0 pr-4 md:table-cell sm:pr-8 text-white text-sm">

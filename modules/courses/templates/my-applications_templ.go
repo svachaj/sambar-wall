@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
 	"github.com/svachaj/sambar-wall/modules/layouts"
-	"strconv"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 func MyApplicationsList(applications []types.ApplicationForm) templ.Component {
@@ -128,9 +128,9 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(application.CoursePrice, 'f', 2, 64))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(application.CoursePrice))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 58, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 58, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -195,9 +195,9 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(application.CoursePrice, 'f', 2, 64))
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(application.CoursePrice))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 95, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 95, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

@@ -119,3 +119,17 @@ func StringifyBool(value bool) string {
 		return "false"
 	}
 }
+
+func FormatPrice(price float64) string {
+	rbaseNumberString := strconv.FormatFloat(price, 'f', 2, 64)
+	ln := len(rbaseNumberString)
+	// now add spaces between every thousands, count with decimal point and 2 decimal places
+	result := ""
+	for i, c := range rbaseNumberString {
+		if i > 0 && (ln-i)%3 == 0 && ln-i > 3 {
+			result += " "
+		}
+		result += string(c)
+	}
+	return result
+}
