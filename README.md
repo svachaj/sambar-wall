@@ -2,6 +2,10 @@
 
 https://registrace.stenakladno.cz/
 
+## Important note
+
+This application uses MSSQL as its database because it is a replacement for an existing interface to an older version of the application and is therefore tightly bound to MSSQL. Based on this application, a general template will be created, which should include an ORM to make everything more flexible.
+
 ## Prerequisites
 
 ### [Go](https://go.dev/) of course 🚀
