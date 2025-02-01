@@ -2,6 +2,8 @@
 
 https://registrace.stenakladno.cz/
 
+This application is designed for registration for climbing wall courses and camps in Kladno. It serves as a pilot project from which I would like to develop an open-source registration platform for courses and similar events. For now, it is available only in Czech localization.
+
 ## Important note
 
 This application uses MSSQL as its database because it is a replacement for an existing interface to an older version of the application and is therefore tightly bound to MSSQL. Based on this application, a general template will be created, which should include an ORM to make everything more flexible.
