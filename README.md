@@ -1,5 +1,7 @@
 # Web application: Sambar Lezecká Stěna - Kroužky a registrace
 
+https://registrace.stenakladno.cz/
+
 ## Prerequisites
 
 ### [Go](https://go.dev/) of course 🚀

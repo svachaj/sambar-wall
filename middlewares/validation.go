@@ -13,7 +13,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
-// ServerHeader middleware adds a `Server` header to the response.
+// ValidateFormField validates a form field based on the provided rules and returns the validation result.
 func ValidateFormField(c echo.Context) error {
 
 	var body = make(map[string]interface{})
@@ -49,6 +49,7 @@ func ValidateFormField(c echo.Context) error {
 	}
 }
 
+// Forms is a map of form IDs to their corresponding form models.
 var Forms map[string]types.Form = map[string]types.Form{
 	agreementModels.AGREEMENT_FORM_STEP1: agreementModels.AgreementFormStep1InitModel(),
 	agreementModels.AGREEMENT_FORM_STEP2: agreementModels.AgreementFormInitModel(),

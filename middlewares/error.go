@@ -8,6 +8,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
+// CustomHTTPErrorHandler handles HTTP errors and returns appropriate error pages.
 func CustomHTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	if he, ok := err.(*echo.HTTPError); ok {

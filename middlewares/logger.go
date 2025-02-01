@@ -1,13 +1,12 @@
 package middlewares
 
 import (
-	"github.com/rs/zerolog/log"
-
-	// echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog/log"
 )
 
+// RequestLoggerWithConfig returns a middleware that logs HTTP requests with the specified configuration.
 func RequestLoggerWithConfig() echo.MiddlewareFunc {
 	return middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:       true,

@@ -14,6 +14,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
+// InitializeModulesAndMapRoutes initializes all modules and maps their routes.
 func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error {
 
 	db, err := db.Initialize(settings)

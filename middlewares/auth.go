@@ -6,7 +6,7 @@ import (
 	"github.com/svachaj/sambar-wall/modules/constants"
 )
 
-// returns true if user is authenticated, username, user id and roles(codes)
+// IsAuthenticated returns true if the user is authenticated, along with the username, user ID, and roles.
 func IsAuthenticated(c *echo.Context) (bool, string, int, []string) {
 
 	authSession, err := session.Get(constants.AUTH_SESSION_NAME, *c)
@@ -23,7 +23,9 @@ func IsAuthenticated(c *echo.Context) (bool, string, int, []string) {
 	return false, "", -1, nil
 }
 
-// middleware to check if user is authenticated
+// AuthMiddleware is a middleware to check if the user is authenticated.
+// If the user is authenticated, it proceeds to the next handler.
+// Otherwise, it redirects the user to the login route.
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 
@@ -47,7 +49,9 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-// middleware to check if user is authenticated and has a role
+// AuthRoleMiddleware is a middleware to check if the user is authenticated and has a specific role.
+// If the user is authenticated and has the required role, it proceeds to the next handler.
+// Otherwise, it redirects the user to the login route.
 func AuthRoleMiddleware(role string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -77,6 +81,7 @@ func AuthRoleMiddleware(role string) echo.MiddlewareFunc {
 	}
 }
 
+// HasRole checks if the given role is present in the list of roles.
 func HasRole(roles []string, role string) bool {
 	for _, r := range roles {
 		if r == role {

@@ -7,8 +7,7 @@ import (
 	"github.com/svachaj/sambar-wall/config"
 )
 
-// session middleware with cookie store
-
+// InitSessionMiddleware initializes the session middleware with a cookie store.
 func InitSessionMiddleware(settings *config.Config) echo.MiddlewareFunc {
 	return session.Middleware(sessions.NewCookieStore([]byte(settings.AppSecret)))
 }
