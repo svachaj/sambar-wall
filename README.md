@@ -6,6 +6,10 @@ https://registrace.stenakladno.cz/
 
 This application uses MSSQL as its database because it is a replacement for an existing interface to an older version of the application and is therefore tightly bound to MSSQL. Based on this application, a general template will be created, which should include an ORM to make everything more flexible.
 
+The application is currently strictly localized to the Czech language, which is another aspect to be improved in the general template.
+
+### The result should be a preconfigured template for developing modern and high-performance web applications based on Go and HTMX, with various authentication options.
+
 ## Prerequisites
 
 ### [Go](https://go.dev/) of course 🚀
