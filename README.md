@@ -10,6 +10,16 @@ The application is currently strictly localized to the Czech language, which is 
 
 ### The result should be a preconfigured template for developing modern and high-performance web applications based on Go and HTMX, with various authentication options.
 
+## Auth
+
+This application uses authentication via a so-called magic email link. Nowadays, authentication with just a username and password is not very secure. This type of authentication provides a higher level of security while also being extremely user-friendly, which is a crucial advantage.
+
+Email clients today are inherently secure enough, so shifting the responsibility to them makes sense. While this method is not strictly two-factor authentication in the traditional sense, it certainly offers a much stronger security model than a simple username and password.
+
+I highly recommend this authentication approach, and this repository can serve as a full reference for implementation and inspiration.
+
+[Security handler](modules/security/security-handlers.go)
+
 ## Prerequisites
 
 ### [Go](https://go.dev/) of course 🚀
