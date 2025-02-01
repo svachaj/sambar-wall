@@ -61,7 +61,7 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 	subject := "Sambar Lezecká Stěna - přihlašovací kód"
 	// crypt email and code as query string
 	queryString := fmt.Sprintf("%v;%v", email, code)
-	queryStringEncoded := utils.Encrypt(queryString, s.GetConfig().AppSecret)
+	queryStringEncoded := utils.Encrypt(queryString, s.GetConfig().AppCryptoKey)
 
 	body := fmt.Sprintf("<span style='letter-spacing: 0.75px;'>Tvůj jednorázový přihlašovací kód je: <a target='_blank' href='%v/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a>", host, queryStringEncoded, code)
 	body += "<br><br>"

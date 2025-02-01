@@ -256,7 +256,7 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	// get query param and decode it
 	queryEncodedParam := c.QueryParam("c")
-	decodedParam := utils.Decrypt(queryEncodedParam, h.securityService.GetConfig().AppSecret)
+	decodedParam := utils.Decrypt(queryEncodedParam, h.securityService.GetConfig().AppCryptoKey)
 	params := strings.Split(decodedParam, ";")
 
 	email := strings.ToLower(params[0])
