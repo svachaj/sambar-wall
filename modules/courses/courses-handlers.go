@@ -3,6 +3,7 @@ package courses
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -31,6 +32,8 @@ type ICoursesHandler interface {
 	CancelApplicationFormEdit(c echo.Context) error
 	BulkApplicationFormCreateWillContinue(c echo.Context) error
 	CoursesAdminPage(c echo.Context) error
+	ExportApplicationForms(c echo.Context) error
+	ExportApplicationFormsInit(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -394,4 +397,103 @@ func (h *CoursesHandler) CoursesAdminPage(c echo.Context) error {
 	coursesPage := coursesTemplates.ApplicationsAdminPage()
 
 	return utils.HTML(c, coursesPage)
+}
+
+func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
+	html := `
+	
+	<script>document.getElementById('download-form').submit();</script>
+	`
+
+	time.Sleep(1 * time.Second) // for fun :)
+
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
+
+	applicationForms, err := h.service.GetAllApplicationForms("")
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all application forms")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=prihlasky-vse.csv")
+	c.Response().Header().Set(echo.HeaderContentType, "text/csv")
+
+	// Convert applicationForms to [][]string
+	csvData := make([][]string, len(applicationForms)+1)
+	csvData[0] = []string{
+		"ID",
+		"Jméno",
+		"Příjmení",
+		"Rodné číslo",
+		"Rok narození",
+		"Telefon",
+		"Název kurzu",
+		"Dny kurzu",
+		"Čas od",
+		"Čas do",
+		"E-mail",
+		"Jméno rodiče",
+		"Zaplaceno",
+		"Zdravotní stav",
+		"Kód kurzu",
+		"Věková skupina",
+	} // Add headers
+
+	for i, form := range applicationForms {
+		personalID := ""
+		phone := ""
+		email := ""
+		parentName := ""
+		healthState := ""
+		birthYer := ""
+		if form.PersonalID != nil {
+			personalID = *form.PersonalID
+		}
+		if form.Phone != nil {
+			phone = *form.Phone
+		}
+		if form.Email != nil {
+			email = *form.Email
+		}
+		if form.ParentName != nil {
+			parentName = *form.ParentName
+		}
+		if form.HealthState != nil {
+			healthState = *form.HealthState
+		}
+		if form.BirthYear != nil {
+			birthYer = strconv.Itoa(*form.BirthYear)
+		}
+		// Add each application form to the CSV data
+		csvData[i+1] = []string{
+			strconv.Itoa(form.ID),
+			form.FirstName,
+			form.LastName,
+			personalID,
+			birthYer,
+			phone,
+			form.CourseName,
+			form.CourseDays,
+			form.CourseTimeFrom.Format("15:04"), // export only time in 24-hour format
+			form.CourseTimeTo.Format("15:04"),
+			email,
+			parentName,
+			strconv.FormatBool(form.Paid),
+			healthState,
+			form.CourseCode,
+			form.CourseAgeGroup,
+		}
+	}
+
+	err = utils.WriteCSV(c.Response(), csvData)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to write csv")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return nil
 }

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"encoding/csv"
+	"net/http"
 	"net/url"
 
 	"github.com/labstack/echo/v4"
@@ -38,4 +40,17 @@ func SetBackUrlAndGetQueryParamFromUrl(c echo.Context, paramKey, defaultBackUrlV
 	c.Response().Header().Set("HX-Push-Url", backUrl)
 
 	return backUrl, searchParam, nil
+}
+
+// WriteCSV writes the given data to the response writer in CSV format.
+func WriteCSV(w http.ResponseWriter, data [][]string) error {
+	writer := csv.NewWriter(w)
+	defer writer.Flush()
+
+	for _, record := range data {
+		if err := writer.Write(record); err != nil {
+			return err
+		}
+	}
+	return nil
 }
