@@ -17,6 +17,8 @@ import (
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/modules/toasts"
 	"github.com/svachaj/sambar-wall/utils"
+
+	"github.com/xuri/excelize/v2"
 )
 
 type ICoursesHandler interface {
@@ -34,6 +36,7 @@ type ICoursesHandler interface {
 	CoursesAdminPage(c echo.Context) error
 	ExportApplicationForms(c echo.Context) error
 	ExportApplicationFormsInit(c echo.Context) error
+	ExportApplicationFormsExcel(c echo.Context) error
 }
 
 type CoursesHandler struct {
@@ -432,6 +435,7 @@ func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 		"Rok narození",
 		"Telefon",
 		"Název kurzu",
+		"Cena kurzu",
 		"Dny kurzu",
 		"Čas od",
 		"Čas do",
@@ -477,6 +481,7 @@ func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 			birthYer,
 			phone,
 			form.CourseName,
+			strconv.FormatFloat(form.CoursePrice, 'f', 2, 64),
 			form.CourseDays,
 			form.CourseTimeFrom.Format("15:04"), // export only time in 24-hour format
 			form.CourseTimeTo.Format("15:04"),
@@ -496,4 +501,85 @@ func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 	}
 
 	return nil
+}
+
+func (h *CoursesHandler) ExportApplicationFormsExcel(c echo.Context) error {
+	applicationForms, err := h.service.GetAllApplicationForms("")
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get all application forms")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	f := excelize.NewFile()
+	sheet := "Přihlášky"
+	f.SetSheetName("Sheet1", sheet)
+
+	headers := []string{
+		"ID", "Jméno", "Příjmení", "Rodné číslo", "Rok narození",
+		"Telefon", "Název kurzu", "Cena kurzu", "Dny kurzu", "Čas od", "Čas do",
+		"E-mail", "Jméno rodiče", "Zaplaceno", "Zdravotní stav",
+		"Kód kurzu", "Věková skupina",
+	}
+
+	// Zapsání hlavičky
+	for i, h := range headers {
+		cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+		f.SetCellValue(sheet, cell, h)
+	}
+
+	// Zapsání řádků s daty
+	for rowIdx, form := range applicationForms {
+		r := rowIdx + 2
+		personalID := getString(form.PersonalID)
+		phone := getString(form.Phone)
+		email := getString(form.Email)
+		parentName := getString(form.ParentName)
+		healthState := getString(form.HealthState)
+		birthYear := ""
+		if form.BirthYear != nil {
+			birthYear = strconv.Itoa(*form.BirthYear)
+		}
+
+		row := []interface{}{
+			form.ID,
+			form.FirstName,
+			form.LastName,
+			personalID,
+			birthYear,
+			phone,
+			form.CourseName,
+			utils.FormatPrice(form.CoursePrice),
+			form.CourseDays,
+			form.CourseTimeFrom.Format("15:04"),
+			form.CourseTimeTo.Format("15:04"),
+			email,
+			parentName,
+			form.Paid,
+			healthState,
+			form.CourseCode,
+			form.CourseAgeGroup,
+		}
+
+		for colIdx, val := range row {
+			cell, _ := excelize.CoordinatesToCellName(colIdx+1, r)
+			f.SetCellValue(sheet, cell, val)
+		}
+	}
+
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=prihlasky-vse.xlsx")
+	c.Response().Header().Set(echo.HeaderContentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	if err := f.Write(c.Response()); err != nil {
+		log.Error().Err(err).Msg("Failed to write xlsx")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return nil
+}
+
+func getString(p *string) string {
+	if p != nil {
+		return *p
+	}
+	return ""
 }

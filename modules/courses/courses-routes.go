@@ -36,5 +36,5 @@ func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 
 	// export application forms
 	e.GET(constants.ROUTE_COURSES_APPLICATION_FORMS_EXPORT_INIT, h.ExportApplicationFormsInit, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
-	e.GET(constants.ROUTE_COURSES_APPLICATION_FORMS_EXPORT, h.ExportApplicationForms, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
+	e.GET(constants.ROUTE_COURSES_APPLICATION_FORMS_EXPORT, h.ExportApplicationFormsExcel, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 }
