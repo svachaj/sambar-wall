@@ -8,8 +8,8 @@ import (
 	"io"
 )
 
-func Encrypt(text string) string {
-	key := []byte("78945dert1384gfr")
+func Encrypt(text, secret string) string {
+	key := []byte(secret)
 	plaintext := []byte(text)
 
 	block, err := aes.NewCipher(key)
@@ -29,8 +29,8 @@ func Encrypt(text string) string {
 	return hex.EncodeToString(ciphertext)
 }
 
-func Decrypt(text string) string {
-	key := []byte("78945dert1384gfr")
+func Decrypt(text, secret string) string {
+	key := []byte(secret)
 	ciphertext, _ := hex.DecodeString(text)
 
 	block, err := aes.NewCipher(key)

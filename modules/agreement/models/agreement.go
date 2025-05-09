@@ -11,6 +11,7 @@ const AGREEMENT_FORM_BIRTH_DATE = "birthDate"
 const AGREEMENT_FORM_CONFIRMATION_CODE = "confirmationCode"
 const AGREEMENT_FORM_RULES_AGREEMENT = "rulesAgreement"
 const AGREEMENT_FORM_GDPR_AGREEMENT = "gdprAgreement"
+const AGREEMENT_FORM_COMMERCIAL_COMMUNICATIONS = "commercialAgreement"
 
 const AGREEMENT_FORM_STEP1 = "agreementStep1Form"
 const AGREEMENT_FORM_STEP2 = "agreementStep2Form"
@@ -59,6 +60,12 @@ func AgreementFormInitModel() baseTypes.Form {
 				Link:        "/static/files/gdpr.pdf",
 				FormId:      AGREEMENT_FORM_STEP2,
 				Validations: baseTypes.Validations(baseTypes.RequiredMsg("Musíte souhlasit se zpracováním osobních údajů"))},
+			AGREEMENT_FORM_COMMERCIAL_COMMUNICATIONS: {
+				ID:        AGREEMENT_FORM_COMMERCIAL_COMMUNICATIONS,
+				Label:     "Chci být v obraze – novinky ze stěny i světa lezení",
+				FieldType: "checkbox",
+				Link:      "/static/files/informace_o_souhlasu_zasilani_obchodni_sdeleni.docx",
+				FormId:    AGREEMENT_FORM_STEP2},
 		},
 	}
 }

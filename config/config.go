@@ -19,6 +19,7 @@ func LoadConfiguraion() (*Config, error) {
 	config.AppAccountIBAN = os.Getenv("APP_ACCOUNT_IBAN")
 	config.AppAccountNumber = os.Getenv("APP_ACCOUNT_NUMBER")
 	config.AppGeneratePaymentInfo = os.Getenv("APP_GENERATE_PAYMENT_INFO")
+	config.AppCryptoKey = os.Getenv("APP_CRYPTO_KEY")
 
 	// we assume that the database is MS SQL Server to backward compatibility
 	// if we want to support other databases, we can simply change the database driver and connection string
@@ -74,6 +75,7 @@ type Config struct {
 	AppAccountIBAN              string
 	AppAccountNumber            string
 	AppGeneratePaymentInfo      string
+	AppCryptoKey                string
 
 	// Database
 	DbHost     string

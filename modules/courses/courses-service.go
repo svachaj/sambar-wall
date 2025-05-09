@@ -395,6 +395,8 @@ tc.Price as coursePrice,
 tsup.FirstName as firstName,
 tsup.LastName as lastName,
 tsu.Email as email,
+tcaf.Phone as phone,
+tcaf.ParentName as parentName,
 tcaf.CreatedDate as createdDate
 FROM t_course_application_form tcaf
 LEFT JOIN t_course tc on tc.ID = tcaf.ID_course

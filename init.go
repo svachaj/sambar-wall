@@ -14,6 +14,7 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
+// InitializeModulesAndMapRoutes initializes all modules and maps their routes.
 func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error {
 
 	db, err := db.Initialize(settings)
@@ -44,7 +45,7 @@ func InitializeModulesAndMapRoutes(e *echo.Echo, settings *config.Config) error 
 	courses.MapCoursesRoutes(e, coursesHandlers)
 	log.Info().Msg("Module Courses Initialized and Routes Mapped Successfully.")
 
-	securityService := security.NewSecurityService(db, emailService)
+	securityService := security.NewSecurityService(db, emailService, settings)
 	securityHandlers := security.NewSecurityHandlers(db, securityService, coursesService)
 	security.MapSecurityRoutes(e, securityHandlers)
 	log.Info().Msg("Module Security Initialized and Routes Mapped Successfully.")

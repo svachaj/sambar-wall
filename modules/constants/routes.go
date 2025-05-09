@@ -3,9 +3,11 @@ package constants
 const (
 	ROUTE_HOME = "/"
 
-	ROUTE_AGREEMENT_START_PAGE  = "/souhlas-s-provoznim-radem"
-	ROUTE_AGREEMENT_CHECK_EMAIL = "/agreement/check-email"
-	ROUTE_AGREEMENT_FINALIZE    = "/agreement/finalize"
+	ROUTE_AGREEMENT_START_PAGE         = "/souhlas-s-provoznim-radem"
+	ROUTE_AGREEMENT_CHECK_EMAIL        = "/agreement/check-email"
+	ROUTE_AGREEMENT_FINALIZE           = "/agreement/finalize"
+	ROUTE_AGREEMENT_EXPORT_EMAILS_INIT = "commercial-emails-export-init"
+	ROUTE_AGREEMENT_EXPORT_EMAILS      = "commercial-emails-export"
 
 	ROUTE_LOGIN            = "/prihlaseni"
 	ROUTE_LOGIN_STEP1      = "/sign-in-step1"
@@ -16,14 +18,16 @@ const (
 
 	ROUTE_USER_ACCOUNT = "/ucet"
 
-	ROUTE_COURSES                              = "/kurzy"
-	ROUTE_COURSES_APPLICATION_FORM_PAGE        = "/prihlaska/:id"
-	ROUTE_COURSES_APPLICATION_FORM             = "/prihlaska"
-	ROUTE_COURSES_APPLICATION_FORM_EDIT        = "/prihlaska-edit"
-	ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL = "/prihlaska-edit-cancel"
-	ROUTE_COURSES_APPLICATION_FORM_EDIT_ID     = "/prihlaska-edit/:id"
-	ROUTE_COURSES_MY_APPLICATIONS              = "/moje-prihlasky"
-	ROUTE_COURSES_APPLICATION_FORMS_REUSE      = "/prihlasky-opakovat"
+	ROUTE_COURSES                               = "/kurzy"
+	ROUTE_COURSES_APPLICATION_FORM_PAGE         = "/prihlaska/:id"
+	ROUTE_COURSES_APPLICATION_FORM              = "/prihlaska"
+	ROUTE_COURSES_APPLICATION_FORM_EDIT         = "/prihlaska-edit"
+	ROUTE_COURSES_APPLICATION_FORM_EDIT_CANCEL  = "/prihlaska-edit-cancel"
+	ROUTE_COURSES_APPLICATION_FORM_EDIT_ID      = "/prihlaska-edit/:id"
+	ROUTE_COURSES_MY_APPLICATIONS               = "/moje-prihlasky"
+	ROUTE_COURSES_APPLICATION_FORMS_REUSE       = "/prihlasky-opakovat"
+	ROUTE_COURSES_APPLICATION_FORMS_EXPORT      = "/prihlasky-export"
+	ROUTE_COURSES_APPLICATION_FORMS_EXPORT_INIT = "/prihlasky-export-init"
 
 	ROUTE_COURSES_APPLICATION_FORMS         = "/prihlasky"
 	ROUTE_COURSES_APPLICATION_FORMS_SEARCH  = "/prihlasky-hledat"

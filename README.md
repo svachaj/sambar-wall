@@ -1,5 +1,27 @@
 # Web application: Sambar Lezecká Stěna - Kroužky a registrace
 
+https://registrace.stenakladno.cz/
+
+This application is designed for registration for climbing wall courses and camps in Kladno. It serves as a pilot project from which I would like to develop an open-source registration platform for courses and similar events. For now, it is available only in Czech localization.
+
+## Important note
+
+This application uses MSSQL as its database because it is a replacement for an existing interface to an older version of the application and is therefore tightly bound to MSSQL. Based on this application, a general template will be created, which should include an ORM to make everything more flexible.
+
+The application is currently strictly localized to the Czech language, which is another aspect to be improved in the general template.
+
+### The result should be a preconfigured template for developing modern and high-performance web applications based on Go and HTMX, with various authentication options.
+
+## Auth
+
+This application uses authentication via a so-called magic email link. Nowadays, authentication with just a username and password is not very secure. This type of authentication provides a higher level of security while also being extremely user-friendly, which is a crucial advantage.
+
+Email clients today are inherently secure enough, so shifting the responsibility to them makes sense. While this method is not strictly two-factor authentication in the traditional sense, it certainly offers a much stronger security model than a simple username and password.
+
+I highly recommend this authentication approach, and this repository can serve as a full reference for implementation and inspiration.
+
+[Security handler](modules/security/security-handlers.go)
+
 ## Prerequisites
 
 ### [Go](https://go.dev/) of course 🚀

@@ -15,7 +15,8 @@ type IAgreementService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string) error
-	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error
+	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error
+	ExportEmailsConfirmedForCommercialCommunication() (string, error)
 }
 
 type AgreementService struct {
@@ -76,7 +77,7 @@ func (s *AgreementService) SendVerificationCode(email string, code string) error
 	return nil
 }
 
-func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error {
+func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error {
 
 	// check confirmation code
 	var count int
@@ -93,9 +94,9 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 
 	// finalize agreement
 	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (id, email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed) VALUES ((select max(id)+1 from t_system_wall_user), '%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_wall_user (id, email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ((select max(id)+1 from t_system_wall_user), '%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
 	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
 	}
 	_, err = s.db.Exec(query)
 
@@ -107,3 +108,26 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 }
 
 const AGREEMENT_ERROR_BAD_CONFIRMATION_CODE = "Neplatný ověřovací kód"
+
+func (s *AgreementService) ExportEmailsConfirmedForCommercialCommunication() (string, error) {
+
+	rows, err := s.db.Query("SELECT DISTINCT email FROM t_system_wall_user WHERE IsEnabled = 1 and commercial_confirmed = 1 and email IS NOT NULL AND email != ''")
+
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	var emails []string
+	for rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			return "", err
+		}
+		emails = append(emails, email)
+	}
+
+	// Join with semicolon
+	result := strings.Join(emails, ";")
+	return result, nil
+}

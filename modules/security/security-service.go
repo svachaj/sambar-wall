@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/svachaj/sambar-wall/config"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -15,15 +16,21 @@ type ISecurityService interface {
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string, host string) error
 	FinalizeLogin(email, confirmationCode string) (userId int, roles []string, err error)
+	GetConfig() *config.Config
 }
 
 type SecurityService struct {
 	db           *sqlx.DB
 	emailService utils.IEmailService
+	_config      *config.Config
 }
 
-func NewSecurityService(db *sqlx.DB, emailService utils.IEmailService) ISecurityService {
-	return &SecurityService{db: db, emailService: emailService}
+func NewSecurityService(db *sqlx.DB, emailService utils.IEmailService, config *config.Config) ISecurityService {
+	return &SecurityService{db: db, emailService: emailService, _config: config}
+}
+
+func (s *SecurityService) GetConfig() *config.Config {
+	return s._config
 }
 
 func (s *SecurityService) GenerateVerificationCode() string {
@@ -54,7 +61,7 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 	subject := "Sambar Lezecká Stěna - přihlašovací kód"
 	// crypt email and code as query string
 	queryString := fmt.Sprintf("%v;%v", email, code)
-	queryStringEncoded := utils.Encrypt(queryString)
+	queryStringEncoded := utils.Encrypt(queryString, s.GetConfig().AppCryptoKey)
 
 	body := fmt.Sprintf("<span style='letter-spacing: 0.75px;'>Tvůj jednorázový přihlašovací kód je: <a target='_blank' href='%v/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a>", host, queryStringEncoded, code)
 	body += "<br><br>"

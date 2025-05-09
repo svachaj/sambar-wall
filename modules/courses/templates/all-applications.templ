@@ -2,6 +2,7 @@ package courses
 
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
+	"github.com/svachaj/sambar-wall/modules/components/forms"
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/utils"
 )
@@ -9,8 +10,9 @@ import (
 templ AllApplicationsList(applications []types.ApplicationForm, searchQuery string, toast templ.Component) {
 	<div class="w-full flex flex-col items-center justify-center px-2">
 		<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
-			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">
-				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8">Všechny přihlášky</h2>
+			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10 flex flex-row items-center justify-between">
+				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8 flex-1">Všechny přihlášky</h2>
+				@components.ExportButton("/prihlasky-export")
 			</div>
 			<div class="p-3">
 				<input
@@ -81,6 +83,9 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 								<div class="truncate text-xs font-medium leading-6 text-white">
 									<span>Přihlášeno:&nbsp; </span>{ utils.StringFromDateTimePointer(application.CreatedDate) }
 								</div>
+								<div class="truncate text-xs font-medium leading-6 text-white">
+									<span>Cena:&nbsp; </span>{ utils.FormatPrice(application.CoursePrice) }<span>&nbsp;Kč</span>
+								</div>
 								<div class="flex flex-row truncate text-xs font-medium leading-6 text-white">
 									<span>Zaplaceno:&nbsp; </span>
 									@ApplicationPaidInfo(application.Paid, utils.StringFromInt(application.ID))
@@ -100,7 +105,7 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-start justify-center gap-x-4">
 							<div class="truncate text-xs w-full font-medium leading-6 text-white text-wrap">
-								{ application.CourseName }
+								{ application.CourseName } &nbsp;({ utils.FormatPrice(application.CoursePrice) } &nbsp;Kč)
 							</div>
 						</div>
 					</td>
