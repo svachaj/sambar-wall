@@ -408,7 +408,7 @@ func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
 	<script>document.getElementById('download-form').submit();</script>
 	`
 
-	time.Sleep(1 * time.Second) // for fun :)
+	time.Sleep(600 * time.Millisecond) // for fun :)
 
 	return c.HTML(http.StatusOK, html)
 }

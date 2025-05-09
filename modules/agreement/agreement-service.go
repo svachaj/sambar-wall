@@ -16,6 +16,7 @@ type IAgreementService interface {
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string) error
 	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error
+	ExportEmailsConfirmedForCommercialCommunication() (string, error)
 }
 
 type AgreementService struct {
@@ -107,3 +108,26 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 }
 
 const AGREEMENT_ERROR_BAD_CONFIRMATION_CODE = "Neplatný ověřovací kód"
+
+func (s *AgreementService) ExportEmailsConfirmedForCommercialCommunication() (string, error) {
+
+	rows, err := s.db.Query("SELECT DISTINCT email FROM t_system_wall_user WHERE IsEnabled = 1 and commercial_confirmed = 1 and email IS NOT NULL AND email != ''")
+
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	var emails []string
+	for rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			return "", err
+		}
+		emails = append(emails, email)
+	}
+
+	// Join with semicolon
+	result := strings.Join(emails, ";")
+	return result, nil
+}

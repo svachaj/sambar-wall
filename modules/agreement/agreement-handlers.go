@@ -2,6 +2,7 @@ package agreement
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	agreementTemplates "github.com/svachaj/sambar-wall/modules/agreement/templates"
+	httperrors "github.com/svachaj/sambar-wall/modules/http-errors"
 	toasts "github.com/svachaj/sambar-wall/modules/toasts"
 )
 
@@ -17,6 +19,8 @@ type IAgreementHandlers interface {
 	AgreementStartPage(c echo.Context) error
 	CheckEmail(c echo.Context) error
 	Finalize(c echo.Context) error
+	ExportEmailsConfirmedForCommercialCommunicationInit(c echo.Context) error
+	ExportEmailsConfirmedForCommercialCommunication(c echo.Context) error
 }
 
 type AgreementHandlers struct {
@@ -118,4 +122,26 @@ func Step1Page() templ.Component {
 	step1Page := agreementTemplates.AgreementPage()
 
 	return step1Page
+}
+
+func (h *AgreementHandlers) ExportEmailsConfirmedForCommercialCommunicationInit(c echo.Context) error {
+	html := `
+	
+	<script>document.getElementById('download-emails').submit();</script>
+	`
+
+	return c.HTML(http.StatusOK, html)
+}
+
+func (h *AgreementHandlers) ExportEmailsConfirmedForCommercialCommunication(c echo.Context) error {
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=emaily-pro-komercni-sdeleni.txt")
+	c.Response().Header().Set(echo.HeaderContentType, "text/plain")
+
+	emails, err := h.service.ExportEmailsConfirmedForCommercialCommunication()
+
+	if err != nil {
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return c.String(200, emails)
 }
