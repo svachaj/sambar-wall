@@ -93,8 +93,9 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 	lastName := agreementForm.FormFields[models.AGREEMENT_FORM_LAST_NAME].Value
 	birthDate := agreementForm.FormFields[models.AGREEMENT_FORM_BIRTH_DATE].Value
 	confirmationCode := agreementForm.FormFields[models.AGREEMENT_FORM_CONFIRMATION_CODE].Value
+	commercialAgreement := agreementForm.FormFields[models.AGREEMENT_FORM_COMMERCIAL_COMMUNICATIONS].Value
 
-	err := h.service.FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode)
+	err := h.service.FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode, commercialAgreement == "on")
 
 	if err != nil {
 		log.Error().Msgf("FinalizeAgreement error: %v", err)

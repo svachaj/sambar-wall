@@ -30,6 +30,7 @@ templ Step2Form(agreementForm baseTypes.Form, toast templ.Component) {
 		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_CONFIRMATION_CODE])
 		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_RULES_AGREEMENT])
 		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_GDPR_AGREEMENT])
+		@formComponents.FormField(agreementForm.FormFields[models.AGREEMENT_FORM_COMMERCIAL_COMMUNICATIONS])
 		@formComponents.SubmitButton("Dokončit")
 	}
 	if toast != nil {

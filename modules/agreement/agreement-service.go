@@ -15,7 +15,7 @@ type IAgreementService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string) error
-	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error
+	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error
 }
 
 type AgreementService struct {
@@ -76,7 +76,7 @@ func (s *AgreementService) SendVerificationCode(email string, code string) error
 	return nil
 }
 
-func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string) error {
+func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error {
 
 	// check confirmation code
 	var count int
@@ -93,9 +93,9 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 
 	// finalize agreement
 	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (id, email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed) VALUES ((select max(id)+1 from t_system_wall_user), '%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_wall_user (id, email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ((select max(id)+1 from t_system_wall_user), '%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
 	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"))
+		query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
 	}
 	_, err = s.db.Exec(query)
 
