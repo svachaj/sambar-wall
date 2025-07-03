@@ -233,7 +233,7 @@ func (s *CoursesService) SendApplicationFormEmail(applicationFormId int, email s
 	body := "<div style=\"width: 100%; max-width: 600px;line-heigth:1.5rem; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;\">\n"
 	body += "<p style=\"font-size: 20px; margin-bottom: 20px;\">Dobrý den,</p>\n\n"
 	//body += "<p style=\"margin-bottom: 20px;\">Děkujeme za Vaši přihlášku na kurz:<br> <strong>" + course.Name + "</strong>.</p>\n\n"
-	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na akci pořádanou Lezeckou stěnou Kladno. <br>Během několika pracovních dní Vám zašleme podrobné informace k akci (tábory, lezení na skalách atd.)</p>\n\n"
+	body += "<p style=\"margin-bottom: 20px;\">Děkujeme Vám za přihlášení na kurz nebo akci pořádanou Lezeckou stěnou Kladno. <br>Během několika pracovních dní Vám zašleme podrobné informace k akci (např. kurz lezení, příměstský tábor, lezení na skalách apod.)</p>\n\n"
 	body += "<p style=\"margin-bottom: 20px;\">V případě jakýchkoliv dotazů nás neváhejte kontaktovat na emailu: anna@stenakladno.cz"
 
 	body += "<br><br><strong>Cena kurzu:</strong> " + price + " Kč\n"
