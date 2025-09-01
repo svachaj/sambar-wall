@@ -1,4 +1,4 @@
-buildall: tailwind templ build
+buildall: templ build
 
 build:
 	go build -o tmp/main .

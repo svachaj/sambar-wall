@@ -1,5 +1,5 @@
-# github.com/a-h/templ v0.3.819
-## explicit; go 1.23
+# github.com/a-h/templ v0.3.943
+## explicit; go 1.23.0
 github.com/a-h/templ
 github.com/a-h/templ/runtime
 github.com/a-h/templ/safehtml
@@ -104,14 +104,14 @@ github.com/xuri/excelize/v2
 # github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7
 ## explicit; go 1.15
 github.com/xuri/nfp
-# golang.org/x/crypto v0.31.0
-## explicit; go 1.20
+# golang.org/x/crypto v0.40.0
+## explicit; go 1.23.0
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/md4
 golang.org/x/crypto/ripemd160
-# golang.org/x/net v0.33.0
-## explicit; go 1.18
+# golang.org/x/net v0.42.0
+## explicit; go 1.23.0
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
@@ -120,11 +120,12 @@ golang.org/x/net/http2
 golang.org/x/net/http2/h2c
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
-# golang.org/x/sys v0.28.0
-## explicit; go 1.18
+golang.org/x/net/internal/httpcommon
+# golang.org/x/sys v0.34.0
+## explicit; go 1.23.0
 golang.org/x/sys/unix
-# golang.org/x/text v0.21.0
-## explicit; go 1.18
+# golang.org/x/text v0.27.0
+## explicit; go 1.23.0
 golang.org/x/text/cases
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
