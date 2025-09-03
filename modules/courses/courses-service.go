@@ -313,6 +313,7 @@ func (s *CoursesService) GetApplicationsByUserId(userId int) ([]types.Applicatio
 	SELECT 
 tcaf.ID as id, 
 tcaf.Paid as paid,
+tcaf.IsActive as isActive,
 tcaf.PersonalId as personalId,
 tc.ID as courseId,
 tct.Name1 as courseName,

@@ -45,19 +45,19 @@ templ MyApplicationsTable(applications []types.ApplicationForm) {
 					<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
 						<div class="flex flex-row flex-wrap">
 							<div class="flex-grow">
-								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+								<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate leading-6", "line-through leading-6 text-gray-400 decoration-neutral-400") }>
 									{ application.CourseName }
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+								<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 									{ application.LastName + " " + application.FirstName }
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white">
+								<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 									{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white">
+								<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 									{ utils.FormatPrice(application.CoursePrice) } Kč
 								</div>
-								<div class="truncate text-sm font-medium leading-6 text-white">
+								<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 									<span>Zaplaceno:&nbsp;</span>
 									if application.Paid {
 										<span class="text-green-500">ANO</span>
@@ -70,35 +70,35 @@ templ MyApplicationsTable(applications []types.ApplicationForm) {
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-start gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white text-balance">
+							<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 								{ application.CourseName }
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center justify-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white text-wrap">
+							<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 								{ application.LastName + " " + application.FirstName }
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center justify-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white">
+							<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 								{ application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - "+ application.CourseTimeTo.Format("15:04") + ")" }
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white">
+							<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 								{ utils.FormatPrice(application.CoursePrice) } Kč
 							</div>
 						</div>
 					</td>
 					<td class="hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8">
 						<div class="flex items-center gap-x-4">
-							<div class="truncate text-sm font-medium leading-6 text-white">
+							<div class={ utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400") }>
 								if application.Paid {
 									<span class="text-green-500">ANO</span>
 								} else {

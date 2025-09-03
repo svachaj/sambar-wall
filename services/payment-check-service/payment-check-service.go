@@ -26,17 +26,22 @@ type Payment struct {
 	Timestamp       int64
 }
 
+// IPaymentCheckService interface for payment checking service.
 type IPaymentCheckService interface {
 	StartCheckingPayments() error
 }
 
+// PaymentService handles automated payment checking from IMAP emails.
 type PaymentService struct {
 	db            *sqlx.DB
 	emailService  utils.IEmailService
-	imapClient    *client.Client
+	imapAddress   string
+	imapUsername  string
+	imapPassword  string
 	cronScheduler *cron.Cron
 }
 
+// NewPaymentService creates a new payment service instance.
 func NewPaymentService(db *sqlx.DB, emailService utils.IEmailService, imapAddress, imapUsername, imapPassword string) IPaymentCheckService {
 
 	cs := cron.New()
@@ -45,27 +50,48 @@ func NewPaymentService(db *sqlx.DB, emailService utils.IEmailService, imapAddres
 		return nil
 	}
 
-	ic, err := client.DialTLS(imapAddress, nil)
-	if err != nil {
-		log.Err(err).Msg("Fail to dial IMAP server")
-		return nil
+	return &PaymentService{
+		emailService:  emailService,
+		cronScheduler: cs,
+		db:            db,
+		imapAddress:   imapAddress,
+		imapUsername:  imapUsername,
+		imapPassword:  imapPassword,
 	}
-
-	err = ic.Login(imapUsername, imapPassword)
-	if err != nil {
-		log.Err(err).Msg("Fail to login to the IMAP server")
-	}
-
-	return &PaymentService{emailService: emailService, cronScheduler: cs, imapClient: ic, db: db}
 }
 
+// createIMAPClient creates and authenticates a new IMAP client connection.
+func (svc *PaymentService) createIMAPClient() (*client.Client, error) {
+	ic, err := client.DialTLS(svc.imapAddress, nil)
+	if err != nil {
+		return nil, fmt.Errorf("fail to dial IMAP server: %w", err)
+	}
+
+	err = ic.Login(svc.imapUsername, svc.imapPassword)
+	if err != nil {
+		ic.Close()
+		return nil, fmt.Errorf("fail to login to IMAP server: %w", err)
+	}
+
+	return ic, nil
+}
+
+// StartCheckingPayments starts the cron scheduler for checking payments.
 func (svc *PaymentService) StartCheckingPayments() error {
 
 	svc.cronScheduler.AddFunc("@every 2m", func() {
 		log.Info().Msg("Check payments started")
 
+		// Create new IMAP client for each run
+		imapClient, err := svc.createIMAPClient()
+		if err != nil {
+			log.Err(err).Msg("Failed to create IMAP client")
+			return
+		}
+		defer imapClient.Close()
+
 		// Check for new emails
-		mbox, err := svc.imapClient.Select("INBOX", false)
+		mbox, err := imapClient.Select("INBOX", false)
 
 		if err != nil {
 			log.Err(err).Msg("Fail to select INBOX")
@@ -90,7 +116,7 @@ func (svc *PaymentService) StartCheckingPayments() error {
 		messages := make(chan *imap.Message, mbox.Messages)
 		done := make(chan error, 1)
 		go func() {
-			done <- svc.imapClient.Fetch(seqset, items, messages)
+			done <- imapClient.Fetch(seqset, items, messages)
 		}()
 
 		for msg := range messages {
