@@ -22,7 +22,7 @@ type ICoursesService interface {
 	SendApplicationFormEmail(applicationFormId int, email string, courseId int, firstName, lastName, parentName, phone, birthYear string) error
 	GetApplicationsByUserId(userId int) ([]types.ApplicationForm, error)
 	GetCourseInfo(id int) types.Course
-	GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error)
+	GetAllApplicationForms(searchText string, statusFilter string) ([]types.ApplicationForm, error)
 	SetApplicationFormPaid(applicationFormId int, paid bool) error
 	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
 	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid, isActive bool) error
@@ -372,13 +372,22 @@ GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tc.TimeFrom,tc.TimeTo, tcag
 	return course
 }
 
-func (s *CoursesService) GetAllApplicationForms(searchText string) ([]types.ApplicationForm, error) {
+func (s *CoursesService) GetAllApplicationForms(searchText string, statusFilter string) ([]types.ApplicationForm, error) {
 	applicationForms := []types.ApplicationForm{}
 
 	searchInt := 0
 	searchInt, _ = strconv.Atoi(searchText)
 
-	err := s.db.Select(&applicationForms, `
+	// Build the status filter condition
+	statusCondition := ""
+	if statusFilter == "active" {
+		statusCondition = "AND tcaf.IsActive = 1"
+	} else if statusFilter == "inactive" {
+		statusCondition = "AND tcaf.IsActive = 0"
+	}
+	// If statusFilter is "all" or empty, no additional condition is added
+
+	query := `
 	SELECT
 tcaf.ID as id,
 tcaf.Paid as paid,
@@ -406,8 +415,10 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
-WHERE tcaf.IsActive = 1 AND ( (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  )
-ORDER BY tcaf.CreatedDate DESC;`, "%"+searchText+"%", searchInt)
+WHERE 1=1 ` + statusCondition + ` AND ( (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  )
+ORDER BY tcaf.CreatedDate DESC;`
+
+	err := s.db.Select(&applicationForms, query, "%"+searchText+"%", searchInt)
 
 	if err != nil {
 		return nil, err
