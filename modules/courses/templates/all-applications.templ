@@ -7,24 +7,37 @@ import (
 	"github.com/svachaj/sambar-wall/utils"
 )
 
-templ AllApplicationsList(applications []types.ApplicationForm, searchQuery string, toast templ.Component) {
+templ AllApplicationsList(applications []types.ApplicationForm, searchQuery string, statusFilter string, toast templ.Component) {
 	<div class="w-full flex flex-col items-center justify-center px-2">
 		<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
 			<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10 flex flex-row items-center justify-between">
 				<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8 flex-1">Všechny přihlášky</h2>
 				@components.ExportButton("/prihlasky-export")
 			</div>
-			<div class="p-3">
+			<div class="p-3 flex flex-col md:flex-row gap-3">
 				<input
 					type="text"
 					name="search"
-					class="w-full p-2 bg-neutral-800 text-white"
+					class="flex-1 p-2 bg-neutral-800 text-white rounded"
 					placeholder="Hledat..."
 					value={ searchQuery }
 					hx-get={ "/prihlasky-hledat" }
 					hx-trigger="keyup changed delay:500"
 					hx-target="#applicationsTable"
+					hx-include="[name='status']"
 				/>
+				<select
+					name="status"
+					class="p-2 bg-neutral-800 text-white rounded border border-neutral-600 md:w-40 md:ml-2"
+					hx-get={ "/prihlasky-hledat" }
+					hx-trigger="change"
+					hx-target="#applicationsTable"
+					hx-include="[name='search']"
+				>
+					<option value="all" selected?={ statusFilter == "all" }>Vše</option>
+					<option value="active" selected?={ statusFilter == "active" || statusFilter == "" }>Aktivní</option>
+					<option value="inactive" selected?={ statusFilter == "inactive" }>Neaktivní</option>
+				</select>
 			</div>
 			<div id="applicationsTable">
 				if len(applications) == 0 {
