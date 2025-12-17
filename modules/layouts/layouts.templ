@@ -3,6 +3,12 @@ package layouts
 import "github.com/svachaj/sambar-wall/modules/constants"
 
 templ BaseLayout(isAuthenticated bool, isAdmin bool) {
+	@BaseLayoutEx(isAuthenticated, isAdmin, true) {
+		{ children... }
+	}
+}
+
+templ BaseLayoutEx(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
 	<!DOCTYPE html>
 	<html lang="en" data-theme="dark" class="dark">
 		<head>
@@ -25,7 +31,7 @@ templ BaseLayout(isAuthenticated bool, isAdmin bool) {
 		</head>
 		<body hx-boost="true" class="dark:bg-neutral-900">
 			if isAuthenticated {
-				@AuthenticatedLayout(isAdmin) {
+				@AuthenticatedLayout(isAdmin, canSeeVisitors) {
 					{ children... }
 				}
 			} else {
@@ -38,7 +44,13 @@ templ BaseLayout(isAuthenticated bool, isAdmin bool) {
 }
 
 templ BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool, isAdmin bool) {
-	@BaseLayout(isAuthenticated, isAdmin) {
+	@BaseLayoutEx(isAuthenticated, isAdmin, true) {
+		@cmp
+	}
+}
+
+templ BaseLayoutWithComponentEx(cmp templ.Component, isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
+	@BaseLayoutEx(isAuthenticated, isAdmin, canSeeVisitors) {
 		@cmp
 	}
 }
@@ -83,7 +95,7 @@ templ AnonymousLayout() {
 	</main>
 }
 
-templ AuthenticatedLayout(isAdmin bool) {
+templ AuthenticatedLayout(isAdmin bool, canSeeVisitors bool) {
 	<header class="bg-neutral-800 sticky top-0 border-b-orange-400 box-border shadow-xl z-20">
 		<nav class="bg-gray-800 p-2 lg:px-8" x-data="{mobileMenuOpen: false}">
 			<div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -115,6 +127,9 @@ templ AuthenticatedLayout(isAdmin bool) {
 								// <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Moje přihlášky</a>
 								if isAdmin {
 									<a href="/prihlasky" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Všechny přihlášky</a>
+								}
+								if canSeeVisitors {
+									<a href="/navstevnici" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Návštěvníci</a>
 								}
 								<a href="/moje-prihlasky" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
 							</div>
@@ -172,6 +187,9 @@ templ AuthenticatedLayout(isAdmin bool) {
 					// <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white" aria-current="page">Moje přihlášky</a>
 					if isAdmin {
 						<a @click="mobileMenuOpen = false" href="/prihlasky" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Všechny přihlášky</a>
+					}
+					if canSeeVisitors {
+						<a @click="mobileMenuOpen = false" href="/navstevnici" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Návštěvníci</a>
 					}
 					<a @click="mobileMenuOpen = false" href="/moje-prihlasky" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
 				</div>

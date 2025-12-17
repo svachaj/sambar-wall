@@ -90,3 +90,37 @@ func HasRole(roles []string, role string) bool {
 	}
 	return false
 }
+
+// AuthMultiRoleMiddleware is a middleware to check if the user is authenticated and has any of the specified roles.
+// If the user is authenticated and has at least one of the required roles, it proceeds to the next handler.
+// Otherwise, it redirects the user to the login route.
+func AuthMultiRoleMiddleware(allowedRoles []string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+
+			if ok, _, _, roles := IsAuthenticated(&c); ok && roles != nil {
+				for _, userRole := range roles {
+					for _, allowedRole := range allowedRoles {
+						if userRole == allowedRole {
+							return next(c)
+						}
+					}
+				}
+			}
+
+			returnUrl := c.Request().URL.Path
+			if c.Request().URL.RawQuery != "" {
+				returnUrl += "?" + c.Request().URL.RawQuery
+			}
+
+			// set return URL in session
+			authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+			authSession.Values[constants.AUTH_RETURN_URL] = returnUrl
+			authSession.Save(c.Request(), c.Response())
+
+			c.Response().Header().Set("HX-Redirect", returnUrl)
+
+			return c.Redirect(302, constants.ROUTE_LOGIN)
+		}
+	}
+}

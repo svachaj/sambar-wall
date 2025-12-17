@@ -32,4 +32,7 @@ const (
 	ROUTE_COURSES_APPLICATION_FORMS         = "/prihlasky"
 	ROUTE_COURSES_APPLICATION_FORMS_SEARCH  = "/prihlasky-hledat"
 	ROUTE_COURSES_APPLICATION_FORM_SET_PAID = "/prihlaska/:id"
+
+	ROUTE_WALL_VISITORS        = "/navstevnici"
+	ROUTE_WALL_VISITORS_SEARCH = "/navstevnici-hledat"
 )
