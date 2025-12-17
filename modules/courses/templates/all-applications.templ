@@ -103,6 +103,14 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 									<span>Zaplaceno:&nbsp; </span>
 									@ApplicationPaidInfo(application.Paid, utils.StringFromInt(application.ID))
 								</div>
+								<div class="truncate text-xs font-medium leading-6 text-white">
+									<span>Aktivní:&nbsp; </span>
+									if application.IsActive != nil && *application.IsActive {
+										<span class="text-green-500">ANO</span>
+									} else {
+										<span class="text-red-600">NE</span>
+									}
+								</div>
 							</div>
 						</div>
 					</td>
@@ -112,6 +120,10 @@ templ AllApplicationsTable(applications []types.ApplicationForm) {
 								<a class="text-pink-400 hover:text-pink-600 underline underline-offset-2" href={ templ.URL("/prihlaska-edit/" + utils.StringFromInt(application.ID)) }>
 									{ application.LastName + " " + application.FirstName }
 								</a>
+								if application.IsActive == nil || !*application.IsActive {
+									<br/>
+									<span class="text-red-600">NEAKTIVNÍ</span>
+								}
 							</div>
 						</div>
 					</td>

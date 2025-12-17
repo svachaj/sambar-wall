@@ -407,7 +407,8 @@ tsup.LastName as lastName,
 tsu.Email as email,
 tcaf.Phone as phone,
 tcaf.ParentName as parentName,
-tcaf.CreatedDate as createdDate
+tcaf.CreatedDate as createdDate,
+tcaf.IsActive as isActive
 FROM t_course_application_form tcaf
 LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
 LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
