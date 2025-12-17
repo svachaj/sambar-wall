@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
@@ -17,6 +18,7 @@ type IAgreementService interface {
 	SendVerificationCode(email string, code string) error
 	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error
 	ExportEmailsConfirmedForCommercialCommunication() (string, error)
+	GetWallVisitors(searchQuery string) ([]models.WallVisitor, error)
 }
 
 type AgreementService struct {
@@ -130,4 +132,40 @@ func (s *AgreementService) ExportEmailsConfirmedForCommercialCommunication() (st
 	// Join with semicolon
 	result := strings.Join(emails, ";")
 	return result, nil
+}
+
+func (s *AgreementService) GetWallVisitors(searchQuery string) ([]models.WallVisitor, error) {
+
+	// Normalize search query for diacritic-insensitive search
+	normalizedSearch := strings.ToLower(searchQuery)
+	normalizedSearch = strings.ReplaceAll(normalizedSearch, "'", "''") // Escape single quotes
+
+	query := `
+		SELECT firstname, lastname, email, createdate 
+		FROM t_system_wall_user 
+		WHERE isenabled = 1 
+		  AND GDPR_confirmed = 1 
+		  AND Rules_confirmed = 1
+	`
+
+	if searchQuery != "" {
+		query += fmt.Sprintf(`
+		  AND (
+			LOWER(firstname) COLLATE Latin1_General_CI_AI LIKE '%%%v%%' OR
+			LOWER(lastname) COLLATE Latin1_General_CI_AI LIKE '%%%v%%' OR
+			LOWER(email) COLLATE Latin1_General_CI_AI LIKE '%%%v%%'
+		  )
+		`, normalizedSearch, normalizedSearch, normalizedSearch)
+	}
+
+	query += " ORDER BY createdate DESC"
+
+	var visitors []models.WallVisitor
+	err := s.db.Select(&visitors, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return visitors, nil
 }
