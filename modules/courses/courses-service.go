@@ -415,7 +415,7 @@ LEFT JOIN t_system_user_participant tsup on tcaf.ID_participant = tsup.ID
 LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID
-WHERE 1=1 ` + statusCondition + ` AND ( (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName LIKE @p1 OR tsup.LastName LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 LIKE @p1 OR tcd.Name1 LIKE @p1 OR tcag.Name1 LIKE @p1)  )
+WHERE 1=1 ` + statusCondition + ` AND ( (@p2 > 0 AND tcaf.ID = @p2) OR @p1 = '%%' OR (tsup.FirstName COLLATE Latin1_General_CI_AI LIKE @p1 OR tsup.LastName COLLATE Latin1_General_CI_AI LIKE @p1 OR tcaf.PersonalId LIKE @p1 OR tsu.Email LIKE @p1 OR tct.Name1 COLLATE Latin1_General_CI_AI LIKE @p1 OR tcd.Name1 COLLATE Latin1_General_CI_AI LIKE @p1 OR tcag.Name1 COLLATE Latin1_General_CI_AI LIKE @p1)  )
 ORDER BY tcaf.CreatedDate DESC;`
 
 	err := s.db.Select(&applicationForms, query, "%"+searchText+"%", searchInt)
