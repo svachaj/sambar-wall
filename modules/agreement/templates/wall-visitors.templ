@@ -1,0 +1,100 @@
+package agreementTemplates
+
+import (
+	"github.com/svachaj/sambar-wall/modules/agreement/models"
+	"github.com/svachaj/sambar-wall/modules/layouts"
+	"github.com/svachaj/sambar-wall/utils"
+)
+
+templ WallVisitorsPage(visitors []models.WallVisitor, searchQuery string, toast templ.Component) {
+	@layouts.BaseLayoutEx(true, false, true) {
+		<div class="w-full flex flex-col items-center justify-center px-2">
+			<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
+				<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10 flex flex-row items-center justify-between">
+					<h2 class="px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8 flex-1">Návštěvníci</h2>
+				</div>
+				<div class="p-3">
+					<input
+						type="text"
+						name="search"
+						class="w-full p-2 bg-neutral-800 text-white rounded"
+						placeholder="Hledat podle jména nebo emailu..."
+						value={ searchQuery }
+						hx-get="/navstevnici-hledat"
+						hx-trigger="keyup changed delay:500"
+						hx-target="#visitorsTable"
+					/>
+				</div>
+				<div id="visitorsTable">
+					if len(visitors) == 0 {
+						@WallVisitorsNoResults()
+					} else {
+						@WallVisitorsTable(visitors)
+					}
+				</div>
+			</div>
+		</div>
+		if toast != nil {
+			@toast
+		}
+	}
+}
+
+templ WallVisitorsTable(visitors []models.WallVisitor) {
+	<table class="mt-2 w-full whitespace-nowrap text-left">
+		<colgroup>
+			<col class="w-fit"/>
+			<col class="w-fit"/>
+			<col class="w-fit"/>
+			<col class="w-fit"/>
+		</colgroup>
+		<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
+			<tr>
+				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8">Jméno</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Příjmení</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Email</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Datum registrace</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-white/20">
+			for _, visitor := range visitors {
+				<tr class="hover:bg-slate-800">
+					<td class="lg:hidden table-cell py-4 pl-4 w-full text-white text-sm">
+						<div class="flex flex-col">
+							<div class="truncate text-base font-bold leading-6 text-white text-wrap">
+								{ visitor.FirstName } { visitor.LastName }
+							</div>
+							<div class="truncate text-xs font-medium leading-6 text-white text-wrap">
+								{ visitor.Email }
+							</div>
+							<div class="truncate text-xs font-medium leading-6 text-gray-400">
+								{ utils.StringFromDateTime(visitor.CreateDate) }
+							</div>
+						</div>
+					</td>
+					<td class="hidden py-4 pl-4 pr-8 sm:pl-6 lg:pl-8 lg:table-cell">
+						<div class="truncate text-sm font-medium leading-6 text-white">{ visitor.FirstName }</div>
+					</td>
+					<td class="hidden py-4 pl-0 pr-4 lg:table-cell lg:pr-8">
+						<div class="truncate text-sm font-medium leading-6 text-white">{ visitor.LastName }</div>
+					</td>
+					<td class="hidden py-4 pl-0 pr-4 text-sm leading-6 lg:table-cell lg:pr-8">
+						<div class="truncate text-sm font-medium leading-6 text-white">{ visitor.Email }</div>
+					</td>
+					<td class="hidden py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-400 lg:table-cell lg:pr-8">
+						<time>{ utils.StringFromDateTime(visitor.CreateDate) }</time>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ WallVisitorsNoResults() {
+	<div class="flex flex-col items-center justify-center py-10">
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-400 mb-4">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"></path>
+		</svg>
+		<p class="text-gray-400 text-lg">Žádní návštěvníci nenalezeni</p>
+	</div>
+}

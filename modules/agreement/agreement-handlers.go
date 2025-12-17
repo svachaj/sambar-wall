@@ -21,6 +21,8 @@ type IAgreementHandlers interface {
 	Finalize(c echo.Context) error
 	ExportEmailsConfirmedForCommercialCommunicationInit(c echo.Context) error
 	ExportEmailsConfirmedForCommercialCommunication(c echo.Context) error
+	WallVisitorsPage(c echo.Context) error
+	WallVisitorsSearch(c echo.Context) error
 }
 
 type AgreementHandlers struct {
@@ -144,4 +146,30 @@ func (h *AgreementHandlers) ExportEmailsConfirmedForCommercialCommunication(c ec
 	}
 
 	return c.String(200, emails)
+}
+
+func (h *AgreementHandlers) WallVisitorsPage(c echo.Context) error {
+	visitors, err := h.service.GetWallVisitors("")
+
+	if err != nil {
+		log.Error().Msgf("GetWallVisitors error: %v", err)
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	page := agreementTemplates.WallVisitorsPage(visitors, "", nil)
+	return utils.HTML(c, page)
+}
+
+func (h *AgreementHandlers) WallVisitorsSearch(c echo.Context) error {
+	searchQuery := c.QueryParam("search")
+
+	visitors, err := h.service.GetWallVisitors(searchQuery)
+
+	if err != nil {
+		log.Error().Msgf("GetWallVisitors error: %v", err)
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	table := agreementTemplates.WallVisitorsTable(visitors)
+	return utils.HTML(c, table)
 }
