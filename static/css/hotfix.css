@@ -1,0 +1,11 @@
+@media (min-width: 768px) {
+  .md\:flex-row {
+    flex-direction: row;
+  }
+  .md\:w-40 {
+    width: 10rem /* 160px */;
+  }
+  .md\:ml-2 {
+    margin-left: 0.5rem /* 8px */;
+  }
+}

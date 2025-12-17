@@ -207,13 +207,17 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 
 	searchText := c.QueryParam("search")
-	applications, err := h.service.GetAllApplicationForms(searchText)
+	statusFilter := c.QueryParam("status")
+	if statusFilter == "" {
+		statusFilter = "active" // default to active
+	}
+	applications, err := h.service.GetAllApplicationForms(searchText, statusFilter)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all applications")
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText, nil)
+	applicationsListComponent := coursesTemplates.AllApplicationsList(applications, searchText, statusFilter, nil)
 	applicationsPage := coursesTemplates.AllApplicationsPage(applicationsListComponent)
 
 	return utils.HTML(c, applicationsPage)
@@ -222,18 +226,32 @@ func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
 func (h *CoursesHandler) SearchInApplications(c echo.Context) error {
 
 	searchText := c.QueryParam("search")
-	applications, err := h.service.GetAllApplicationForms(searchText)
+	statusFilter := c.QueryParam("status")
+	if statusFilter == "" {
+		statusFilter = "active" // default to active
+	}
+	applications, err := h.service.GetAllApplicationForms(searchText, statusFilter)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all applications")
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
 	// add htmx push url to the search form
-	if searchText == "" {
-		c.Response().Header().Set("HX-Push-Url", "/prihlasky")
-	} else {
-		c.Response().Header().Set("HX-Push-Url", "/prihlasky?search="+searchText)
+	url := "/prihlasky"
+	params := []string{}
+	if searchText != "" {
+		params = append(params, "search="+searchText)
 	}
+	if statusFilter != "active" {
+		params = append(params, "status="+statusFilter)
+	}
+	if len(params) > 0 {
+		url += "?" + params[0]
+		for i := 1; i < len(params); i++ {
+			url += "&" + params[i]
+		}
+	}
+	c.Response().Header().Set("HX-Push-Url", url)
 
 	if len(applications) == 0 {
 		return utils.HTML(c, coursesTemplates.AllApplicationsNoApplications())
@@ -330,29 +348,37 @@ func (h *CoursesHandler) UpdateApplicationForm(c echo.Context) error {
 	}
 
 	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
+	statusParam := c.QueryParam("status")
+	if statusParam == "" {
+		statusParam = "active"
+	}
 
-	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
+	applicationForms, err := h.service.GetAllApplicationForms(searchParam, statusParam)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, toasts.SuccessToast(constants.SUCCESSFULLY_UPDATED)))
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, statusParam, toasts.SuccessToast(constants.SUCCESSFULLY_UPDATED)))
 }
 
 func (h *CoursesHandler) CancelApplicationFormEdit(c echo.Context) error {
 
 	_, searchParam, _ := utils.SetBackUrlAndGetQueryParamFromUrl(c, "search", "/prihlasky")
+	statusParam := c.QueryParam("status")
+	if statusParam == "" {
+		statusParam = "active"
+	}
 
-	applicationForms, err := h.service.GetAllApplicationForms(searchParam)
+	applicationForms, err := h.service.GetAllApplicationForms(searchParam, statusParam)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, nil))
+	return utils.HTML(c, coursesTemplates.AllApplicationsList(applicationForms, searchParam, statusParam, nil))
 }
 
 func (h *CoursesHandler) BulkApplicationFormCreateWillContinue(c echo.Context) error {
@@ -415,7 +441,7 @@ func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
 
 func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 
-	applicationForms, err := h.service.GetAllApplicationForms("")
+	applicationForms, err := h.service.GetAllApplicationForms("", "all")
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
@@ -504,7 +530,7 @@ func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 }
 
 func (h *CoursesHandler) ExportApplicationFormsExcel(c echo.Context) error {
-	applicationForms, err := h.service.GetAllApplicationForms("")
+	applicationForms, err := h.service.GetAllApplicationForms("", "all")
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())

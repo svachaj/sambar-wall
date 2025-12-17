@@ -113,7 +113,7 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 		}
 	}
 
-	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToast("Souhlas s provozním řádem byl úspěšně dokončen."))
+	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToastWithSeconds("Souhlas s provozním řádem byl úspěšně dokončen.", 10))
 	return utils.HTML(c, step1WithToast)
 
 }
