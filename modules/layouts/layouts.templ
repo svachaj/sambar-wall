@@ -2,8 +2,8 @@ package layouts
 
 import "github.com/svachaj/sambar-wall/modules/constants"
 
-templ BaseLayout(isAuthenticated bool, isAdmin bool) {
-	@BaseLayoutEx(isAuthenticated, isAdmin, true) {
+templ BaseLayout(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
+	@BaseLayoutEx(isAuthenticated, isAdmin, canSeeVisitors) {
 		{ children... }
 	}
 }
@@ -43,8 +43,8 @@ templ BaseLayoutEx(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
 	</html>
 }
 
-templ BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool, isAdmin bool) {
-	@BaseLayoutEx(isAuthenticated, isAdmin, true) {
+templ BaseLayoutWithComponent(cmp templ.Component, isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
+	@BaseLayoutEx(isAuthenticated, isAdmin, canSeeVisitors) {
 		@cmp
 	}
 }

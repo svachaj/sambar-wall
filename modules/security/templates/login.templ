@@ -87,7 +87,7 @@ templ LoginModal(model types.LoginFormResponse) {
 }
 
 templ LoginPage(expired bool) {
-	@layouts.BaseLayout(false, false) {
+	@layouts.BaseLayout(false, false, false) {
 		if !expired {
 			@LoginFormStep1(models.SignInStep1InitModel(), nil)
 		} else {

@@ -10,7 +10,7 @@ import (
 )
 
 templ ApplicationFormEditPage(applicationForm types.ApplicationForm, backUrl string) {
-	@layouts.BaseLayout(true, true) {
+	@layouts.BaseLayout(true, true, false) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
 			@ApplicationFormEdit(models.ApplicationFormEditModel(applicationForm), applicationForm, backUrl, nil)
 		</div>

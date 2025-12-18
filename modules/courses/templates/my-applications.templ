@@ -119,8 +119,8 @@ templ MyApplicationsNoApplications() {
 	</div>
 }
 
-templ MyApplicationsPage(cmp templ.Component, isAdmin bool) {
-	@layouts.BaseLayout(true, isAdmin) {
+templ MyApplicationsPage(cmp templ.Component, isAdmin bool, canSeeVisitors bool) {
+	@layouts.BaseLayout(true, isAdmin, canSeeVisitors) {
 		@cmp
 	}
 }

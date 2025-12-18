@@ -14,6 +14,7 @@ templ ExportButton(postUrl string) {
 		hx-get={ postUrl + "-init" }
 		hx-trigger="click"
 		hx-swap="afterend"
+		hx-include="[name='search'],[name='status']"
 		class="flex flex-row items-center justify-end gap-x-4 pr-4"
 		id="exportForm"
 	>

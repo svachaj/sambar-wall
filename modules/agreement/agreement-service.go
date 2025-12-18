@@ -136,6 +136,11 @@ func (s *AgreementService) ExportEmailsConfirmedForCommercialCommunication() (st
 
 func (s *AgreementService) GetWallVisitors(searchQuery string) ([]models.WallVisitor, error) {
 
+	// if search query is empty, return nothing
+	if strings.TrimSpace(searchQuery) == "" {
+		return []models.WallVisitor{}, nil
+	}
+
 	// Normalize search query for diacritic-insensitive search
 	normalizedSearch := strings.ToLower(searchQuery)
 	normalizedSearch = strings.ReplaceAll(normalizedSearch, "'", "''") // Escape single quotes

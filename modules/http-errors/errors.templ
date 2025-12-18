@@ -33,7 +33,7 @@ templ InternalServerErrorComponent() {
 }
 
 templ ErrorPage(cmp templ.Component) {
-	@layouts.BaseLayout(false, false) {
+	@layouts.BaseLayout(false, false, false) {
 		@cmp
 	}
 }

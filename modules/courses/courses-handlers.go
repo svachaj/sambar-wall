@@ -58,7 +58,7 @@ func (h *CoursesHandler) GetCoursesList(c echo.Context) error {
 	isAuthenticated, _, _, roles := middlewares.IsAuthenticated(&c)
 
 	coursesListComponent := coursesTemplates.CoursesList(courses, isAuthenticated)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN))
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION))
 
 	return utils.HTML(c, coursesPage)
 }
@@ -79,7 +79,7 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 	if !capacityOK {
-		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true, false))
+		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true, false, false))
 	}
 
 	courseInfo := h.service.GetCourseInfo(courseId)
@@ -199,7 +199,7 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 	}
 
 	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
-	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN))
+	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), false)
 
 	return utils.HTML(c, applicationsPage)
 }
@@ -429,9 +429,26 @@ func (h *CoursesHandler) CoursesAdminPage(c echo.Context) error {
 }
 
 func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
+	searchText := c.QueryParam("search")
+	statusFilter := c.QueryParam("status")
+
+	log.Info().Msgf("ExportApplicationFormsInit search: %v, status: %v", searchText, statusFilter)
+
+	// Build hidden input fields for the form
+	hiddenInputs := ""
+	if searchText != "" {
+		hiddenInputs += `<input type="hidden" name="search" value="` + searchText + `">`
+	}
+	if statusFilter != "" {
+		hiddenInputs += `<input type="hidden" name="status" value="` + statusFilter + `">`
+	}
+
 	html := `
-	
-	<script>document.getElementById('download-form').submit();</script>
+	<script>
+		var form = document.getElementById('download-form');
+		form.innerHTML = '` + hiddenInputs + `';
+		form.submit();
+	</script>
 	`
 
 	time.Sleep(600 * time.Millisecond) // for fun :)
@@ -441,7 +458,13 @@ func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
 
 func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 
-	applicationForms, err := h.service.GetAllApplicationForms("", "all")
+	searchText := c.QueryParam("search")
+	statusFilter := c.QueryParam("status")
+	if statusFilter == "" {
+		statusFilter = "all"
+	}
+
+	applicationForms, err := h.service.GetAllApplicationForms(searchText, statusFilter)
 
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
@@ -530,7 +553,16 @@ func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 }
 
 func (h *CoursesHandler) ExportApplicationFormsExcel(c echo.Context) error {
-	applicationForms, err := h.service.GetAllApplicationForms("", "all")
+	searchText := c.QueryParam("search")
+	statusFilter := c.QueryParam("status")
+	if statusFilter == "" {
+		statusFilter = "all"
+	}
+
+	// log query params
+	log.Info().Msgf("ExportApplicationFormsExcel search: %v, status: %v", searchText, statusFilter)
+
+	applicationForms, err := h.service.GetAllApplicationForms(searchText, statusFilter)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get all application forms")
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
