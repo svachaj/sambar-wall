@@ -472,7 +472,7 @@ func AllApplicationsPage(cmp templ.Component) templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layouts.BaseLayout(true, true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var22), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.BaseLayout(true, true, true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var22), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -611,7 +611,7 @@ func ApplicationsAdminPage() templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layouts.BaseLayout(true, true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layouts.BaseLayout(true, true, true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

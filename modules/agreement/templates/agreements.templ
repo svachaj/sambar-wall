@@ -39,7 +39,7 @@ templ Step2Form(agreementForm baseTypes.Form, toast templ.Component) {
 }
 
 templ AgreementPage() {
-	@layouts.BaseLayout(false, false) {
+	@layouts.BaseLayout(false, false, false) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
 			@Step1Form(models.AgreementFormStep1InitModel(), nil)
 		</div>

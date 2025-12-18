@@ -175,7 +175,7 @@ templ AllApplicationsNoApplications() {
 }
 
 templ AllApplicationsPage(cmp templ.Component) {
-	@layouts.BaseLayout(true, true) {
+	@layouts.BaseLayout(true, true, true) {
 		@cmp
 	}
 }
@@ -203,7 +203,7 @@ templ ApplicationPaidInfoWithToast(paid bool, applicationID string, toast templ.
 }
 
 templ ApplicationsAdminPage() {
-	@layouts.BaseLayout(true, true) {
+	@layouts.BaseLayout(true, true, true) {
 		<div class="w-full flex flex-col items-center justify-center px-2">
 			<div class="w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10">
 				<div class="py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10">

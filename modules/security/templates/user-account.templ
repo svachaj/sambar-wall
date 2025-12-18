@@ -9,7 +9,7 @@ templ UserAccountForm(userName string) {
 }
 
 templ UserAccountPage(userName string) {
-	@layouts.BaseLayout(true, false) {
+	@layouts.BaseLayout(true, false, false) {
 		@UserAccountForm(userName)
 	}
 }
