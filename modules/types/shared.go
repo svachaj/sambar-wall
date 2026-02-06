@@ -18,6 +18,7 @@ type FormField struct {
 	Disabled    bool
 	FormId      string
 	Pattern     string
+	Autofocus   bool
 }
 type IForm interface {
 	ValidateFields(data map[string][]string) bool

@@ -1,9 +1,9 @@
 package components
 
 import (
-	"github.com/svachaj/sambar-wall/utils"
-	"github.com/svachaj/sambar-wall/modules/types"
 	"fmt"
+	"github.com/svachaj/sambar-wall/modules/types"
+	"github.com/svachaj/sambar-wall/utils"
 )
 
 templ FormField(field types.FormField) {
@@ -35,6 +35,9 @@ templ FormField(field types.FormField) {
 						}
 						hx-target="closest .form-field"
 						hx-swap="outerHTML"
+					}
+					if field.Autofocus && field.Value == "@" {
+						autofocus
 					}
 					type={ field.FieldType }
 					id={ field.ID }
