@@ -2,7 +2,7 @@ package courses
 
 import "github.com/svachaj/sambar-wall/modules/layouts"
 
-templ CoursesPage(cmp templ.Component, isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
+templ CoursesPage(cmp templ.Component, isAuthenticated bool, isAdmin bool, canSeeVisitors bool, canSeeAttendance bool) {
 	@layouts.BaseLayout(isAuthenticated, isAdmin, canSeeVisitors) {
 		@cmp
 	}

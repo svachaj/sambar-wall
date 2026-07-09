@@ -89,7 +89,7 @@ func (h *SecurityHandlers) SignOut(c echo.Context) error {
 	}
 
 	coursesListComponent := coursesTemplates.CoursesList(courses, false)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false, false, false)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, false, false, false, false)
 
 	return utils.HTML(c, coursesPage)
 }
