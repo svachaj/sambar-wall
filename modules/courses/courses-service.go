@@ -547,6 +547,8 @@ func (s *CoursesService) GetAttendanceSheet(courseId int, lessonDate string) ([]
 		tsup.FirstName as firstName,
 		tsup.LastName as lastName,
 		tcaf.ParentName as parentName,
+		tcaf.Phone as parentPhone,
+		tcaf.HealthState as healthState,
 		CASE WHEN tca.ID IS NULL THEN CAST(0 as bit) ELSE tca.Present END as present,
 		CASE WHEN tca.ID IS NULL THEN CAST(0 as bit) ELSE CAST(1 as bit) END as hasRecord
 	FROM t_course_application_form tcaf

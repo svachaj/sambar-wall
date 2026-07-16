@@ -62,6 +62,8 @@ type AttendanceSheetRow struct {
 	FirstName         string    `json:"firstName" db:"firstName"`
 	LastName          string    `json:"lastName" db:"lastName"`
 	ParentName        *string   `json:"parentName" db:"parentName"`
+	ParentPhone       *string   `json:"parentPhone" db:"parentPhone"`
+	HealthState       *string   `json:"healthState" db:"healthState"`
 	Present           bool      `json:"present" db:"present"`
 	HasRecord         bool      `json:"hasRecord" db:"hasRecord"`
 }

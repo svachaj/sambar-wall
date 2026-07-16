@@ -40,24 +40,40 @@ templ AttendancePage(courseOptions []types.Course, rows []types.AttendanceSheetR
 					<table class="mt-2 w-full whitespace-nowrap text-left">
 						<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
 							<tr>
-								<th scope="col" class="py-2 px-4 font-semibold text-center">Účastník</th>
-								<th scope="col" class="py-2 px-4 font-semibold text-center">Rodič</th>
-								<th scope="col" class="py-2 px-4 font-semibold text-center">Docházka</th>
+								<th scope="col" class="hidden py-2 px-4 font-semibold text-center lg:table-cell">Účastník</th>
+								<th scope="col" class="hidden py-2 px-4 font-semibold text-center lg:table-cell">Rodič</th>
+								<th scope="col" class="hidden py-2 px-4 font-semibold text-center lg:table-cell">Telefon rodiče</th>
+								<th scope="col" class="hidden py-2 px-4 font-semibold text-center lg:table-cell">Zdravotní stav</th>
+								<th scope="col" class="hidden py-2 px-4 font-semibold text-center lg:table-cell">Docházka</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-white/20">
 							for _, row := range rows {
 								<tr class="hover:bg-slate-800">
-									<td class="py-4 px-4 text-sm font-medium leading-6 text-white text-center">{ row.LastName + " " + row.FirstName }</td>
-									<td class="py-4 px-4 text-sm font-medium leading-6 text-white text-center">{ utils.StringFromStringPointer(row.ParentName) }</td>
-									<td class="py-4 px-4 text-sm font-medium leading-6 text-white text-center">
+									<td class="lg:hidden table-cell py-4 px-4 w-full text-white text-sm whitespace-normal">
+										<div class="flex flex-col gap-1">
+											<div class="text-base font-bold leading-6 text-white break-words">{ row.LastName + " " + row.FirstName }</div>
+											<div class="text-xs font-medium leading-5 text-gray-300 break-words"><span class="text-gray-400">Rodič:&nbsp;</span>{ utils.StringFromStringPointer(row.ParentName) }</div>
+											<div class="text-xs font-medium leading-5 text-gray-300 break-words"><span class="text-gray-400">Telefon:&nbsp;</span>{ utils.StringFromStringPointer(row.ParentPhone) }</div>
+											<div class="text-xs font-medium leading-5 text-gray-300 break-words whitespace-pre-line max-h-24 overflow-y-auto pr-1"><span class="text-gray-400">Zdravotní stav:&nbsp;</span>{ utils.StringFromStringPointer(row.HealthState) }</div>
+											<div class="pt-2 mt-1 border-t border-white/10">
+												<div class="text-xs font-medium text-gray-400 mb-1">Docházka</div>
+												@AttendanceToggle(row.Present, utils.StringFromInt(row.ApplicationFormID), row.CourseID, lessonDate)
+											</div>
+										</div>
+									</td>
+									<td class="hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell">{ row.LastName + " " + row.FirstName }</td>
+									<td class="hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell">{ utils.StringFromStringPointer(row.ParentName) }</td>
+									<td class="hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell">{ utils.StringFromStringPointer(row.ParentPhone) }</td>
+									<td class="hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell">{ utils.StringFromStringPointer(row.HealthState) }</td>
+									<td class="hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell">
 										@AttendanceToggle(row.Present, utils.StringFromInt(row.ApplicationFormID), row.CourseID, lessonDate)
 									</td>
 								</tr>
 							}
 							if len(rows) == 0 {
 								<tr>
-									<td colspan="3" class="py-6 px-4 text-center text-sm text-gray-300">Pro vybraný kurz a datum nejsou žádné aktivní přihlášky.</td>
+									<td colspan="5" class="py-6 px-4 text-center text-sm text-gray-300">Pro vybraný kurz a datum nejsou žádné aktivní přihlášky.</td>
 								</tr>
 							}
 						</tbody>
