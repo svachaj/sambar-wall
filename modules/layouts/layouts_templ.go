@@ -78,7 +78,7 @@ func BaseLayoutEx(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) templ
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" data-theme=\"dark\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" href=\"/static/assets/favicon.ico\" type=\"image/x-icon\"><meta name=\"description\" content=\"Sambar Lezecká Stěna Kladno - Příhlašování na kroužky a souhlas s provozním řádem stěny\"><meta name=\"google\" content=\"notranslate\"><title>Stěna Kladno - Kroužky a Registrace</title><script src=\"/static/js/htmx.2.0.0.min.js\"></script><script defer src=\"/static/js/alpine.3.14.1.min.js\"></script><script defer src=\"/static/js/main.js\"></script><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><link href=\"/static/css/hotfix.css\" rel=\"stylesheet\"></head><body hx-boost=\"true\" class=\"dark:bg-neutral-900\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" data-theme=\"dark\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" href=\"/static/assets/favicon.ico\" type=\"image/x-icon\"><meta name=\"description\" content=\"Sambar Lezecká Stěna Kladno - Příhlašování na kroužky a souhlas s provozním řádem stěny\"><meta name=\"google\" content=\"notranslate\"><title>Stěna Kladno - Kroužky a Registrace</title><script src=\"/static/js/htmx.2.0.0.min.js\"></script><script defer src=\"/static/js/alpine.3.14.1.min.js\"></script><script defer src=\"/static/js/main.js\"></script><script>\n\t\t\t\twindow.initRegistrationMetaPixel = function() {\n\t\t\t\t\tif (window.fbq) {\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\t\t\t\t\t!function(f,b,e,v,n,t,s)\n\t\t\t\t\t{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\n\t\t\t\t\tn.callMethod.apply(n,arguments):n.queue.push(arguments)};\n\t\t\t\t\tif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\n\t\t\t\t\tn.queue=[];t=b.createElement(e);t.async=!0;\n\t\t\t\t\tt.src=v;s=b.getElementsByTagName(e)[0];\n\t\t\t\t\ts.parentNode.insertBefore(t,s)}(window, document,'script',\n\t\t\t\t\t'https://connect.facebook.net/en_US/fbevents.js');\n\t\t\t\t\tfbq('init', '2043212523203633');\n\t\t\t\t\tfbq('track', 'PageView');\n\t\t\t\t};\n\t\t\t</script><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><link href=\"/static/css/hotfix.css\" rel=\"stylesheet\"></head><body hx-boost=\"true\" class=\"dark:bg-neutral-900\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -317,7 +317,7 @@ func AuthenticatedLayout(isAdmin bool, canSeeVisitors bool) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(constants.ROUTE_AGREEMENT_EXPORT_EMAILS_INIT)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/layouts/layouts.templ`, Line: 142, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/layouts/layouts.templ`, Line: 159, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -330,7 +330,7 @@ func AuthenticatedLayout(isAdmin bool, canSeeVisitors bool) templ.Component {
 			var templ_7745c5c3_Var13 templ.SafeURL
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(constants.ROUTE_AGREEMENT_EXPORT_EMAILS))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/layouts/layouts.templ`, Line: 156, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/layouts/layouts.templ`, Line: 173, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
