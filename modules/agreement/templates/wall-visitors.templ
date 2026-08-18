@@ -47,12 +47,14 @@ templ WallVisitorsTable(visitors []models.WallVisitor) {
 			<col class="w-fit"/>
 			<col class="w-fit"/>
 			<col class="w-fit"/>
+			<col class="w-fit"/>
 		</colgroup>
 		<thead class="lg:border-b border-0 border-white/20 text-sm leading-6 text-white">
 			<tr>
 				<th scope="col" class="hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8">Jméno</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Příjmení</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Email</th>
+				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Datum narození</th>
 				<th scope="col" class="hidden py-2 pl-0 pr-8 font-semibold lg:table-cell">Datum registrace</th>
 			</tr>
 		</thead>
@@ -68,7 +70,15 @@ templ WallVisitorsTable(visitors []models.WallVisitor) {
 								{ visitor.Email }
 							</div>
 							<div class="truncate text-xs font-medium leading-6 text-gray-400">
-								{ utils.StringFromDateTime(visitor.CreateDate) }
+								Datum narození:
+								if visitor.BirthDate != nil {
+									{ utils.StringFromDateTime(*visitor.BirthDate) }
+								} else {
+									-
+								}
+							</div>
+							<div class="truncate text-xs font-medium leading-6 text-gray-400">
+								Datum registrace: { utils.StringFromDateTime(visitor.CreateDate) }
 							</div>
 						</div>
 					</td>
@@ -80,6 +90,15 @@ templ WallVisitorsTable(visitors []models.WallVisitor) {
 					</td>
 					<td class="hidden py-4 pl-0 pr-4 text-sm leading-6 lg:table-cell lg:pr-8">
 						<div class="truncate text-sm font-medium leading-6 text-white">{ visitor.Email }</div>
+					</td>
+					<td class="hidden py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-400 lg:table-cell lg:pr-8">
+						<time>
+							if visitor.BirthDate != nil {
+								{ utils.StringFromDateTime(*visitor.BirthDate) }
+							} else {
+								-
+							}
+						</time>
 					</td>
 					<td class="hidden py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-400 lg:table-cell lg:pr-8">
 						<time>{ utils.StringFromDateTime(visitor.CreateDate) }</time>

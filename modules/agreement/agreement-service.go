@@ -146,7 +146,7 @@ func (s *AgreementService) GetWallVisitors(searchQuery string) ([]models.WallVis
 	normalizedSearch = strings.ReplaceAll(normalizedSearch, "'", "''") // Escape single quotes
 
 	query := `
-		SELECT firstname, lastname, email, createdate 
+		SELECT firstname, lastname, email, birthdate, createdate 
 		FROM t_system_wall_user 
 		WHERE isenabled = 1 
 		  AND GDPR_confirmed = 1 
