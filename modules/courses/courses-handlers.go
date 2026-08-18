@@ -26,6 +26,10 @@ type ICoursesHandler interface {
 	ApplicationFormPage(c echo.Context) error
 	ProcessApplicationForm(c echo.Context) error
 	MyApplicationsPage(c echo.Context) error
+	AttendancePage(c echo.Context) error
+	SetAttendance(c echo.Context) error
+	ExportAttendanceInit(c echo.Context) error
+	ExportAttendanceExcel(c echo.Context) error
 	GetAllApplicationForms(c echo.Context) error
 	SearchInApplications(c echo.Context) error
 	SetApplicationFormPaid(c echo.Context) error
@@ -58,7 +62,8 @@ func (h *CoursesHandler) GetCoursesList(c echo.Context) error {
 	isAuthenticated, _, _, roles := middlewares.IsAuthenticated(&c)
 
 	coursesListComponent := coursesTemplates.CoursesList(courses, isAuthenticated)
-	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION))
+	canSeeAttendance := middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN) || middlewares.HasRole(roles, constants.ROLE_SAMBAR_INSTRUCTOR)
+	coursesPage := coursesTemplates.CoursesPage(coursesListComponent, isAuthenticated, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION), canSeeAttendance)
 
 	return utils.HTML(c, coursesPage)
 }
@@ -198,10 +203,191 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
+	attendanceHistory, err := h.service.GetAttendanceByUserId(userId)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get attendance history by userId")
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	attendanceByApplication := map[int][]types.CourseAttendance{}
+	for _, item := range attendanceHistory {
+		attendanceByApplication[item.ApplicationFormID] = append(attendanceByApplication[item.ApplicationFormID], item)
+	}
+
+	for i := range applications {
+		applications[i].AttendanceHistory = attendanceByApplication[applications[i].ID]
+	}
+
 	applicationsListComponent := coursesTemplates.MyApplicationsList(applications)
 	applicationsPage := coursesTemplates.MyApplicationsPage(applicationsListComponent, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), false)
 
 	return utils.HTML(c, applicationsPage)
+}
+
+func (h *CoursesHandler) AttendancePage(c echo.Context) error {
+	courseIdParam := c.QueryParam("courseId")
+	lessonDate := c.QueryParam("lessonDate")
+	if lessonDate == "" {
+		lessonDate = time.Now().Format("2006-01-02")
+	}
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	roles := authSession.Values[constants.AUTH_USER_ROLES].([]string)
+
+	courseId := 0
+	if courseIdParam != "" {
+		parsedCourseID, err := strconv.Atoi(courseIdParam)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Neplatný kurz.")
+		}
+		courseId = parsedCourseID
+	}
+
+	courseOptions, err := h.service.GetAttendanceCourseOptions()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get attendance course options")
+		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+	}
+
+	if courseId == 0 && len(courseOptions) > 0 {
+		courseId = courseOptions[0].ID
+	}
+
+	attendanceRows := []types.AttendanceSheetRow{}
+	if courseId > 0 {
+		attendanceRows, err = h.service.GetAttendanceSheet(courseId, lessonDate)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get attendance sheet")
+			return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
+		}
+	}
+
+	return utils.HTML(c, coursesTemplates.AttendancePage(courseOptions, attendanceRows, courseId, lessonDate, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION), nil))
+}
+
+func (h *CoursesHandler) SetAttendance(c echo.Context) error {
+	applicationFormIdParam := c.Param("id")
+	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to parse application form id")
+		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, 0, time.Now().Format("2006-01-02"), toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	courseIdParam := c.QueryParam("courseId")
+	courseId, err := strconv.Atoi(courseIdParam)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to parse course id")
+		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, 0, time.Now().Format("2006-01-02"), toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	lessonDate := c.QueryParam("lessonDate")
+	if lessonDate == "" {
+		lessonDate = time.Now().Format("2006-01-02")
+	}
+
+	presentParam := c.QueryParam("present")
+	present, err := strconv.ParseBool(presentParam)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to parse present flag")
+		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, courseId, lessonDate, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
+	actorUserId := authSession.Values[constants.AUTH_USER_ID].(int)
+
+	err = h.service.SetAttendance(applicationFormId, courseId, lessonDate, present, actorUserId)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to set attendance")
+		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(!present, applicationFormIdParam, courseId, lessonDate, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	}
+
+	return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(present, applicationFormIdParam, courseId, lessonDate, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
+}
+
+func (h *CoursesHandler) ExportAttendanceExcel(c echo.Context) error {
+	courseIdParam := c.QueryParam("courseId")
+	courseId, err := strconv.Atoi(courseIdParam)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to parse course id")
+		return c.String(http.StatusBadRequest, "Neplatný kurz.")
+	}
+
+	lessonDate := c.QueryParam("lessonDate")
+	if lessonDate == "" {
+		lessonDate = time.Now().Format("2006-01-02")
+	}
+
+	attendanceRows, err := h.service.GetAttendanceSheet(courseId, lessonDate)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get attendance sheet for export")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	f := excelize.NewFile()
+	sheet := "Docházka"
+	f.SetSheetName("Sheet1", sheet)
+
+	headers := []string{"Kurz", "Datum lekce", "Účastník", "Rodič", "Docházka"}
+	for i, h := range headers {
+		cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+		f.SetCellValue(sheet, cell, h)
+	}
+
+	for rowIdx, row := range attendanceRows {
+		r := rowIdx + 2
+		status := "Nebyl"
+		if row.Present {
+			status = "Byl"
+		}
+
+		data := []interface{}{
+			row.CourseName + " (" + row.CourseDays + " " + row.CourseTimeFrom.Format("15:04") + "-" + row.CourseTimeTo.Format("15:04") + ")",
+			lessonDate,
+			row.LastName + " " + row.FirstName,
+			utils.StringFromStringPointer(row.ParentName),
+			status,
+		}
+
+		for colIdx, val := range data {
+			cell, _ := excelize.CoordinatesToCellName(colIdx+1, r)
+			f.SetCellValue(sheet, cell, val)
+		}
+	}
+
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=dochazka.xlsx")
+	c.Response().Header().Set(echo.HeaderContentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	if err := f.Write(c.Response()); err != nil {
+		log.Error().Err(err).Msg("Failed to write attendance xlsx")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return nil
+}
+
+func (h *CoursesHandler) ExportAttendanceInit(c echo.Context) error {
+	courseId := c.QueryParam("courseId")
+	lessonDate := c.QueryParam("lessonDate")
+
+	hiddenInputs := ""
+	if courseId != "" {
+		hiddenInputs += `<input type="hidden" name="courseId" value="` + courseId + `">`
+	}
+	if lessonDate != "" {
+		hiddenInputs += `<input type="hidden" name="lessonDate" value="` + lessonDate + `">`
+	}
+
+	html := `
+	<script>
+		var form = document.getElementById('download-attendance-form');
+		form.innerHTML = '` + hiddenInputs + `';
+		form.submit();
+	</script>
+	`
+
+	time.Sleep(600 * time.Millisecond)
+
+	return c.HTML(http.StatusOK, html)
 }
 
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {

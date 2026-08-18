@@ -17,6 +17,7 @@ templ MyApplicationsList(applications []types.ApplicationForm) {
 			} else {
 				@MyApplicationsTable(applications)
 			}
+			@MyApplicationsAttendanceHistory(applications)
 		</div>
 	</div>
 }
@@ -116,6 +117,46 @@ templ MyApplicationsTable(applications []types.ApplicationForm) {
 templ MyApplicationsNoApplications() {
 	<div class="p-4 text-white text-center">
 		<p>Nemáte žádné přihlášky.</p>
+	</div>
+}
+
+templ MyApplicationsAttendanceHistory(applications []types.ApplicationForm) {
+	<div class="border-t border-white/20 mt-4">
+		<div class="px-4 py-3 bg-slate-800/70">
+			<h3 class="text-white font-semibold text-base">Historie docházky</h3>
+		</div>
+		<div class="overflow-x-auto">
+			<table class="w-full whitespace-nowrap text-left">
+				<thead class="border-b border-white/20 text-sm leading-6 text-white">
+					<tr>
+						<th scope="col" class="py-2 pl-4 pr-4 font-semibold text-center">Účastník</th>
+						<th scope="col" class="py-2 pl-4 pr-4 font-semibold text-center">Kurz</th>
+						<th scope="col" class="py-2 pl-4 pr-4 font-semibold text-center">Datum lekce</th>
+						<th scope="col" class="py-2 pl-4 pr-4 font-semibold text-center">Docházka</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-white/20">
+					for _, application := range applications {
+						if len(application.AttendanceHistory) > 0 {
+							for _, attendance := range application.AttendanceHistory {
+								<tr class="hover:bg-slate-800">
+									<td class="py-3 px-4 text-sm text-white text-center">{ application.LastName + " " + application.FirstName }</td>
+									<td class="py-3 px-4 text-sm text-white text-center">{ application.CourseName }</td>
+									<td class="py-3 px-4 text-sm text-white text-center">{ attendance.LessonDate.Format("2.1.2006") }</td>
+									<td class="py-3 px-4 text-sm text-center">
+										if attendance.Present {
+											<span class="text-green-500 font-semibold">Byl</span>
+										} else {
+											<span class="text-red-500 font-semibold">Nebyl</span>
+										}
+									</td>
+								</tr>
+							}
+						}
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 }
 

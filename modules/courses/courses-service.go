@@ -27,6 +27,10 @@ type ICoursesService interface {
 	GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error)
 	UpdateApplicationForm(applicationFormId int, personalId, parentName, healthState, firstName, lastName, phone string, paid, isActive bool) error
 	GetApplicationFormsWillContinue() ([]types.ApplicationForm, error)
+	GetAttendanceCourseOptions() ([]types.Course, error)
+	GetAttendanceSheet(courseId int, lessonDate string) ([]types.AttendanceSheetRow, error)
+	SetAttendance(applicationFormId int, courseId int, lessonDate string, present bool, actorUserId int) error
+	GetAttendanceByUserId(userId int) ([]types.CourseAttendance, error)
 }
 
 type CoursesService struct {
@@ -503,6 +507,156 @@ WHERE tcaf.ID = @p1;
 	}
 
 	return nil
+}
+
+func (s *CoursesService) GetAttendanceCourseOptions() ([]types.Course, error) {
+	courses := []types.Course{}
+
+	err := s.db.Select(&courses, `
+	SELECT
+	tc.ID as id,
+	tct.Name1 as name,
+	tcd.Name1 as days,
+	tc.TimeFrom as timeFrom,
+	tc.TimeTo as timeTo
+	FROM t_course tc
+	LEFT JOIN t_course_type tct on tct.ID = tc.ID_typeOfCourse
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	WHERE tc.IsActive = 1
+	ORDER BY tct.Name1, tcd.Code, tc.TimeFrom;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
+
+func (s *CoursesService) GetAttendanceSheet(courseId int, lessonDate string) ([]types.AttendanceSheetRow, error) {
+	rows := []types.AttendanceSheetRow{}
+
+	err := s.db.Select(&rows, `
+	SELECT
+		tcaf.ID as applicationFormId,
+		tc.ID as courseId,
+		tct.Name1 as courseName,
+		tcd.Name1 as courseDays,
+		tc.TimeFrom as courseTimeFrom,
+		tc.TimeTo as courseTimeTo,
+		tsup.FirstName as firstName,
+		tsup.LastName as lastName,
+		tcaf.ParentName as parentName,
+		tcaf.Phone as parentPhone,
+		tcaf.HealthState as healthState,
+		CASE WHEN tca.ID IS NULL THEN CAST(0 as bit) ELSE tca.Present END as present,
+		CASE WHEN tca.ID IS NULL THEN CAST(0 as bit) ELSE CAST(1 as bit) END as hasRecord
+	FROM t_course_application_form tcaf
+	LEFT JOIN t_system_user_participant tsup on tsup.ID = tcaf.ID_participant
+	LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+	LEFT JOIN t_course_type tct on tct.ID = tc.ID_typeOfCourse
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	LEFT JOIN t_course_attendance tca on tca.ID_ApplicationForm = tcaf.ID
+		AND tca.IsActive = 1
+		AND CAST(tca.LessonDate as date) = CAST(@p2 as date)
+	WHERE tcaf.IsActive = 1
+	AND tcaf.ID_course = @p1
+	ORDER BY tsup.LastName, tsup.FirstName;
+	`, courseId, lessonDate)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+}
+
+func (s *CoursesService) SetAttendance(applicationFormId int, courseId int, lessonDate string, present bool, actorUserId int) error {
+	_, err := s.db.Exec(`
+	IF EXISTS (
+		SELECT 1
+		FROM t_course_attendance
+		WHERE ID_ApplicationForm = @p1
+		AND CAST(LessonDate as date) = CAST(@p3 as date)
+		AND IsActive = 1
+	)
+	BEGIN
+		UPDATE t_course_attendance
+		SET Present = @p4,
+			UpdatedDate = GETDATE(),
+			ID_UpdatedBy = @p5
+		WHERE ID_ApplicationForm = @p1
+		AND CAST(LessonDate as date) = CAST(@p3 as date)
+		AND IsActive = 1
+	END
+	ELSE
+	BEGIN
+		INSERT INTO t_course_attendance(
+			ID_ApplicationForm,
+			ID_Course,
+			LessonDate,
+			Present,
+			UpdatedDate,
+			CreatedDate,
+			ID_UpdatedBy,
+			ID_CreatedBy,
+			GID,
+			IsActive
+		)
+		VALUES (
+			@p1,
+			@p2,
+			CAST(@p3 as date),
+			@p4,
+			GETDATE(),
+			GETDATE(),
+			@p5,
+			@p5,
+			NEWID(),
+			1
+		)
+	END
+	`, applicationFormId, courseId, lessonDate, present, actorUserId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *CoursesService) GetAttendanceByUserId(userId int) ([]types.CourseAttendance, error) {
+	attendance := []types.CourseAttendance{}
+
+	err := s.db.Select(&attendance, `
+	SELECT
+		tca.ID_ApplicationForm as applicationFormId,
+		tct.Name1 as courseName,
+		tcd.Name1 as courseDays,
+		tc.TimeFrom as courseTimeFrom,
+		tc.TimeTo as courseTimeTo,
+		tsup.FirstName as firstName,
+		tsup.LastName as lastName,
+		tcaf.ParentName as parentName,
+		tca.LessonDate as lessonDate,
+		tca.Present as present
+	FROM t_course_attendance tca
+	LEFT JOIN t_course_application_form tcaf on tcaf.ID = tca.ID_ApplicationForm
+	LEFT JOIN t_system_user_participant tsup on tsup.ID = tcaf.ID_participant
+	LEFT JOIN t_system_user tsu on tsu.ID = tsup.ID_ParentUser
+	LEFT JOIN t_course tc on tc.ID = tcaf.ID_course
+	LEFT JOIN t_course_type tct on tct.ID = tc.ID_typeOfCourse
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	WHERE tca.IsActive = 1
+	AND tsu.ID = @p1
+	ORDER BY tca.LessonDate DESC, tct.Name1;
+	`, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return attendance, nil
 }
 
 func (s *CoursesService) GetApplicationFormById(applicationFormId int) (types.ApplicationForm, error) {
