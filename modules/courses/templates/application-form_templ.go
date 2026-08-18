@@ -51,7 +51,20 @@ func ApplicationFormPage(course_id string, courseInfo dbTypes.Course) templ.Comp
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full flex flex-col items-center justify-center px-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full flex flex-col items-center justify-center px-2\" data-page=\"course-registration\"><script>\n\t\t\t\tif (window.initRegistrationMetaPixel) {\n\t\t\t\t\twindow.initRegistrationMetaPixel();\n\t\t\t\t}\n\t\t\t</script><noscript><img height=\"1\" width=\"1\" style=\"display:none\" alt=\"\" src=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("https://www.facebook.com/tr?id=" + layouts.RegistrationMetaPixelID() + "&ev=PageView&noscript=1")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 22, Col: 161}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></noscript>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,7 +72,7 @@ func ApplicationFormPage(course_id string, courseInfo dbTypes.Course) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -89,12 +102,12 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var5 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -110,7 +123,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,7 +131,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +139,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +147,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -142,7 +155,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -150,7 +163,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -158,7 +171,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -166,7 +179,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -174,7 +187,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,7 +195,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -190,7 +203,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -200,7 +213,7 @@ func ApplicationForm(applicationForm baseTypes.Form, courseInfo dbTypes.Course, 
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM, "outerHTML", "", applicationForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = formComponents.BaseForm(constants.ROUTE_COURSES_APPLICATION_FORM, "outerHTML", "", applicationForm.Errors).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -230,12 +243,12 @@ func ApplicationFormSuccessInfo() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Přihláška byla úspěšně odeslána!</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">Brzy se vám ozveme s dalšími informacemi. <br>V emailu naleznete také QR kód pro platbu kurzu.</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a> <a href=\"/moje-prihlasky\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Přehled mých přihlášek</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><script>\n\t\t\tif (window.fbq) {\n\t\t\t\tfbq('track', 'CompleteRegistration');\n\t\t\t}\n\t\t</script><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Přihláška byla úspěšně odeslána!</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">Brzy se vám ozveme s dalšími informacemi. <br>V emailu naleznete také QR kód pro platbu kurzu.</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a> <a href=\"/moje-prihlasky\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Přehled mých přihlášek</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -259,25 +272,25 @@ func ApplicationFormErrorInfo(message string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var6 == nil {
-			templ_7745c5c3_Var6 = templ.NopComponent
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Omlouváme se, ale ...</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 mb-10\t sm:w-10/12 font-bold text-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"rounded-lg bg-neutral-800 shadow-lg px-6 py-6 flex flex-col m-auto w-full max-w-2xl items-center\"><h1 class=\"sm:text-3xl text-xl font-bold text-neutral-100 my-2 w-full text-center\">Omlouváme se, ale ...</h1><div class=\"sm:text-lg text-sm text-cyan-200 pt-3 mb-10\t sm:w-10/12 font-bold text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 53, Col: 102}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 66, Col: 102}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a> <a href=\"/moje-prihlasky\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Přehled mých přihlášek</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div><a href=\"/\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Zpět na výběr kurzů</a> <a href=\"/moje-prihlasky\" class=\"mt-4 text-primary-600 underline hover:text-primary-400\">Přehled mých přihlášek</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -301,45 +314,32 @@ func CourseInfoCard(courseInfo dbTypes.Course) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"rounded-lg bg-neutral-700 shadow-lg lg:px-4 px-1 lg:py-4 py-2 lg:mt-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 61, Col: 103}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><div class=\"sm:text-base text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"rounded-lg bg-neutral-700 shadow-lg lg:px-4 px-1 lg:py-4 py-2 lg:mt-4 mt-1 flex flex-col m-auto w-full max-w-2xl items-center\"><div class=\"sm:text-lg text-sm text-cyan-300 pt-3 sm:w-10/12 font-bold text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.Days + " (" + courseInfo.TimeFrom.Format("15:04") + " - " + courseInfo.TimeTo.Format("15:04") + ")")
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 62, Col: 200}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 74, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><div class=\"sm:text-base text-sm text-cyan-200 pt-2 sm:w-10/12 font-bold text-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><div class=\"sm:text-base text-sm text-cyan-200 pt-3 sm:w-10/12 font-bold text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.AgeGroup)
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.Days + " (" + courseInfo.TimeFrom.Format("15:04") + " - " + courseInfo.TimeTo.Format("15:04") + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 63, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 75, Col: 200}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -350,15 +350,28 @@ func CourseInfoCard(courseInfo dbTypes.Course) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(courseInfo.Price, 'f', 2, 64) + " Kč")
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(courseInfo.AgeGroup)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 64, Col: 148}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 76, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div><div class=\"sm:text-base text-sm text-cyan-200 pt-2 sm:w-10/12 font-bold text-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(courseInfo.Price, 'f', 2, 64) + " Kč")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/application-form.templ`, Line: 77, Col: 148}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
