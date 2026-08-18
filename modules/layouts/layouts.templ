@@ -10,7 +10,7 @@ templ BaseLayout(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
 
 templ BaseLayoutEx(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
 	<!DOCTYPE html>
-	<html lang="en" data-theme="dark" class="dark">
+	<html lang="en" data-theme="dark" class="dark" data-meta-pixel-id={ RegistrationMetaPixelID() }>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -39,7 +39,7 @@ templ BaseLayoutEx(isAuthenticated bool, isAdmin bool, canSeeVisitors bool) {
 					t.src=v;s=b.getElementsByTagName(e)[0];
 					s.parentNode.insertBefore(t,s)}(window, document,'script',
 					'https://connect.facebook.net/en_US/fbevents.js');
-					fbq('init', '2043212523203633');
+					fbq('init', document.documentElement.dataset.metaPixelId);
 					fbq('track', 'PageView');
 				};
 			</script>
