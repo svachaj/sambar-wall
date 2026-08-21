@@ -58,18 +58,16 @@ func (s *SecurityService) SaveVerificationCode(email string, code string) error 
 
 func (s *SecurityService) SendVerificationCode(email string, code string, host string) error {
 
-	subject := "Sambar Lezecká Stěna - přihlašovací kód"
+	subject := "Lezecká stěna Kladno - přihlašovací kód"
 	// crypt email and code as query string
 	queryString := fmt.Sprintf("%v;%v", email, code)
 	queryStringEncoded := utils.Encrypt(queryString, s.GetConfig().AppCryptoKey)
 
-	body := fmt.Sprintf("<span style='letter-spacing: 0.75px;'>Tvůj jednorázový přihlašovací kód je: <a target='_blank' href='%v/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a>", host, queryStringEncoded, code)
-	body += "<br><br>"
-	body += "<span style='letter-spacing: 0.75px;'>Kliknutím na kód je možné se rovnou přihlásit.</span>"
-	body += "<br><br>"
-	body += "<span style='font-size:13px;color: #f40d0d;letter-spacing: 0.5px;'>Tento kód je platný pouze 10 minut.</span>"
-	body += "<br>"
-	body += "<span style='font-size:13px;color: #4d4d4d;letter-spacing: 0.5px;'>Pokud jste o tento kód nepožádali, ignorujte tento email.</span>"
+	body := "<p><strong>Lezecká stěna Kladno – přihlášení / registrace</strong></p>"
+	body += fmt.Sprintf("<p style='letter-spacing: 0.75px;'>Váš jednorázový přihlašovací kód je: <a target='_blank' href='%v/sign-me-in?c=%v' style='color: rgb(219 39 119);' ><span style='font-size:20px;letter-spacing: 2px;'>%v</span></a></p>", host, queryStringEncoded, code)
+	body += "<p style='letter-spacing: 0.75px;'>Kliknutím na kód je možné se rovnou přihlásit.</p>"
+	body += "<p style='font-size:13px;color: #f40d0d;letter-spacing: 0.5px;'>Tento kód je platný pouze 10 minut.</p>"
+	body += "<p style='font-size:13px;color: #4d4d4d;letter-spacing: 0.5px;'>Pokud jste o tento kód nepožádali, ignorujte tento email.</p>"
 
 	return s.emailService.SendEmail(subject, body, email)
 }
