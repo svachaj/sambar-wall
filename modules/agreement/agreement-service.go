@@ -33,8 +33,7 @@ func NewAgreementService(db *sqlx.DB, emailService utils.IEmailService) IAgreeme
 func (s *AgreementService) EmailExists(email string) (bool, error) {
 
 	var count int
-	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_wall_user WHERE isenabled = 'true' AND lower(email) = '%v'", strings.ToLower(email))
-	err := s.db.Get(&count, query)
+	err := s.db.Get(&count, "SELECT COUNT(*) FROM t_system_wall_user WHERE isenabled = 'true' AND lower(email) = @p1", strings.ToLower(email))
 
 	if err != nil {
 		return false, err
@@ -55,14 +54,19 @@ func (s *AgreementService) GenerateVerificationCode() string {
 
 func (s *AgreementService) SaveVerificationCode(email string, code string) error {
 
-	var query string
+	now := time.Now()
 	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), '%v', '1234', '%v')", email, time.Now().Format("2006-01-02 15:04:05"))
-	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (email, code, createdate) VALUES ('%v', '%v', '%v')", email, code, time.Now().Format("2006-01-02 15:04:05"))
+		_, err := s.db.Exec(
+			"INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), $1, '1234', $2)",
+			email, now,
+		)
+		return err
 	}
-
-	_, err := s.db.Exec(query)
+	// MSSQL
+	_, err := s.db.Exec(
+		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
+		email, code, now,
+	)
 
 	if err != nil {
 		return err
