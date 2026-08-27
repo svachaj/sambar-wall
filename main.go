@@ -33,6 +33,10 @@ func main() {
 	settings, err := config.LoadConfiguraion()
 	utils.PanicOnError(err)
 
+	if settings.AppCryptoKey == "" {
+		log.Fatal().Msg("APP_CRYPTO_KEY is not set in environment. AES encryption cannot function without a valid key (must be 16, 24, or 32 bytes).")
+	}
+
 	// Echo - http framewrok instance
 	e := echo.New()
 

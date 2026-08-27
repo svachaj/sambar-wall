@@ -366,10 +366,14 @@ LEFT join t_course_type tct on tct.ID = tc.ID_typeOfCourse
 LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID 
 LEFT JOIN t_course_age_group tcag on tc.ID_ageGroup = tcag.ID 
 WHERE tc.ID = @p1
-GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tc.TimeFrom,tc.TimeTo, tcag.Name1, tc.Price, tcd.Name1;
+	AND tc.ValidFrom <= getdate()
+	AND tc.ValidTo >= getdate()
+	AND tc.IsActive = 1
+GROUP by tc.ID, tct.ID, tct.Name1, tct.Description1, tct.Code, tc.TimeFrom,tc.TimeTo, tcag.Name1, tc.Price, tcd.Name1;
 	`, id)
 
 	if err != nil {
+		log.Err(err).Msg("GetCourseInfo failed for course ID: " + strconv.Itoa(id))
 		return types.Course{}
 	}
 
