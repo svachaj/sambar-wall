@@ -1,8 +1,10 @@
 package security
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
-	"math/rand"
+	mathRand "math/rand"
 	"strings"
 	"time"
 
@@ -34,25 +36,35 @@ func (s *SecurityService) GetConfig() *config.Config {
 }
 
 func (s *SecurityService) GenerateVerificationCode() string {
-	code := rand.Intn(100000)
+	b := make([]byte, 4)
+	_, err := rand.Read(b)
+	if err != nil {
+		return fmt.Sprintf("%05d", 10000+mathRand.Intn(90000))
+	}
+	code := binary.BigEndian.Uint32(b) % 100000
 	if code < 10000 {
 		code += 10000
 	}
 
-	return fmt.Sprintf("%v", code)
+	return fmt.Sprintf("%d", code)
 }
 
 func (s *SecurityService) SaveVerificationCode(email string, code string) error {
+	now := time.Now()
+	lowerEmail := strings.ToLower(email)
 
-	var query string
 	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), '%v', '1234', '%v')", strings.ToLower(email), time.Now().Format("2006-01-02 15:04:05"))
-	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_registration_code (email, code, createdate) VALUES ('%v', '%v', '%v')", strings.ToLower(email), code, time.Now().Format("2006-01-02 15:04:05"))
+		_, err := s.db.Exec(
+			"INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), $1, $2, $3)",
+			lowerEmail, code, now,
+		)
+		return err
 	}
-
-	_, err := s.db.Exec(query)
-
+	// MSSQL
+	_, err := s.db.Exec(
+		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
+		lowerEmail, code, now,
+	)
 	return err
 }
 
@@ -73,51 +85,74 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 }
 
 func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId int, roles []string, err error) {
+	lowerEmail := strings.ToLower(email)
 
-	// check confirmation code
+	// check confirmation code exists and is within 10 minutes
 	var count int
-	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", strings.ToLower(email), confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
-	err = s.db.Get(&count, query)
+	err = s.db.Get(&count,
+		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > @p3",
+		lowerEmail, confirmationCode, time.Now().Add(-10*time.Minute))
 
 	if err != nil {
 		return -1, roles, err
 	}
-
 	if count == 0 {
 		return -1, roles, fmt.Errorf(AGREEMENT_ERROR_BAD_CONFIRMATION_CODE)
 	}
 
-	// we want to create a new user with the email if it does not exist
-	query = fmt.Sprintf(`IF NOT EXISTS (SELECT 1 FROM t_system_user WHERE UserName = '%[1]v')
-	BEGIN
-		INSERT INTO t_system_user (email, username, CreateDate, IsActivated, IsDeleted, IsEnabled) VALUES ('%[1]v', '%[1]v', getdate(), 1, 0 ,1);
-	END;`, strings.ToLower(email))
-	_, _ = s.db.Exec(query)
+	// create user if not exists
+	var exists int
+	err = s.db.Get(&exists,
+		"SELECT COUNT(*) FROM t_system_user WHERE UserName = @p1",
+		lowerEmail)
+	if err != nil {
+		return -1, roles, err
+	}
+	if exists == 0 {
+		_, err = s.db.Exec(
+			"INSERT INTO t_system_user (email, username, CreateDate, IsActivated, IsDeleted, IsEnabled) VALUES (@p1, @p1, GETDATE(), 1, 0, 1)",
+			lowerEmail)
+		if err != nil {
+			return -1, roles, err
+		}
+	}
 
 	// get user id
-	query = fmt.Sprintf("SELECT ID FROM t_system_user WHERE UserName = '%v'", strings.ToLower(email))
-	err = s.db.Get(&userId, query)
-
+	err = s.db.Get(&userId,
+		"SELECT ID FROM t_system_user WHERE UserName = @p1",
+		lowerEmail)
 	if err != nil {
 		return -1, roles, err
 	}
 
-	// get user roles (codes)
-	query = fmt.Sprintf(`SELECT tsr.Code 
-						from t_system_user tsu
-						left join t_system_role_user tsru on tsu.ID = tsru.UserID
-						left join t_system_role tsr on tsr.ID = tsru.RoleId
-						where tsu.ID = %v`, userId)
+	// get user roles
+	var userRoles []string
+	err = s.db.Select(&userRoles,
+		`SELECT tsr.Code
+		FROM t_system_user tsu
+		LEFT JOIN t_system_role_user tsru ON tsu.ID = tsru.UserID
+		LEFT JOIN t_system_role tsr ON tsr.ID = tsru.RoleId
+		WHERE tsu.ID = @p1`, userId)
+	if err != nil {
+		return -1, roles, err
+	}
+	roles = userRoles
 
-	_ = s.db.Select(&roles, query)
+	// update last logon date
+	_, err = s.db.Exec(
+		"UPDATE t_system_user SET LastLogonDate = GETDATE() WHERE UserName = @p1",
+		lowerEmail)
+	if err != nil {
+		return -1, roles, err
+	}
 
-	// set last logon date
-	query = fmt.Sprintf("UPDATE t_system_user SET LastLogonDate = getdate() WHERE UserName = '%v'", strings.ToLower(email))
-	_, _ = s.db.Exec(query)
-
-	// if everything is ok, delete the confirmation code
-	query = fmt.Sprintf("DELETE FROM t_system_registration_code WHERE email = '%v'", strings.ToLower(email))
-	_, _ = s.db.Exec(query)
+	// delete the confirmation code (one-time use)
+	_, err = s.db.Exec(
+		"DELETE FROM t_system_registration_code WHERE email = @p1",
+		lowerEmail)
+	if err != nil {
+		return -1, roles, err
+	}
 
 	return userId, roles, nil
 }

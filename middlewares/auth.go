@@ -11,16 +11,19 @@ func IsAuthenticated(c *echo.Context) (bool, string, int, []string) {
 
 	authSession, err := session.Get(constants.AUTH_SESSION_NAME, *c)
 
-	if err == nil && authSession != nil {
-		userName := authSession.Values[constants.AUTH_USER_USERNAME]
-		userID := authSession.Values[constants.AUTH_USER_ID]
-		roles := authSession.Values[constants.AUTH_USER_ROLES]
-		if userID != nil && userName != nil && roles != nil {
-			return true, userName.(string), userID.(int), roles.([]string)
-		}
+	if err != nil || authSession == nil || authSession.IsNew {
+		return false, "", -1, nil
 	}
 
-	return false, "", -1, nil
+	userName, ok1 := authSession.Values[constants.AUTH_USER_USERNAME].(string)
+	userID, ok2 := authSession.Values[constants.AUTH_USER_ID].(int)
+	roles, ok3 := authSession.Values[constants.AUTH_USER_ROLES].([]string)
+
+	if !ok1 || !ok2 || !ok3 {
+		return false, "", -1, nil
+	}
+
+	return true, userName, userID, roles
 }
 
 // AuthMiddleware is a middleware to check if the user is authenticated.

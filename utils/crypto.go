@@ -5,48 +5,60 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"io"
 )
 
+var ErrDecryptionFailed = errors.New("decryption failed")
+
 func Encrypt(text, secret string) string {
 	key := []byte(secret)
-	plaintext := []byte(text)
-
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
 	}
 
-	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
-	iv := ciphertext[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
 		panic(err)
 	}
 
-	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err)
+	}
 
+	ciphertext := aesGCM.Seal(nonce, nonce, []byte(text), nil)
 	return hex.EncodeToString(ciphertext)
 }
 
-func Decrypt(text, secret string) string {
+func Decrypt(hexCiphertext, secret string) (string, error) {
 	key := []byte(secret)
-	ciphertext, _ := hex.DecodeString(text)
-
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	if len(ciphertext) < aes.BlockSize {
-		panic("ciphertext too short")
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
 	}
 
-	iv := ciphertext[:aes.BlockSize]
-	ciphertext = ciphertext[aes.BlockSize:]
+	ciphertext, err := hex.DecodeString(hexCiphertext)
+	if err != nil {
+		return "", err
+	}
 
-	stream := cipher.NewCFBDecrypter(block, iv)
-	stream.XORKeyStream(ciphertext, ciphertext)
+	nonceSize := aesGCM.NonceSize()
+	if len(ciphertext) < nonceSize {
+		return "", ErrDecryptionFailed
+	}
 
-	return string(ciphertext)
+	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return "", ErrDecryptionFailed
+	}
+
+	return string(plaintext), nil
 }
