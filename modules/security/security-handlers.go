@@ -256,7 +256,11 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	// get query param and decode it
 	queryEncodedParam := c.QueryParam("c")
-	decodedParam := utils.Decrypt(queryEncodedParam, h.securityService.GetConfig().AppCryptoKey)
+	decodedParam, err := utils.Decrypt(queryEncodedParam, h.securityService.GetConfig().AppCryptoKey)
+	if err != nil {
+		log.Err(err).Msg("Failed to decrypt magic link parameter")
+		return c.Redirect(302, constants.ROUTE_LOGIN+"?expired=true")
+	}
 	params := strings.Split(decodedParam, ";")
 
 	email := strings.ToLower(params[0])
