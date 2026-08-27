@@ -89,6 +89,11 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 
 	courseInfo := h.service.GetCourseInfo(courseId)
 
+	if courseInfo.ID == 0 {
+		log.Warn().Msg("GetCourseInfo returned empty result for course ID: " + strconv.Itoa(courseId))
+		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Požadovaný kurz nebyl nalezen. Může být již plně obsazen nebo neplatný. Zkuste prosím jiný kurz."), true, false, false))
+	}
+
 	applicationForm := coursesTemplates.ApplicationFormPage(id, courseInfo)
 
 	return utils.HTML(c, applicationForm)
