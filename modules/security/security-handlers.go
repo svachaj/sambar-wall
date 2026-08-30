@@ -50,6 +50,7 @@ type ISecurityHandlers interface {
 	SignOut(c echo.Context) error
 	UserAccountPage(c echo.Context) error
 	SignMeIn(c echo.Context) error
+	SignMeInConfirm(c echo.Context) error
 }
 
 type SecurityHandlers struct {
@@ -235,31 +236,58 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	return utils.HTML(c, step2)
 }
 
-// SignMeIn handles the user sign-in process. It retrieves and decodes the query parameter,
-// finalizes the login process, and sets up the authentication session.
+// SignMeIn handles the GET request for a magic-link login URL. It only renders a landing
+// page carrying the encoded parameter forward - it does NOT touch the database or consume
+// the code. This matters because email security gateways/antivirus (Safe Links, Proofpoint,
+// Mimecast, etc.) routinely pre-fetch links in incoming emails before a human clicks them;
+// if a plain GET consumed the one-time code, that prefetch would burn it before the real
+// user ever clicks, and the real click would then look like an expired code. The actual
+// login is finalized by SignMeInConfirm, triggered via htmx only once the page has actually
+// loaded and executed JavaScript in a real browser.
 //
 // Parameters:
 //   - c: echo.Context - the context for the request, which provides query parameters and request/response handling.
 //
 // Returns:
+//   - error: an error if rendering fails, otherwise nil.
+func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
+
+	queryEncodedParam := c.QueryParam("c")
+	if queryEncodedParam == "" {
+		return c.Redirect(302, constants.ROUTE_LOGIN+"?expired=true")
+	}
+
+	landingPage := security.SignMeInLanding(queryEncodedParam)
+	return utils.HTML(c, landingPage)
+}
+
+// SignMeInConfirm finalizes the magic-link login. It is invoked via htmx (hx-trigger="load")
+// from the SignMeIn landing page once it has actually rendered in a browser, so a bare HTTP
+// prefetch of the magic-link URL (see SignMeIn) can never reach this handler and consume the
+// code on its own.
+//
+// Parameters:
+//   - c: echo.Context - the context for the request, which provides the posted "c" form value.
+//
+// Returns:
 //   - error: an error if the sign-in process fails, otherwise nil.
 //
 // The function performs the following steps:
-//  1. Retrieves the encoded query parameter "c" from the request and decodes it using the application secret.
+//  1. Retrieves the encoded "c" form value and decodes it using the application secret.
 //  2. Splits the decoded parameter to extract the email and confirmation code.
 //  3. Calls the security service to finalize the login process with the extracted email and confirmation code.
-//  4. If the login fails, logs an unauthorized error and redirects to the login route with an expired flag.
+//  4. If the login fails, logs an unauthorized error and redirects (via HX-Redirect) to the login route with an expired flag.
 //  5. If the login succeeds, sets up the authentication session with user details and saves the session.
 //  6. Logs the successful sign-in event with the user's email, roles, and IP address.
-//  7. Redirects the user to the return URL if available, otherwise redirects to the courses page.
-func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
+//  7. Redirects (via HX-Redirect) the user to the return URL if available, otherwise redirects to the courses page.
+func (h *SecurityHandlers) SignMeInConfirm(c echo.Context) error {
 
-	// get query param and decode it
-	queryEncodedParam := c.QueryParam("c")
+	queryEncodedParam := c.FormValue("c")
 	decodedParam, err := utils.Decrypt(queryEncodedParam, h.securityService.GetConfig().AppCryptoKey)
 	if err != nil {
 		log.Err(err).Msg("Failed to decrypt magic link parameter")
-		return c.Redirect(302, constants.ROUTE_LOGIN+"?expired=true")
+		c.Response().Header().Set("HX-Redirect", constants.ROUTE_LOGIN+"?expired=true")
+		return c.NoContent(200)
 	}
 	params := strings.Split(decodedParam, ";")
 
@@ -270,7 +298,8 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 
 	if err != nil {
 		log.Err(fmt.Errorf("Unathorized")).Msg("Unathorized")
-		return c.Redirect(302, constants.ROUTE_LOGIN+"?expired=true")
+		c.Response().Header().Set("HX-Redirect", constants.ROUTE_LOGIN+"?expired=true")
+		return c.NoContent(200)
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
@@ -297,10 +326,12 @@ func (h *SecurityHandlers) SignMeIn(c echo.Context) error {
 	// if user is authenticated, we want to retarget to the courses page
 
 	if returnUrl != "" {
-		return c.Redirect(302, returnUrl)
+		c.Response().Header().Set("HX-Redirect", returnUrl)
+	} else {
+		c.Response().Header().Set("HX-Redirect", constants.ROUTE_COURSES)
 	}
 
-	return c.Redirect(302, constants.ROUTE_COURSES)
+	return c.NoContent(200)
 }
 
 func (h *SecurityHandlers) UserAccountPage(c echo.Context) error {

@@ -125,13 +125,14 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 		return -1, roles, err
 	}
 
-	// get user roles
+	// get user roles (INNER JOIN so a user with no assigned role yields an empty
+	// slice instead of a row with a NULL tsr.Code, which fails to scan into a string)
 	var userRoles []string
 	err = s.db.Select(&userRoles,
 		`SELECT tsr.Code
 		FROM t_system_user tsu
-		LEFT JOIN t_system_role_user tsru ON tsu.ID = tsru.UserID
-		LEFT JOIN t_system_role tsr ON tsr.ID = tsru.RoleId
+		INNER JOIN t_system_role_user tsru ON tsu.ID = tsru.UserID
+		INNER JOIN t_system_role tsr ON tsr.ID = tsru.RoleId
 		WHERE tsu.ID = @p1`, userId)
 	if err != nil {
 		return -1, roles, err
@@ -146,10 +147,11 @@ func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId 
 		return -1, roles, err
 	}
 
-	// delete the confirmation code (one-time use)
+	// delete the confirmation code (one-time use) - only the code that was actually redeemed,
+	// so other still-valid outstanding codes for the same email aren't invalidated
 	_, err = s.db.Exec(
-		"DELETE FROM t_system_registration_code WHERE email = @p1",
-		lowerEmail)
+		"DELETE FROM t_system_registration_code WHERE email = @p1 AND code = @p2",
+		lowerEmail, confirmationCode)
 	if err != nil {
 		return -1, roles, err
 	}
