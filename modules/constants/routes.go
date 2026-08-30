@@ -9,10 +9,11 @@ const (
 	ROUTE_AGREEMENT_EXPORT_EMAILS_INIT = "commercial-emails-export-init"
 	ROUTE_AGREEMENT_EXPORT_EMAILS      = "commercial-emails-export"
 
-	ROUTE_LOGIN            = "/prihlaseni"
-	ROUTE_LOGIN_STEP1      = "/sign-in-step1"
-	ROUTE_LOGIN_STEP2      = "/sign-in-step2"
-	ROUTE_LOGIN_MAGIC_LINK = "/sign-me-in"
+	ROUTE_LOGIN                    = "/prihlaseni"
+	ROUTE_LOGIN_STEP1              = "/sign-in-step1"
+	ROUTE_LOGIN_STEP2              = "/sign-in-step2"
+	ROUTE_LOGIN_MAGIC_LINK         = "/sign-me-in"
+	ROUTE_LOGIN_MAGIC_LINK_CONFIRM = "/sign-me-in-confirm"
 
 	ROUTE_SIGN_OUT = "/sign-out"
 

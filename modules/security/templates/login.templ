@@ -95,3 +95,19 @@ templ LoginPage(expired bool) {
 		}
 	}
 }
+
+templ SignMeInLanding(code string) {
+	@layouts.BaseLayout(false, false, false) {
+		<div
+			class="flex min-h-full flex-col items-center justify-center px-6 py-8"
+			hx-post={ constants.ROUTE_LOGIN_MAGIC_LINK_CONFIRM }
+			hx-trigger="load"
+			hx-include="#magic-link-code"
+			hx-target="body"
+			hx-swap="outerHTML"
+		>
+			<input type="hidden" id="magic-link-code" name="c" value={ code }/>
+			<p class="text-white">Přihlašuji vás…</p>
+		</div>
+	}
+}

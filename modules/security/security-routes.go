@@ -28,6 +28,8 @@ func MapSecurityRoutes(e *echo.Echo, h ISecurityHandlers) {
 
 	e.GET(constants.ROUTE_LOGIN_MAGIC_LINK, h.SignMeIn)
 
+	e.POST(constants.ROUTE_LOGIN_MAGIC_LINK_CONFIRM, h.SignMeInConfirm)
+
 	e.GET(constants.ROUTE_SIGN_OUT, h.SignOut)
 
 	e.GET(constants.ROUTE_USER_ACCOUNT, h.UserAccountPage, middlewares.AuthMiddleware)
