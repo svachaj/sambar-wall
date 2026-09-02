@@ -115,6 +115,13 @@ func (h *AgreementHandlers) Finalize(c echo.Context) error {
 		}
 	}
 
+	visitorCardEmailErr := h.service.SendVisitorCardEmail(email, firstName, lastName)
+	if visitorCardEmailErr != nil {
+		log.Error().Msgf("SendVisitorCardEmail error: %v", visitorCardEmailErr)
+		step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.WarnToast("Souhlas s provozním řádem byl úspěšně dokončen. Potvrzovací e-mail se nepodařilo odeslat, při vstupu vás recepce dohledá ručně."))
+		return utils.HTML(c, step1WithToast)
+	}
+
 	step1WithToast := agreementTemplates.Step1Form(models.AgreementFormStep1InitModel(), toasts.SuccessToastWithSeconds("Souhlas s provozním řádem byl úspěšně dokončen.", 10))
 	return utils.HTML(c, step1WithToast)
 
