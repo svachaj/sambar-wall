@@ -10,11 +10,12 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	types "github.com/svachaj/sambar-wall/db/types"
+	"github.com/svachaj/sambar-wall/modules/courses/models"
 	"github.com/svachaj/sambar-wall/modules/layouts"
 	"github.com/svachaj/sambar-wall/utils"
 )
 
-func AttendancePage(courseOptions []types.Course, rows []types.AttendanceSheetRow, selectedCourseID int, lessonDate string, isAdmin bool, canSeeVisitors bool, toast templ.Component) templ.Component {
+func AttendancePage(m models.AttendancePageModel, isAdmin bool, canSeeVisitors bool, toast templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -47,202 +48,381 @@ func AttendancePage(courseOptions []types.Course, rows []types.AttendanceSheetRo
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full flex flex-col items-center justify-center px-2\"><div class=\"w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10 flex flex-row items-center justify-between\"><h2 class=\"px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">Docházka dětí</h2><form hx-get=\"/dochazka-export-init\" hx-trigger=\"click\" hx-swap=\"afterend\" hx-include=\"[name='courseId'],[name='lessonDate']\" class=\"mr-4\"><button class=\"rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-400\">Export XLSX</button></form></div><form method=\"GET\" action=\"/dochazka\" class=\"p-3 flex flex-col md:flex-row gap-3 items-start md:items-end\"><div class=\"flex flex-col gap-1 w-full md:w-80\"><label class=\"text-sm text-white\" for=\"courseId\">Kurz</label> <select id=\"courseId\" name=\"courseId\" class=\"p-2 bg-neutral-800 text-white rounded border border-neutral-600\" onchange=\"this.form.submit()\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full flex flex-col items-center justify-center px-2\"><div class=\"w-full max-w-5xl border border-neutral-600 shadow-xl rounded-xl bg-neutral-900 mb-10\"><div class=\"py-3 bg-slate-800 rounded-t-xl sticky top-[76px] z-10 flex flex-row items-center justify-between\"><h2 class=\"px-4 sm:text-xl text-lg text-center font-semibold leading-7 text-white sm:px-6 lg:px-8\">Docházka dětí</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, course := range courseOptions {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<option value=\"")
+			if m.SelectedCourseID > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<a hx-boost=\"false\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromInt(course.ID))
+				var templ_7745c5c3_Var3 templ.SafeURL
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/dochazka-export?courseId=" + utils.StringFromInt(m.SelectedCourseID) + "&lessonDate=" + m.LessonDate))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 30, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 19, Col: 131}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"mr-4 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-400\">Export lekce XLSX</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if selectedCourseID == course.ID {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " selected")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ">")
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"p-3 flex flex-col md:flex-row gap-3 items-start md:items-end\"><form method=\"GET\" action=\"/dochazka\" class=\"flex flex-col gap-1 w-full md:w-auto\"><label class=\"text-sm text-white\" for=\"lessonDate\">Datum lekce</label><div class=\"flex flex-row items-center gap-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if m.SelectedCourseID > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(course.Name + " - " + course.Days + " (" + course.TimeFrom.Format("15:04") + "-" + course.TimeTo.Format("15:04") + ")")
+				var templ_7745c5c3_Var4 templ.SafeURL
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/dochazka?courseId=" + utils.StringFromInt(m.SelectedCourseID) + "&lessonDate=" + m.PrevLessonDate))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 30, Col: 221}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 30, Col: 130}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</option>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" title=\"O týden zpět\" class=\"px-3 py-2 rounded border border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700\">◀</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select></div><div class=\"flex flex-col gap-1 w-full md:w-52\"><label class=\"text-sm text-white\" for=\"lessonDate\">Datum lekce</label> <input id=\"lessonDate\" type=\"date\" name=\"lessonDate\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input id=\"lessonDate\" type=\"date\" name=\"lessonDate\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(lessonDate)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(m.LessonDate)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 36, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 35, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"p-2 bg-neutral-800 text-white rounded border border-neutral-600\" onchange=\"this.form.submit()\"></div></form><div class=\"overflow-x-auto\" id=\"attendanceTable\"><table class=\"mt-2 w-full whitespace-nowrap text-left\"><thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Účastník</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Rodič</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Telefon rodiče</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Zdravotní stav</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Docházka</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"p-2 bg-neutral-800 text-white rounded border border-neutral-600 cursor-pointer hover:border-neutral-400\" onchange=\"this.form.submit()\"> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, row := range rows {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 px-4 w-full text-white text-sm whitespace-normal\"><div class=\"flex flex-col gap-1\"><div class=\"text-base font-bold leading-6 text-white break-words\">")
+			if m.SelectedCourseID > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(row.LastName + " " + row.FirstName)
+				var templ_7745c5c3_Var6 templ.SafeURL
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/dochazka?courseId=" + utils.StringFromInt(m.SelectedCourseID) + "&lessonDate=" + m.NextLessonDate))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 55, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 38, Col: 130}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words\"><span class=\"text-gray-400\">Rodič:&nbsp;</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" title=\"O týden dopředu\" class=\"px-3 py-2 rounded border border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700\">▶</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentName))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 56, Col: 175}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"text-sm font-semibold text-primary-400\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(m.LessonDateLabel)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 44, Col: 77}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></form><form method=\"GET\" action=\"/dochazka\" class=\"flex flex-col gap-1 w-full \"><input type=\"hidden\" name=\"lessonDate\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(m.LessonDate)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 47, Col: 65}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <label class=\"text-sm text-white\" for=\"courseId\">Kurz</label><div class=\"relative\"><select id=\"courseId\" name=\"courseId\" class=\"w-full appearance-none bg-none p-2 pr-10 bg-neutral-800 text-white rounded border border-neutral-600 cursor-pointer hover:border-neutral-400\" onchange=\"this.form.submit()\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if m.SelectedCourseID == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<option value=\"\" selected>— vyberte kurz —</option> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words\"><span class=\"text-gray-400\">Telefon:&nbsp;</span>")
+			}
+			if len(m.DayCourses) > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<optgroup label=\"Kurzy v tento den\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentPhone))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 57, Col: 177}
+				for _, course := range m.DayCourses {
+					templ_7745c5c3_Err = attendanceCourseOption(course, m.SelectedCourseID).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</optgroup> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words whitespace-pre-line max-h-24 overflow-y-auto pr-1\"><span class=\"text-gray-400\">Zdravotní stav:&nbsp;</span>")
+			}
+			if len(m.OtherCourses) > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<optgroup label=\"Ostatní kurzy\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				for _, course := range m.OtherCourses {
+					templ_7745c5c3_Err = attendanceCourseOption(course, m.SelectedCourseID).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</optgroup>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</select> <svg class=\"pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-200\" viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m6 8 4 4 4-4\"></path></svg></div><div class=\"text-sm text-gray-400 invisible\">&nbsp;</div></form></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if m.DayMismatch {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"mx-3 mb-2 rounded-md border border-yellow-500 bg-yellow-900/40 px-4 py-3 text-sm text-yellow-200\"><span class=\"font-bold\">Pozor:</span> vybraný kurz probíhá v den „")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.HealthState))
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(m.SelectedCourseDays)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 58, Col: 235}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 78, Col: 99}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"pt-2 mt-1 border-t border-white/10\"><div class=\"text-xs font-medium text-gray-400 mb-1\">Docházka</div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = AttendanceToggle(row.Present, utils.StringFromInt(row.ApplicationFormID), row.CourseID, lessonDate).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "“, ale zvolené datum je ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(row.LastName + " " + row.FirstName)
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(m.LessonDateLabel)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 65, Col: 141}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 78, Col: 147}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentName))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 66, Col: 152}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentPhone))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 67, Col: 153}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.HealthState))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 68, Col: 153}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = AttendanceToggle(row.Present, utils.StringFromInt(row.ApplicationFormID), row.CourseID, lessonDate).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, ". Opravdu zapisujete správné datum?</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			if len(rows) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<tr><td colspan=\"5\" class=\"py-6 px-4 text-center text-sm text-gray-300\">Pro vybraný kurz a datum nejsou žádné aktivní přihlášky.</td></tr>")
+			if m.SelectedCourseID == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"mx-3 mb-4 py-6 px-4 text-center text-sm text-gray-300\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if len(m.DayCourses) == 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "V tento den neprobíhá žádný kurz. Zvolte jiné datum nebo vyberte kurz ze seznamu.")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "Vyberte kurz.")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"overflow-x-auto\" id=\"attendanceTable\"><table class=\"mt-2 w-full whitespace-nowrap text-left\"><thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Účastník</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Rodič</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Telefon rodiče</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Zdravotní stav</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold text-center lg:table-cell\">Docházka</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				for _, row := range m.Rows {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 px-4 w-full text-white text-sm whitespace-normal\"><div class=\"flex flex-col gap-1\"><div class=\"text-base font-bold leading-6 text-white break-words\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var11 string
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(row.LastName + " " + row.FirstName)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 106, Col: 114}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words\"><span class=\"text-gray-400\">Rodič:&nbsp;</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var12 string
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentName))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 107, Col: 176}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words\"><span class=\"text-gray-400\">Telefon:&nbsp;</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var13 string
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentPhone))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 108, Col: 178}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</div><div class=\"text-xs font-medium leading-5 text-gray-300 break-words whitespace-pre-line max-h-24 overflow-y-auto pr-1\"><span class=\"text-gray-400\">Zdravotní stav:&nbsp;</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var14 string
+					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.HealthState))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 109, Col: 236}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div><div class=\"pt-2 mt-1 border-t border-white/10\"><div class=\"text-xs font-medium text-gray-400 mb-1\">Docházka</div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = AttendanceButtons(models.AttendanceStatus(row.HasRecord, row.Present), utils.StringFromInt(row.ApplicationFormID), row.CourseID, m.LessonDate).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div></div></td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var15 string
+					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(row.LastName + " " + row.FirstName)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 116, Col: 142}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var16 string
+					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentName))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 117, Col: 153}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var17 string
+					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.ParentPhone))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 118, Col: 154}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var18 string
+					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromStringPointer(row.HealthState))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 119, Col: 154}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</td><td class=\"hidden py-4 px-4 text-sm font-medium leading-6 text-white text-center lg:table-cell\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = AttendanceButtons(models.AttendanceStatus(row.HasRecord, row.Present), utils.StringFromInt(row.ApplicationFormID), row.CourseID, m.LessonDate).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</td></tr>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				if len(m.Rows) == 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<tr><td colspan=\"5\" class=\"py-6 px-4 text-center text-sm text-gray-300\">Pro vybraný kurz a datum nejsou žádné aktivní přihlášky.</td></tr>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</tbody></table></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</tbody></table></div></div></div><form id=\"download-attendance-form\" action=\"/dochazka-export\" method=\"GET\" style=\"display:none\"></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</div><form method=\"GET\" action=\"/dochazka-export-vse\" hx-boost=\"false\" class=\"m-3 mt-3 p-3 rounded-md border border-neutral-700 flex flex-col md:flex-row gap-3 items-start md:items-end\"><div class=\"text-sm font-semibold text-white md:self-center md:mr-2\">Celková docházka</div><div class=\"flex flex-col gap-1\"><label class=\"text-sm text-white\" for=\"dateFrom\">Od</label> <input id=\"dateFrom\" type=\"date\" name=\"dateFrom\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var19 string
+			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(m.ExportDateFrom)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 139, Col: 78}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" required class=\"p-2 bg-neutral-800 text-white rounded border border-neutral-600 cursor-pointer hover:border-neutral-400\"></div><div class=\"flex flex-col gap-1\"><label class=\"text-sm text-white\" for=\"dateTo\">Do</label> <input id=\"dateTo\" type=\"date\" name=\"dateTo\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var20 string
+			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(m.ExportDateTo)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 143, Col: 72}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" required class=\"p-2 bg-neutral-800 text-white rounded border border-neutral-600 cursor-pointer hover:border-neutral-400\"></div><button type=\"submit\" class=\"rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-400\">Export vše XLSX</button></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -262,7 +442,7 @@ func AttendancePage(courseOptions []types.Course, rows []types.AttendanceSheetRo
 	})
 }
 
-func AttendanceToggle(present bool, applicationID string, courseID int, lessonDate string) templ.Component {
+func attendanceCourseOption(course types.Course, selectedCourseID int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -278,40 +458,48 @@ func AttendanceToggle(present bool, applicationID string, courseID int, lessonDa
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var14 == nil {
-			templ_7745c5c3_Var14 = templ.NopComponent
+		templ_7745c5c3_Var21 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var21 == nil {
+			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"inline-flex items-center rounded-md px-4 py-2 cursor-pointer text-sm font-semibold underline-offset-2\" hx-put=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<option value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var15 string
-		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs("/dochazka/" + applicationID + "?present=" + utils.StringifyBool(!present) + "&courseId=" + utils.StringFromInt(courseID) + "&lessonDate=" + lessonDate)
+		var templ_7745c5c3_Var22 string
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(utils.StringFromInt(course.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 94, Col: 162}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 155, Col: 47}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-trigger=\"click\" hx-swap=\"outerHTML\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if present {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-green-500 hover:underline\">Byl</span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-red-500 hover:underline\">Nebyl</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if selectedCourseID == course.ID {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, " selected")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, ">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var23 string
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(course.Days + " " + course.TimeFrom.Format("15:04") + "–" + course.TimeTo.Format("15:04") + " – " + course.Name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 155, Col: 211}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</option>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -319,7 +507,7 @@ func AttendanceToggle(present bool, applicationID string, courseID int, lessonDa
 	})
 }
 
-func AttendanceToggleWithToast(present bool, applicationID string, courseID int, lessonDate string, toast templ.Component) templ.Component {
+func AttendanceButtons(status string, applicationID string, courseID int, lessonDate string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -335,12 +523,150 @@ func AttendanceToggleWithToast(present bool, applicationID string, courseID int,
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var16 == nil {
-			templ_7745c5c3_Var16 = templ.NopComponent
+		templ_7745c5c3_Var24 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var24 == nil {
+			templ_7745c5c3_Var24 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = AttendanceToggle(present, applicationID, courseID, lessonDate).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"inline-flex rounded-md border border-neutral-600 overflow-hidden text-sm font-semibold\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = attendanceButton(models.ATTENDANCE_STATUS_UNSET, status, applicationID, courseID, lessonDate, "bg-neutral-500 text-white").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = attendanceButton(models.ATTENDANCE_STATUS_PRESENT, status, applicationID, courseID, lessonDate, "bg-green-600 text-white").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = attendanceButton(models.ATTENDANCE_STATUS_ABSENT, status, applicationID, courseID, lessonDate, "bg-red-600 text-white").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func attendanceButton(target string, current string, applicationID string, courseID int, lessonDate string, activeClass string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var25 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var25 == nil {
+			templ_7745c5c3_Var25 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		if target == current {
+			var templ_7745c5c3_Var26 = []any{"px-4 py-2 cursor-default", activeClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var26...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var27 string
+			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var26).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var28 string
+			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(models.AttendanceStatusLabel(target))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 168, Col: 96}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<button type=\"button\" class=\"px-4 py-2 bg-neutral-800 text-gray-300 hover:bg-neutral-700 hover:text-white\" hx-put=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var29 string
+			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs("/dochazka/" + applicationID + "?status=" + target + "&courseId=" + utils.StringFromInt(courseID) + "&lessonDate=" + lessonDate)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 173, Col: 139}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" hx-target=\"closest div\" hx-swap=\"outerHTML\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var30 string
+			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(models.AttendanceStatusLabel(target))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/attendance.templ`, Line: 176, Col: 41}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</button>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		return nil
+	})
+}
+
+func AttendanceButtonsWithToast(status string, applicationID string, courseID int, lessonDate string, toast templ.Component) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var31 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var31 == nil {
+			templ_7745c5c3_Var31 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = AttendanceButtons(status, applicationID, courseID, lessonDate).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -44,6 +44,9 @@ func main() {
 
 	e.Use(middlewares.InitSessionMiddleware(settings))
 
+	// Expose user roles to templates (menu)
+	e.Use(middlewares.UserRolesContextMiddleware)
+
 	// Echo Logging
 	e.Use(middlewares.RequestLoggerWithConfig())
 

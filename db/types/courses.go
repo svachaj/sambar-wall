@@ -8,6 +8,7 @@ type Course struct {
 	Code              string    `json:"code" db:"code"`
 	Description       string    `json:"description" db:"description"`
 	Days              string    `json:"days" db:"days"`
+	DayCode           string    `json:"dayCode" db:"dayCode"`
 	AgeGroup          string    `json:"ageGroup" db:"ageGroup"`
 	Capacity          int       `json:"capacity" db:"capacity"`
 	ApplicationsCount int       `json:"applicationsCount" db:"applicationsCount"`
@@ -57,6 +58,7 @@ type AttendanceSheetRow struct {
 	CourseID          int       `json:"courseId" db:"courseId"`
 	CourseName        string    `json:"courseName" db:"courseName"`
 	CourseDays        string    `json:"courseDays" db:"courseDays"`
+	CourseDayCode     string    `json:"courseDayCode" db:"courseDayCode"`
 	CourseTimeFrom    time.Time `json:"courseTimeFrom" db:"courseTimeFrom"`
 	CourseTimeTo      time.Time `json:"courseTimeTo" db:"courseTimeTo"`
 	FirstName         string    `json:"firstName" db:"firstName"`
@@ -77,6 +79,12 @@ type CourseAttendance struct {
 	FirstName         string    `json:"firstName" db:"firstName"`
 	LastName          string    `json:"lastName" db:"lastName"`
 	ParentName        *string   `json:"parentName" db:"parentName"`
+	LessonDate        time.Time `json:"lessonDate" db:"lessonDate"`
+	Present           bool      `json:"present" db:"present"`
+}
+
+type AttendanceExportRecord struct {
+	ApplicationFormID int       `json:"applicationFormId" db:"applicationFormId"`
 	LessonDate        time.Time `json:"lessonDate" db:"lessonDate"`
 	Present           bool      `json:"present" db:"present"`
 }

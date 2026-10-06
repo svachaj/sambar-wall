@@ -29,6 +29,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	"github.com/svachaj/sambar-wall/middlewares"
 	"github.com/svachaj/sambar-wall/modules/constants"
 	"github.com/svachaj/sambar-wall/modules/courses"
 	coursesTemplates "github.com/svachaj/sambar-wall/modules/courses/templates"
@@ -61,6 +62,15 @@ type SecurityHandlers struct {
 
 func NewSecurityHandlers(db *sqlx.DB, securityService ISecurityService, coursesService courses.ICoursesService) ISecurityHandlers {
 	return &SecurityHandlers{db: db, coursesService: coursesService, securityService: securityService}
+}
+
+// defaultLandingRoute returns where to go after login when there is no return URL:
+// instructors (who are not admins) go straight to the attendance page.
+func defaultLandingRoute(roles []string, fallback string) string {
+	if middlewares.HasRole(roles, constants.ROLE_SAMBAR_INSTRUCTOR) && !middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN) {
+		return constants.ROUTE_COURSES_ATTENDANCE
+	}
+	return fallback
 }
 
 func (h *SecurityHandlers) Login(c echo.Context) error {
@@ -229,7 +239,7 @@ func (h *SecurityHandlers) SignInStep2(c echo.Context) error {
 	if returnUrl != "" {
 		c.Response().Header().Set("HX-Redirect", returnUrl)
 	} else {
-		c.Response().Header().Set("HX-Redirect", constants.ROUTE_HOME)
+		c.Response().Header().Set("HX-Redirect", defaultLandingRoute(roles, constants.ROUTE_HOME))
 	}
 
 	step2 := security.LoginFormStep2(step2Form, toasts.SuccessToast("Přihlášení proběhlo úspěšně."))
@@ -328,7 +338,7 @@ func (h *SecurityHandlers) SignMeInConfirm(c echo.Context) error {
 	if returnUrl != "" {
 		c.Response().Header().Set("HX-Redirect", returnUrl)
 	} else {
-		c.Response().Header().Set("HX-Redirect", constants.ROUTE_COURSES)
+		c.Response().Header().Set("HX-Redirect", defaultLandingRoute(roles, constants.ROUTE_COURSES))
 	}
 
 	return c.NoContent(200)

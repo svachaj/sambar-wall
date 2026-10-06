@@ -35,8 +35,8 @@ const (
 	ROUTE_COURSES_APPLICATION_FORM_SET_PAID = "/prihlaska/:id"
 	ROUTE_COURSES_ATTENDANCE                = "/dochazka"
 	ROUTE_COURSES_ATTENDANCE_SET            = "/dochazka/:id"
-	ROUTE_COURSES_ATTENDANCE_EXPORT_INIT    = "/dochazka-export-init"
 	ROUTE_COURSES_ATTENDANCE_EXPORT         = "/dochazka-export"
+	ROUTE_COURSES_ATTENDANCE_EXPORT_ALL     = "/dochazka-export-vse"
 
 	ROUTE_WALL_VISITORS        = "/navstevnici"
 	ROUTE_WALL_VISITORS_SEARCH = "/navstevnici-hledat"

@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"context"
+
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/svachaj/sambar-wall/modules/constants"
@@ -125,5 +127,16 @@ func AuthMultiRoleMiddleware(allowedRoles []string) echo.MiddlewareFunc {
 
 			return c.Redirect(302, constants.ROUTE_LOGIN)
 		}
+	}
+}
+
+// UserRolesContextMiddleware stores the signed-in user's roles in the request context,
+// so templates (e.g. the menu in layouts) can render role-dependent items.
+func UserRolesContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if ok, _, _, roles := IsAuthenticated(&c); ok {
+			c.SetRequest(c.Request().WithContext(context.WithValue(c.Request().Context(), constants.CTX_USER_ROLES, roles)))
+		}
+		return next(c)
 	}
 }

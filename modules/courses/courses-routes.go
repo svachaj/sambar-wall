@@ -25,8 +25,8 @@ func MapCoursesRoutes(e *echo.Echo, h ICoursesHandler) {
 	attendanceRoles := []string{constants.ROLE_SAMBAR_ADMIN, constants.ROLE_SAMBAR_INSTRUCTOR}
 	e.GET(constants.ROUTE_COURSES_ATTENDANCE, h.AttendancePage, middlewares.AuthMultiRoleMiddleware(attendanceRoles))
 	e.PUT(constants.ROUTE_COURSES_ATTENDANCE_SET, h.SetAttendance, middlewares.AuthMultiRoleMiddleware(attendanceRoles))
-	e.GET(constants.ROUTE_COURSES_ATTENDANCE_EXPORT_INIT, h.ExportAttendanceInit, middlewares.AuthMultiRoleMiddleware(attendanceRoles))
 	e.GET(constants.ROUTE_COURSES_ATTENDANCE_EXPORT, h.ExportAttendanceExcel, middlewares.AuthMultiRoleMiddleware(attendanceRoles))
+	e.GET(constants.ROUTE_COURSES_ATTENDANCE_EXPORT_ALL, h.ExportAttendanceAllExcel, middlewares.AuthMultiRoleMiddleware(attendanceRoles))
 
 	e.PUT(constants.ROUTE_COURSES_APPLICATION_FORM_SET_PAID, h.SetApplicationFormPaid, middlewares.AuthRoleMiddleware(constants.ROLE_SAMBAR_ADMIN))
 

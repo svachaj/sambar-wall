@@ -144,12 +144,16 @@ templ AuthenticatedLayout(isAdmin bool, canSeeVisitors bool) {
 								// <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Moje přihlášky</a>
 								if isAdmin {
 									<a href="/prihlasky" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Všechny přihlášky</a>
+								}
+								if isAdmin || canSeeAttendance(ctx) {
 									<a href="/dochazka" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Docházka</a>
 								}
 								if canSeeVisitors {
 									<a href="/navstevnici" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Návštěvníci</a>
 								}
-								<a href="/moje-prihlasky" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
+								if !isInstructorOnly(ctx) {
+									<a href="/moje-prihlasky" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
+								}
 							</div>
 						</div>
 					</div>
@@ -205,12 +209,16 @@ templ AuthenticatedLayout(isAdmin bool, canSeeVisitors bool) {
 					// <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white" aria-current="page">Moje přihlášky</a>
 					if isAdmin {
 						<a @click="mobileMenuOpen = false" href="/prihlasky" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Všechny přihlášky</a>
+					}
+					if isAdmin || canSeeAttendance(ctx) {
 						<a @click="mobileMenuOpen = false" href="/dochazka" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Docházka</a>
 					}
 					if canSeeVisitors {
 						<a @click="mobileMenuOpen = false" href="/navstevnici" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Návštěvníci</a>
 					}
-					<a @click="mobileMenuOpen = false" href="/moje-prihlasky" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
+					if !isInstructorOnly(ctx) {
+						<a @click="mobileMenuOpen = false" href="/moje-prihlasky" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Moje přihlášky</a>
+					}
 				</div>
 			</div>
 		</nav>
