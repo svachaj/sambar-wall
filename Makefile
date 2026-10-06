@@ -1,3 +1,6 @@
+# Tailwind is pinned to v3: the project uses tailwind.config.js and v4 produces broken CSS
+TAILWIND_VERSION := v3.4.17
+
 buildall: templ build
 
 build:
@@ -16,6 +19,6 @@ templ:
 install-tools:
 	go install github.com/a-h/templ/cmd/templ@latest
 	go install github.com/air-verse/air@latest
-	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
+	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/$(TAILWIND_VERSION)/tailwindcss-linux-x64
 	sudo chmod +x tailwindcss-linux-x64
 	sudo mv tailwindcss-linux-x64 /usr/bin/tailwindcss
