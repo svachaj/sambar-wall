@@ -30,6 +30,8 @@ type ICoursesService interface {
 	GetAttendanceCourseOptions() ([]types.Course, error)
 	GetAttendanceSheet(courseId int, lessonDate string) ([]types.AttendanceSheetRow, error)
 	SetAttendance(applicationFormId int, courseId int, lessonDate string, present bool, actorUserId int) error
+	ClearAttendance(applicationFormId int, lessonDate string, actorUserId int) error
+	GetAttendanceExport(dateFrom string, dateTo string) ([]types.AttendanceSheetRow, []types.AttendanceExportRecord, error)
 	GetAttendanceByUserId(userId int) ([]types.CourseAttendance, error)
 }
 
@@ -521,13 +523,14 @@ func (s *CoursesService) GetAttendanceCourseOptions() ([]types.Course, error) {
 	tc.ID as id,
 	tct.Name1 as name,
 	tcd.Name1 as days,
+	ISNULL(CAST(tcd.Code as nvarchar(50)), '') as dayCode,
 	tc.TimeFrom as timeFrom,
 	tc.TimeTo as timeTo
 	FROM t_course tc
 	LEFT JOIN t_course_type tct on tct.ID = tc.ID_typeOfCourse
 	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
 	WHERE tc.IsActive = 1
-	ORDER BY tct.Name1, tcd.Code, tc.TimeFrom;
+	ORDER BY tcd.Code, tc.TimeFrom, tct.Name1;
 	`)
 
 	if err != nil {
@@ -546,6 +549,7 @@ func (s *CoursesService) GetAttendanceSheet(courseId int, lessonDate string) ([]
 		tc.ID as courseId,
 		tct.Name1 as courseName,
 		tcd.Name1 as courseDays,
+		ISNULL(CAST(tcd.Code as nvarchar(50)), '') as courseDayCode,
 		tc.TimeFrom as courseTimeFrom,
 		tc.TimeTo as courseTimeTo,
 		tsup.FirstName as firstName,
@@ -627,6 +631,81 @@ func (s *CoursesService) SetAttendance(applicationFormId int, courseId int, less
 	}
 
 	return nil
+}
+
+// ClearAttendance soft-deletes the attendance record so the lesson shows as not filled in again.
+func (s *CoursesService) ClearAttendance(applicationFormId int, lessonDate string, actorUserId int) error {
+	_, err := s.db.Exec(`
+	UPDATE t_course_attendance
+	SET IsActive = 0,
+		UpdatedDate = GETDATE(),
+		ID_UpdatedBy = @p3
+	WHERE ID_ApplicationForm = @p1
+	AND CAST(LessonDate as date) = CAST(@p2 as date)
+	AND IsActive = 1
+	`, applicationFormId, lessonDate, actorUserId)
+
+	return err
+}
+
+// GetAttendanceExport returns participants of all active courses (active applications plus any application
+// with attendance in the range) and all attendance records between dateFrom and dateTo (inclusive).
+func (s *CoursesService) GetAttendanceExport(dateFrom string, dateTo string) ([]types.AttendanceSheetRow, []types.AttendanceExportRecord, error) {
+	participants := []types.AttendanceSheetRow{}
+
+	err := s.db.Select(&participants, `
+	SELECT
+		tcaf.ID as applicationFormId,
+		tc.ID as courseId,
+		tct.Name1 as courseName,
+		tcd.Name1 as courseDays,
+		ISNULL(CAST(tcd.Code as nvarchar(50)), '') as courseDayCode,
+		tc.TimeFrom as courseTimeFrom,
+		tc.TimeTo as courseTimeTo,
+		tsup.FirstName as firstName,
+		tsup.LastName as lastName,
+		tcaf.ParentName as parentName,
+		tcaf.Phone as parentPhone
+	FROM t_course_application_form tcaf
+	JOIN t_course tc on tc.ID = tcaf.ID_course
+	LEFT JOIN t_system_user_participant tsup on tsup.ID = tcaf.ID_participant
+	LEFT JOIN t_course_type tct on tct.ID = tc.ID_typeOfCourse
+	LEFT JOIN t_course_day tcd on tc.ID_dayOfCourse = tcd.ID
+	WHERE tc.IsActive = 1
+	AND (
+		tcaf.IsActive = 1
+		OR EXISTS (
+			SELECT 1 FROM t_course_attendance tca
+			WHERE tca.ID_ApplicationForm = tcaf.ID
+			AND tca.IsActive = 1
+			AND tca.LessonDate BETWEEN CAST(@p1 as date) AND CAST(@p2 as date)
+		)
+	)
+	ORDER BY tcd.Code, tc.TimeFrom, tct.Name1, tc.ID, tsup.LastName, tsup.FirstName;
+	`, dateFrom, dateTo)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	records := []types.AttendanceExportRecord{}
+
+	err = s.db.Select(&records, `
+	SELECT
+		tca.ID_ApplicationForm as applicationFormId,
+		tca.LessonDate as lessonDate,
+		tca.Present as present
+	FROM t_course_attendance tca
+	WHERE tca.IsActive = 1
+	AND tca.LessonDate BETWEEN CAST(@p1 as date) AND CAST(@p2 as date)
+	ORDER BY tca.LessonDate;
+	`, dateFrom, dateTo)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return participants, records, nil
 }
 
 func (s *CoursesService) GetAttendanceByUserId(userId int) ([]types.CourseAttendance, error) {

@@ -28,8 +28,8 @@ type ICoursesHandler interface {
 	MyApplicationsPage(c echo.Context) error
 	AttendancePage(c echo.Context) error
 	SetAttendance(c echo.Context) error
-	ExportAttendanceInit(c echo.Context) error
 	ExportAttendanceExcel(c echo.Context) error
+	ExportAttendanceAllExcel(c echo.Context) error
 	GetAllApplicationForms(c echo.Context) error
 	SearchInApplications(c echo.Context) error
 	SetApplicationFormPaid(c echo.Context) error
@@ -230,17 +230,17 @@ func (h *CoursesHandler) MyApplicationsPage(c echo.Context) error {
 }
 
 func (h *CoursesHandler) AttendancePage(c echo.Context) error {
-	courseIdParam := c.QueryParam("courseId")
-	lessonDate := c.QueryParam("lessonDate")
-	if lessonDate == "" {
-		lessonDate = time.Now().Format("2006-01-02")
+	today := time.Now()
+	lessonDate, err := utils.ParseISODate(c.QueryParam("lessonDate"))
+	if err != nil {
+		lessonDate = time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, time.Local)
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	roles := authSession.Values[constants.AUTH_USER_ROLES].([]string)
+	roles, _ := authSession.Values[constants.AUTH_USER_ROLES].([]string)
 
 	courseId := 0
-	if courseIdParam != "" {
+	if courseIdParam := c.QueryParam("courseId"); courseIdParam != "" {
 		parsedCourseID, err := strconv.Atoi(courseIdParam)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "Neplatný kurz.")
@@ -254,20 +254,84 @@ func (h *CoursesHandler) AttendancePage(c echo.Context) error {
 		return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 	}
 
-	if courseId == 0 && len(courseOptions) > 0 {
-		courseId = courseOptions[0].ID
+	m := models.AttendancePageModel{
+		DayCourses:      []types.Course{},
+		OtherCourses:    []types.Course{},
+		LessonDate:      lessonDate.Format(utils.ISODateLayout),
+		LessonDateLabel: utils.FormatCzechDateWithWeekday(lessonDate),
+		PrevLessonDate:  lessonDate.AddDate(0, 0, -7).Format(utils.ISODateLayout),
+		NextLessonDate:  lessonDate.AddDate(0, 0, 7).Format(utils.ISODateLayout),
+		ExportDateFrom:  utils.SchoolYearStart(today).Format(utils.ISODateLayout),
+		ExportDateTo:    today.Format(utils.ISODateLayout),
 	}
 
-	attendanceRows := []types.AttendanceSheetRow{}
+	for _, course := range courseOptions {
+		if utils.CourseDayMatchesDate(course.DayCode, course.Days, lessonDate) {
+			m.DayCourses = append(m.DayCourses, course)
+		} else {
+			m.OtherCourses = append(m.OtherCourses, course)
+		}
+		if course.ID == courseId {
+			m.SelectedCourseDays = course.Days
+		}
+	}
+
+	if courseId == 0 {
+		courseId = pickDefaultAttendanceCourse(m.DayCourses, lessonDate, today)
+	}
+	m.SelectedCourseID = courseId
+
+	for _, course := range m.OtherCourses {
+		if course.ID == courseId {
+			m.DayMismatch = true
+			m.SelectedCourseDays = course.Days
+		}
+	}
+
+	m.Rows = []types.AttendanceSheetRow{}
 	if courseId > 0 {
-		attendanceRows, err = h.service.GetAttendanceSheet(courseId, lessonDate)
+		m.Rows, err = h.service.GetAttendanceSheet(courseId, m.LessonDate)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to get attendance sheet")
 			return utils.HTML(c, httperrors.ErrorPage(httperrors.InternalServerErrorSimple()))
 		}
 	}
 
-	return utils.HTML(c, coursesTemplates.AttendancePage(courseOptions, attendanceRows, courseId, lessonDate, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION), nil))
+	return utils.HTML(c, coursesTemplates.AttendancePage(m, middlewares.HasRole(roles, constants.ROLE_SAMBAR_ADMIN), middlewares.HasRole(roles, constants.ROLE_SAMBAR_RECEPTION), nil))
+}
+
+// pickDefaultAttendanceCourse preselects a course among those held on the lesson date's weekday (sorted by time):
+// for today the running one, else the next upcoming one, else the last one; for other dates the first one.
+func pickDefaultAttendanceCourse(dayCourses []types.Course, lessonDate time.Time, now time.Time) int {
+	if len(dayCourses) == 0 {
+		return 0
+	}
+
+	if lessonDate.Format(utils.ISODateLayout) != now.Format(utils.ISODateLayout) {
+		return dayCourses[0].ID
+	}
+
+	minutesOfDay := func(t time.Time) int { return t.Hour()*60 + t.Minute() }
+	nowMinutes := minutesOfDay(now)
+
+	for _, course := range dayCourses {
+		if minutesOfDay(course.TimeFrom) <= nowMinutes && nowMinutes <= minutesOfDay(course.TimeTo) {
+			return course.ID
+		}
+	}
+	for _, course := range dayCourses {
+		if minutesOfDay(course.TimeFrom) > nowMinutes {
+			return course.ID
+		}
+	}
+	return dayCourses[len(dayCourses)-1].ID
+}
+
+// attendanceErrorToast shows an error toast without touching the attendance buttons, so they keep their previous state.
+func attendanceErrorToast(c echo.Context) error {
+	c.Response().Header().Set("HX-Retarget", "body")
+	c.Response().Header().Set("HX-Reswap", "beforeend")
+	return utils.HTML(c, toasts.ErrorToast(constants.SOMETHING_GET_WRONG))
 }
 
 func (h *CoursesHandler) SetAttendance(c echo.Context) error {
@@ -275,51 +339,57 @@ func (h *CoursesHandler) SetAttendance(c echo.Context) error {
 	applicationFormId, err := strconv.Atoi(applicationFormIdParam)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to parse application form id")
-		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, 0, time.Now().Format("2006-01-02"), toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+		return attendanceErrorToast(c)
 	}
 
-	courseIdParam := c.QueryParam("courseId")
-	courseId, err := strconv.Atoi(courseIdParam)
+	courseId, err := strconv.Atoi(c.QueryParam("courseId"))
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to parse course id")
-		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, 0, time.Now().Format("2006-01-02"), toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+		return attendanceErrorToast(c)
 	}
 
 	lessonDate := c.QueryParam("lessonDate")
-	if lessonDate == "" {
-		lessonDate = time.Now().Format("2006-01-02")
-	}
-
-	presentParam := c.QueryParam("present")
-	present, err := strconv.ParseBool(presentParam)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to parse present flag")
-		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(false, applicationFormIdParam, courseId, lessonDate, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	if _, err := utils.ParseISODate(lessonDate); err != nil {
+		log.Error().Err(err).Msg("Failed to parse lesson date")
+		return attendanceErrorToast(c)
 	}
 
 	authSession, _ := session.Get(constants.AUTH_SESSION_NAME, c)
-	actorUserId := authSession.Values[constants.AUTH_USER_ID].(int)
-
-	err = h.service.SetAttendance(applicationFormId, courseId, lessonDate, present, actorUserId)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to set attendance")
-		return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(!present, applicationFormIdParam, courseId, lessonDate, toasts.ErrorToast(constants.SOMETHING_GET_WRONG)))
+	actorUserId, ok := authSession.Values[constants.AUTH_USER_ID].(int)
+	if !ok {
+		log.Error().Msg("Missing user id in session")
+		return attendanceErrorToast(c)
 	}
 
-	return utils.HTML(c, coursesTemplates.AttendanceToggleWithToast(present, applicationFormIdParam, courseId, lessonDate, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
+	status := c.QueryParam("status")
+	switch status {
+	case models.ATTENDANCE_STATUS_PRESENT, models.ATTENDANCE_STATUS_ABSENT:
+		err = h.service.SetAttendance(applicationFormId, courseId, lessonDate, status == models.ATTENDANCE_STATUS_PRESENT, actorUserId)
+	case models.ATTENDANCE_STATUS_UNSET:
+		err = h.service.ClearAttendance(applicationFormId, lessonDate, actorUserId)
+	default:
+		log.Error().Msgf("Invalid attendance status %q", status)
+		return attendanceErrorToast(c)
+	}
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to set attendance")
+		return attendanceErrorToast(c)
+	}
+
+	return utils.HTML(c, coursesTemplates.AttendanceButtonsWithToast(status, applicationFormIdParam, courseId, lessonDate, toasts.SuccessToast(constants.SUCCESSFULLY_SET)))
 }
 
 func (h *CoursesHandler) ExportAttendanceExcel(c echo.Context) error {
-	courseIdParam := c.QueryParam("courseId")
-	courseId, err := strconv.Atoi(courseIdParam)
+	courseId, err := strconv.Atoi(c.QueryParam("courseId"))
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to parse course id")
 		return c.String(http.StatusBadRequest, "Neplatný kurz.")
 	}
 
 	lessonDate := c.QueryParam("lessonDate")
-	if lessonDate == "" {
-		lessonDate = time.Now().Format("2006-01-02")
+	if _, err := utils.ParseISODate(lessonDate); err != nil {
+		return c.String(http.StatusBadRequest, "Neplatné datum.")
 	}
 
 	attendanceRows, err := h.service.GetAttendanceSheet(courseId, lessonDate)
@@ -340,17 +410,13 @@ func (h *CoursesHandler) ExportAttendanceExcel(c echo.Context) error {
 
 	for rowIdx, row := range attendanceRows {
 		r := rowIdx + 2
-		status := "Nebyl"
-		if row.Present {
-			status = "Byl"
-		}
 
 		data := []interface{}{
 			row.CourseName + " (" + row.CourseDays + " " + row.CourseTimeFrom.Format("15:04") + "-" + row.CourseTimeTo.Format("15:04") + ")",
 			lessonDate,
 			row.LastName + " " + row.FirstName,
 			utils.StringFromStringPointer(row.ParentName),
-			status,
+			models.AttendanceStatusLabel(models.AttendanceStatus(row.HasRecord, row.Present)),
 		}
 
 		for colIdx, val := range data {
@@ -359,7 +425,7 @@ func (h *CoursesHandler) ExportAttendanceExcel(c echo.Context) error {
 		}
 	}
 
-	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=dochazka.xlsx")
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=dochazka_"+lessonDate+".xlsx")
 	c.Response().Header().Set(echo.HeaderContentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	if err := f.Write(c.Response()); err != nil {
@@ -370,29 +436,36 @@ func (h *CoursesHandler) ExportAttendanceExcel(c echo.Context) error {
 	return nil
 }
 
-func (h *CoursesHandler) ExportAttendanceInit(c echo.Context) error {
-	courseId := c.QueryParam("courseId")
-	lessonDate := c.QueryParam("lessonDate")
-
-	hiddenInputs := ""
-	if courseId != "" {
-		hiddenInputs += `<input type="hidden" name="courseId" value="` + courseId + `">`
+func (h *CoursesHandler) ExportAttendanceAllExcel(c echo.Context) error {
+	dateFrom, errFrom := utils.ParseISODate(c.QueryParam("dateFrom"))
+	dateTo, errTo := utils.ParseISODate(c.QueryParam("dateTo"))
+	if errFrom != nil || errTo != nil || dateTo.Before(dateFrom) {
+		return c.String(http.StatusBadRequest, "Neplatné období.")
 	}
-	if lessonDate != "" {
-		hiddenInputs += `<input type="hidden" name="lessonDate" value="` + lessonDate + `">`
+	from := dateFrom.Format(utils.ISODateLayout)
+	to := dateTo.Format(utils.ISODateLayout)
+
+	participants, records, err := h.service.GetAttendanceExport(from, to)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get attendance for full export")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	html := `
-	<script>
-		var form = document.getElementById('download-attendance-form');
-		form.innerHTML = '` + hiddenInputs + `';
-		form.submit();
-	</script>
-	`
+	f, err := buildAttendanceWorkbook(participants, records)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to build attendance xlsx")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
 
-	time.Sleep(600 * time.Millisecond)
+	c.Response().Header().Set(echo.HeaderContentDisposition, "attachment; filename=dochazka_"+from+"_"+to+".xlsx")
+	c.Response().Header().Set(echo.HeaderContentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-	return c.HTML(http.StatusOK, html)
+	if err := f.Write(c.Response()); err != nil {
+		log.Error().Err(err).Msg("Failed to write attendance xlsx")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
+
+	return nil
 }
 
 func (h *CoursesHandler) GetAllApplicationForms(c echo.Context) error {
