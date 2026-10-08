@@ -16,6 +16,7 @@ type IAgreementService interface {
 	GenerateVerificationCode() string
 	SaveVerificationCode(email string, code string) error
 	SendVerificationCode(email string, code string) error
+	SendVisitorCardEmail(email, firstName, lastName string) error
 	FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error
 	ExportEmailsConfirmedForCommercialCommunication() (string, error)
 	GetWallVisitors(searchQuery string) ([]models.WallVisitor, error)
@@ -81,6 +82,28 @@ func (s *AgreementService) SendVerificationCode(email string, code string) error
 		return err
 	}
 	return nil
+}
+
+func (s *AgreementService) SendVisitorCardEmail(email, firstName, lastName string) error {
+	subject := "Sambar Lezecká Stěna - potvrzení registrace"
+	body := fmt.Sprintf(`
+		<div style="font-family: Arial, sans-serif; color: #111827; max-width: 640px; margin: 0 auto; line-height: 1.6;">
+			<div style="background: linear-gradient(90deg, #ec4899, #db2777); color: white; padding: 18px 24px; border-radius: 10px 10px 0 0;">
+				<h2 style="margin: 0; font-size: 22px;">Sambar Lezecká Stěna</h2>
+				<p style="margin: 6px 0 0 0; font-size: 14px;">Potvrzení registrace návštěvníka</p>
+			</div>
+			<div style="border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px; padding: 24px;">
+				<p style="margin-top: 0;">Dobrý den %v %v,</p>
+				<p>vaše registrace byla úspěšně dokončena a byla vám vytvořena návštěvnická karta.</p>
+				<p><strong>Účel:</strong> karta slouží pro ověření vstupu na recepci lezecké stěny.</p>
+				<p><strong>Platnost:</strong> karta je platná 12 měsíců od dokončení registrace.</p>
+				<p>Pokud by systém kartu při vstupu nenašel, recepce vás může dohledat ručně podle jména a e-mailu.</p>
+				<p style="margin-bottom: 0; color: #6b7280; font-size: 13px;">Tento e-mail je informační, odpovědi na něj nejsou monitorovány.</p>
+			</div>
+		</div>
+	`, firstName, lastName)
+
+	return s.emailService.SendEmail(subject, body, email)
 }
 
 func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error {
