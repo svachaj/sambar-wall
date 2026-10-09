@@ -20,9 +20,6 @@ github.com/emersion/go-imap/utf7
 # github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21
 ## explicit; go 1.12
 github.com/emersion/go-sasl
-# github.com/golang-jwt/jwt v3.2.2+incompatible
-## explicit
-github.com/golang-jwt/jwt
 # github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe
 ## explicit
 github.com/golang-sql/civil
@@ -35,8 +32,8 @@ github.com/gorilla/context
 # github.com/gorilla/securecookie v1.1.2
 ## explicit; go 1.20
 github.com/gorilla/securecookie
-# github.com/gorilla/sessions v1.2.2
-## explicit; go 1.20
+# github.com/gorilla/sessions v1.4.0
+## explicit; go 1.23
 github.com/gorilla/sessions
 # github.com/jmoiron/sqlx v1.3.5
 ## explicit; go 1.10
@@ -46,33 +43,30 @@ github.com/jmoiron/sqlx/reflectx
 ## explicit; go 1.12
 github.com/joho/godotenv
 github.com/joho/godotenv/autoload
-# github.com/labstack/echo-contrib v0.15.0
-## explicit; go 1.18
+# github.com/labstack/echo-contrib v0.50.1
+## explicit; go 1.25.0
 github.com/labstack/echo-contrib/session
-# github.com/labstack/echo/v4 v4.12.0
-## explicit; go 1.18
+# github.com/labstack/echo/v4 v4.16.0
+## explicit; go 1.25.0
 github.com/labstack/echo/v4
 github.com/labstack/echo/v4/middleware
-# github.com/labstack/gommon v0.4.2
-## explicit; go 1.18
+# github.com/labstack/gommon v0.5.0
+## explicit; go 1.23.0
 github.com/labstack/gommon/bytes
 github.com/labstack/gommon/color
 github.com/labstack/gommon/log
 # github.com/lib/pq v1.10.9
 ## explicit; go 1.13
-# github.com/mattn/go-colorable v0.1.13
-## explicit; go 1.15
+# github.com/mattn/go-colorable v0.1.15
+## explicit; go 1.18
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.20
-## explicit; go 1.15
+# github.com/mattn/go-isatty v0.0.22
+## explicit; go 1.21
 github.com/mattn/go-isatty
-# github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
-## explicit
-github.com/mohae/deepcopy
-# github.com/richardlehane/mscfb v1.0.4
-## explicit
+# github.com/richardlehane/mscfb v1.0.7
+## explicit; go 1.18
 github.com/richardlehane/mscfb
-# github.com/richardlehane/msoleps v1.0.4
+# github.com/richardlehane/msoleps v1.0.6
 ## explicit
 github.com/richardlehane/msoleps/types
 # github.com/robfig/cron/v3 v3.0.1
@@ -89,29 +83,32 @@ github.com/rs/zerolog/log
 github.com/skip2/go-qrcode
 github.com/skip2/go-qrcode/bitset
 github.com/skip2/go-qrcode/reedsolomon
+# github.com/tiendc/go-deepcopy v1.7.2
+## explicit; go 1.18
+github.com/tiendc/go-deepcopy
 # github.com/valyala/bytebufferpool v1.0.0
 ## explicit
 github.com/valyala/bytebufferpool
 # github.com/valyala/fasttemplate v1.2.2
 ## explicit; go 1.12
 github.com/valyala/fasttemplate
-# github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d
+# github.com/xuri/efp v0.0.1
 ## explicit; go 1.11
 github.com/xuri/efp
-# github.com/xuri/excelize/v2 v2.9.0
-## explicit; go 1.18
+# github.com/xuri/excelize/v2 v2.11.0
+## explicit; go 1.25.0
 github.com/xuri/excelize/v2
-# github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7
+# github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9
 ## explicit; go 1.15
 github.com/xuri/nfp
-# golang.org/x/crypto v0.40.0
-## explicit; go 1.23.0
+# golang.org/x/crypto v0.57.0
+## explicit; go 1.26.0
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/md4
 golang.org/x/crypto/ripemd160
-# golang.org/x/net v0.42.0
-## explicit; go 1.23.0
+# golang.org/x/net v0.60.0
+## explicit; go 1.26.0
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
@@ -121,11 +118,13 @@ golang.org/x/net/http2/h2c
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/httpcommon
-# golang.org/x/sys v0.34.0
-## explicit; go 1.23.0
+golang.org/x/net/internal/httpsfv
+# golang.org/x/sys v0.48.0
+## explicit; go 1.26.0
 golang.org/x/sys/unix
-# golang.org/x/text v0.27.0
-## explicit; go 1.23.0
+golang.org/x/sys/windows
+# golang.org/x/text v0.42.0
+## explicit; go 1.26.0
 golang.org/x/text/cases
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
@@ -155,8 +154,9 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.5.0
-## explicit; go 1.18
+golang.org/x/text/width
+# golang.org/x/time v0.15.0
+## explicit; go 1.25.0
 golang.org/x/time/rate
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 ## explicit

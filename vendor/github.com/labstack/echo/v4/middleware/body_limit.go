@@ -6,6 +6,7 @@ package middleware
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"sync"
 
 	"github.com/labstack/echo/v4"
@@ -77,7 +78,10 @@ func BodyLimitWithConfig(config BodyLimitConfig) echo.MiddlewareFunc {
 			}
 
 			// Based on content read
-			r := pool.Get().(*limitedReader)
+			r, ok := pool.Get().(*limitedReader)
+			if !ok {
+				return echo.NewHTTPError(http.StatusInternalServerError, "invalid pool object")
+			}
 			r.Reset(req.Body)
 			defer pool.Put(r)
 			req.Body = r
@@ -88,12 +92,18 @@ func BodyLimitWithConfig(config BodyLimitConfig) echo.MiddlewareFunc {
 }
 
 func (r *limitedReader) Read(b []byte) (n int, err error) {
+	if r.limit > 0 && r.read > r.limit {
+		return 0, echo.ErrStatusRequestEntityTooLarge
+	}
+
 	n, err = r.reader.Read(b)
 	r.read += int64(n)
-	if r.read > r.limit {
+
+	if r.limit > 0 && r.read > r.limit {
 		return n, echo.ErrStatusRequestEntityTooLarge
 	}
-	return
+
+	return n, err
 }
 
 func (r *limitedReader) Close() error {
