@@ -54,6 +54,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// static files
+	e.Use(middlewares.StaticCacheMiddleware)
 	e.Static("/static", "static")
 
 	// Initialize modules and map routes
