@@ -55,14 +55,6 @@ func (s *AgreementService) GenerateVerificationCode() string {
 func (s *AgreementService) SaveVerificationCode(email string, code string) error {
 
 	now := time.Now()
-	if s.db.DriverName() == "postgres" {
-		_, err := s.db.Exec(
-			"INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), $1, '1234', $2)",
-			email, now,
-		)
-		return err
-	}
-	// MSSQL
 	_, err := s.db.Exec(
 		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
 		email, code, now,
@@ -87,8 +79,10 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 
 	// check confirmation code
 	var count int
-	query := fmt.Sprintf("SELECT COUNT(*) FROM t_system_registration_code WHERE email = '%v' AND code = '%v' AND createdate > '%v'", email, confirmationCode, time.Now().Add(-time.Minute*10).Format("2006-01-02 15:04:05"))
-	err := s.db.Get(&count, query)
+	err := s.db.Get(&count,
+		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > @p3",
+		email, confirmationCode, time.Now().Add(-time.Minute*10),
+	)
 
 	if err != nil {
 		return err
@@ -99,12 +93,10 @@ func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDa
 	}
 
 	// finalize agreement
-	if s.db.DriverName() == "postgres" {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (id, email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ((select max(id)+1 from t_system_wall_user), '%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
-	} else {
-		query = fmt.Sprintf("INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES ('%v', '%v', '%v', '%v', 'true', '%v', 'true', 'true', '%v')", email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now().Format("2006-01-02 15:04:05"), commercialAgreement)
-	}
-	_, err = s.db.Exec(query)
+	_, err = s.db.Exec(
+		"INSERT INTO t_system_wall_user (email, firstname, lastname, birthdate, isenabled, createdate, GDPR_confirmed, Rules_confirmed, commercial_confirmed) VALUES (@p1, @p2, @p3, @p4, 'true', @p5, 'true', 'true', @p6)",
+		email, firstName, lastName, utils.NormalizeDate(birthDate), time.Now(), commercialAgreement,
+	)
 
 	if err != nil {
 		return err
@@ -146,8 +138,7 @@ func (s *AgreementService) GetWallVisitors(searchQuery string) ([]models.WallVis
 	}
 
 	// Normalize search query for diacritic-insensitive search
-	normalizedSearch := strings.ToLower(searchQuery)
-	normalizedSearch = strings.ReplaceAll(normalizedSearch, "'", "''") // Escape single quotes
+	pattern := "%" + strings.ToLower(searchQuery) + "%"
 
 	query := `
 		SELECT firstname, lastname, email, birthdate, createdate 
@@ -155,22 +146,15 @@ func (s *AgreementService) GetWallVisitors(searchQuery string) ([]models.WallVis
 		WHERE isenabled = 1 
 		  AND GDPR_confirmed = 1 
 		  AND Rules_confirmed = 1
-	`
-
-	if searchQuery != "" {
-		query += fmt.Sprintf(`
 		  AND (
-			LOWER(firstname) COLLATE Latin1_General_CI_AI LIKE '%%%v%%' OR
-			LOWER(lastname) COLLATE Latin1_General_CI_AI LIKE '%%%v%%' OR
-			LOWER(email) COLLATE Latin1_General_CI_AI LIKE '%%%v%%'
+			LOWER(firstname) COLLATE Latin1_General_CI_AI LIKE @p1 OR
+			LOWER(lastname) COLLATE Latin1_General_CI_AI LIKE @p1 OR
+			LOWER(email) COLLATE Latin1_General_CI_AI LIKE @p1
 		  )
-		`, normalizedSearch, normalizedSearch, normalizedSearch)
-	}
-
-	query += " ORDER BY createdate DESC"
+		ORDER BY createdate DESC`
 
 	var visitors []models.WallVisitor
-	err := s.db.Select(&visitors, query)
+	err := s.db.Select(&visitors, query, pattern)
 
 	if err != nil {
 		return nil, err

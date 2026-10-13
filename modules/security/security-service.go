@@ -53,14 +53,6 @@ func (s *SecurityService) SaveVerificationCode(email string, code string) error 
 	now := time.Now()
 	lowerEmail := strings.ToLower(email)
 
-	if s.db.DriverName() == "postgres" {
-		_, err := s.db.Exec(
-			"INSERT INTO t_system_registration_code (id, email, code, createdate) VALUES ((select max(id)+1 from t_system_registration_code), $1, $2, $3)",
-			lowerEmail, code, now,
-		)
-		return err
-	}
-	// MSSQL
 	_, err := s.db.Exec(
 		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
 		lowerEmail, code, now,
