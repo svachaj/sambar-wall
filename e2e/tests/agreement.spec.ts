@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { test, expect, tick, toast } from '../lib/fixtures';
+import { test, expect, htmxSettled, tick, toast } from '../lib/fixtures';
 import { latestCode } from '../lib/auth';
 import { E2E_DOMAIN } from '../lib/constants';
 import { queryOne } from '../lib/db';
@@ -11,6 +11,7 @@ async function startAgreement(page: Page, email: string) {
   await page.getByLabel('Nejprve zadej svůj email, prosím').fill(email);
   await page.getByRole('button', { name: 'Pokračovat' }).click();
   await expect(page.getByText('Na zadaný email byl odeslán ověřovací kód')).toBeVisible();
+  await htmxSettled(page);
 }
 
 async function fillPersonalDetails(page: Page, lastName: string) {
@@ -100,18 +101,35 @@ test.describe('wall rules agreement', () => {
     await expect(page.getByText('Neplatný datum - akceptovaný formát je: den.měsíc.rok')).toBeVisible();
   });
 
-  test('a field is validated as soon as the visitor leaves it', async ({ page }) => {
-    test.fail(
-      true,
-      'Known bug (regression from the Echo v4.12 -> v4.16 bump in aae7df9): POST /validate-form-field panics in ' +
-        'middlewares/validation.go because Bind() now yields string values instead of []string, so inline validation never shows.',
-    );
+  test('a field is validated as soon as the visitor leaves it', async ({ page, seed }) => {
+    // POST /validate-form-field re-renders the field; it used to return 500 after the Echo v4.16 upgrade
+    const validated = () => page.waitForResponse((r) => r.url().endsWith('/validate-form-field'));
+
     await page.goto('/souhlas-s-provoznim-radem');
     const emailInput = page.getByLabel('Nejprve zadej svůj email, prosím');
-    const validated = page.waitForResponse((r) => r.url().endsWith('/validate-form-field'));
+    let response = validated();
     await emailInput.fill('spatny-email');
     await emailInput.blur();
-    expect((await validated).status()).toBe(200);
-    await expect(page.getByText('Neplatný email')).toBeVisible({ timeout: 3_000 });
+    expect((await response).status()).toBe(200);
+    await expect(page.getByText('Neplatný email')).toBeVisible();
+    await htmxSettled(page);
+
+    response = validated();
+    await page.getByLabel('Nejprve zadej svůj email, prosím').fill(newEmail(seed.runId));
+    await page.getByLabel('Nejprve zadej svůj email, prosím').blur();
+    await response;
+    await expect(page.getByText('Neplatný email')).toHaveCount(0);
+
+    await startAgreement(page, newEmail(seed.runId));
+    const birthDate = page.getByLabel('Datum narození (den.měsíc.rok)');
+    await birthDate.fill('1990');
+    await birthDate.blur();
+    await expect(page.getByText('Neplatný datum - akceptovaný formát je: den.měsíc.rok')).toBeVisible();
+
+    // unticking a mandatory consent shows its message right away
+    const rules = page.getByLabel('Souhlasím s provozním řádem stěny');
+    await tick(rules);
+    await tick(page.getByLabel('Souhlasím s provozním řádem stěny'), false);
+    await expect(page.getByText('Musíte souhlasit s provozním řádem stěny')).toBeVisible();
   });
 });

@@ -19,6 +19,7 @@ Go web app: Echo + templ + HTMX + Alpine + Tailwind v3, on the legacy MSSQL data
 - **Selectors:**
   - Prefer `getByRole` and `getByLabel` with the Czech labels.
   - Use `tick()` for checkboxes, because htmx re-renders them on click.
+  - Call `htmxSettled(page)` before interacting with content htmx just swapped in, because its triggers are attached only after settling.
   - Use `toast(page, text)` for toasts.
   - Use `row(page, text)` for table rows.
 - **Known bugs** are tests marked `test.fail(true, '<reason>')`. Remove the marker once the bug is fixed.

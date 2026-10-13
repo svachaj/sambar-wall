@@ -28,6 +28,12 @@ export async function tick(checkbox: Locator, checked = true): Promise<void> {
     await checkbox.click();
   }
   await expect(checkbox).toBeChecked({ checked });
+  await htmxSettled(checkbox.page());
+}
+
+/** Waits until htmx has finished settling swapped content (its triggers are attached only then). */
+export async function htmxSettled(page: Page): Promise<void> {
+  await expect(page.locator('.htmx-added, .htmx-settling, .htmx-swapping')).toHaveCount(0);
 }
 
 /** Table row (desktop layout) containing the text. */
