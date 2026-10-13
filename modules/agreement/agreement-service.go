@@ -54,10 +54,10 @@ func (s *AgreementService) GenerateVerificationCode() string {
 
 func (s *AgreementService) SaveVerificationCode(email string, code string) error {
 
-	now := time.Now()
+	// createdate comes from the database clock, the same one FinalizeAgreement compares against
 	_, err := s.db.Exec(
-		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
-		email, code, now,
+		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, SYSDATETIME())",
+		email, code,
 	)
 
 	if err != nil {
@@ -77,11 +77,11 @@ func (s *AgreementService) SendVerificationCode(email string, code string) error
 
 func (s *AgreementService) FinalizeAgreement(email, firstName, lastName, birthDate, confirmationCode string, commercialAgreement bool) error {
 
-	// check confirmation code
+	// check confirmation code (valid 10 minutes); the limit is computed in SQL, see SecurityService.FinalizeLogin
 	var count int
 	err := s.db.Get(&count,
-		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > @p3",
-		email, confirmationCode, time.Now().Add(-time.Minute*10),
+		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > DATEADD(minute, -10, SYSDATETIME())",
+		email, confirmationCode,
 	)
 
 	if err != nil {

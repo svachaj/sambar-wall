@@ -13,14 +13,16 @@ export async function latestCode(email: string): Promise<string> {
 }
 
 /**
- * Inserts a code directly, e.g. to build a magic link or to simulate an expired code. CreateDate is written as
- * local wall-clock time, which is what the app ends up storing (see the known-bug note in login.spec.ts).
+ * Inserts a code directly, e.g. to build a magic link or to simulate an expired code. Like the app,
+ * CreateDate comes from the database clock.
  */
 export async function insertCode(email: string, code: string, minutesAgo = 0): Promise<void> {
-  const created = new Date(Date.now() - minutesAgo * 60_000);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const local = `${created.getFullYear()}-${pad(created.getMonth() + 1)}-${pad(created.getDate())} ${pad(created.getHours())}:${pad(created.getMinutes())}:${pad(created.getSeconds())}`;
-  await query(`INSERT INTO t_system_registration_code (Email, Code, CreateDate) VALUES (@p1, @p2, @p3)`, email.toLowerCase(), code, local);
+  await query(
+    `INSERT INTO t_system_registration_code (Email, Code, CreateDate) VALUES (@p1, @p2, DATEADD(second, -@p3, SYSDATETIME()))`,
+    email.toLowerCase(),
+    code,
+    Math.round(minutesAgo * 60),
+  );
 }
 
 /** Same format as utils.Encrypt: hex(nonce | AES-GCM ciphertext | tag) keyed by APP_CRYPTO_KEY. */

@@ -36,16 +36,20 @@ test.describe('login with an email code', () => {
   });
 
   test('a code older than 10 minutes is rejected', async ({ page, seed }) => {
-    test.fail(
-      true,
-      'Known bug: go-mssqldb sends time.Now() as datetimeoffset while CreateDate is a local-time datetime2, so SQL Server ' +
-        'compares it as UTC and codes stay valid for 10 minutes + the UTC offset (2h10m in Czech summer time).',
-    );
     const email = newEmail(seed.runId);
     await requestCode(page, email);
     await insertCode(email, '55555', 11);
     await submitCode(page, '55555');
-    await expect(page.getByText('Neplatný kód').first()).toBeVisible({ timeout: 3_000 });
+    await expect(page.getByText('Neplatný kód').first()).toBeVisible();
+    await expect(page).toHaveURL('/prihlaseni');
+  });
+
+  test('a code issued 9 minutes ago still works', async ({ page, seed }) => {
+    const email = newEmail(seed.runId);
+    await requestCode(page, email);
+    await insertCode(email, '44444', 9);
+    await submitCode(page, '44444');
+    await expect(page).toHaveURL('/');
   });
 
   test('a code can be used only once', async ({ page, browser, seed }) => {
