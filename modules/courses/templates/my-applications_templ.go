@@ -83,16 +83,16 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-fit\"> <col class=\"w-fit\"> <col class=\"w-24\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 pl-4 pr-8 font-semibold lg:table-cell sm:pl-6 lg:pl-8 text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 pl-0 pr-8 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"overflow-x-auto\"><table class=\"mt-2 w-full whitespace-nowrap text-left\"><colgroup><col class=\"w-fit\"> <col class=\"w-fit\"> <col class=\"w-24\"> <col class=\"lg:w-1/12\"> <col class=\"lg:w-1/12\"></colgroup> <thead class=\"lg:border-b border-0 border-white/20 text-sm leading-6 text-white\"><tr><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold lg:table-cell text-center\">Kurz</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold lg:table-cell text-center\">Účastník</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold lg:table-cell text-center\">Kdy</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold lg:table-cell text-center\">Cena</th><th scope=\"col\" class=\"hidden py-2 px-4 font-semibold lg:table-cell text-center\">Zaplaceno</th></tr></thead> <tbody class=\"divide-y divide-white/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, application := range applications {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 pl-4 w-full text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr class=\"hover:bg-slate-800\"><td class=\"lg:hidden table-cell py-4 px-4 w-full whitespace-normal text-white text-sm\"><div class=\"flex flex-row flex-wrap\"><div class=\"flex-grow\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 = []any{utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate leading-6", "line-through leading-6 text-gray-400 decoration-neutral-400")}
+			var templ_7745c5c3_Var3 = []any{utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "break-words leading-6", "break-words line-through leading-6 text-gray-400 decoration-neutral-400")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -117,7 +117,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 50, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 51, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -152,7 +152,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(application.LastName + " " + application.FirstName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 53, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 54, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - " + application.CourseTimeTo.Format("15:04") + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 56, Col: 141}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 57, Col: 142}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -222,7 +222,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(application.CoursePrice))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 59, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 60, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -265,11 +265,11 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-start gap-x-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div></div></td><td class=\"hidden py-4 px-4 whitespace-normal lg:table-cell\"><div class=\"flex items-start gap-x-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var17 = []any{utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "truncate text-sm font-medium leading-6 text-white", "truncate text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400")}
+			var templ_7745c5c3_Var17 = []any{utils.ClassIf(application.IsActive != nil && *application.IsActive == true, "text-sm font-medium leading-6 text-white", "text-sm font-medium leading-6 text-gray-400 line-through decoration-neutral-400")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var17...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -294,13 +294,13 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 75, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 76, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center justify-center gap-x-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div></td><td class=\"hidden py-4 px-4 lg:table-cell\"><div class=\"flex items-center justify-center gap-x-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -329,13 +329,13 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(application.LastName + " " + application.FirstName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 82, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 83, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center justify-center gap-x-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></div></td><td class=\"hidden py-4 px-4 lg:table-cell\"><div class=\"flex items-center justify-center gap-x-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -364,13 +364,13 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseDays + " (" + application.CourseTimeFrom.Format("15:04") + " - " + application.CourseTimeTo.Format("15:04") + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 89, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 90, Col: 141}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center gap-x-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></div></td><td class=\"hidden py-4 px-4 lg:table-cell\"><div class=\"flex items-center gap-x-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -399,13 +399,13 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatPrice(application.CoursePrice))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 96, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 97, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, " Kč</div></div></td><td class=\"hidden py-4 pl-4 pr-8 lg:table-cell sm:pl-6 lg:pl-8\"><div class=\"flex items-center gap-x-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, " Kč</div></div></td><td class=\"hidden py-4 px-4 lg:table-cell\"><div class=\"flex items-center gap-x-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -447,7 +447,7 @@ func MyApplicationsTable(applications []types.ApplicationForm) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</tbody></table>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</tbody></table></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -519,7 +519,7 @@ func MyApplicationsAttendanceHistory(applications []types.ApplicationForm) templ
 					var templ_7745c5c3_Var33 string
 					templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(application.LastName + " " + application.FirstName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 143, Col: 114}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 145, Col: 114}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 					if templ_7745c5c3_Err != nil {
@@ -532,7 +532,7 @@ func MyApplicationsAttendanceHistory(applications []types.ApplicationForm) templ
 					var templ_7745c5c3_Var34 string
 					templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(application.CourseName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 144, Col: 86}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 146, Col: 86}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 					if templ_7745c5c3_Err != nil {
@@ -545,7 +545,7 @@ func MyApplicationsAttendanceHistory(applications []types.ApplicationForm) templ
 					var templ_7745c5c3_Var35 string
 					templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(attendance.LessonDate.Format("2.1.2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 145, Col: 104}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/courses/templates/my-applications.templ`, Line: 147, Col: 104}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 					if templ_7745c5c3_Err != nil {
