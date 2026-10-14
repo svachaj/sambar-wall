@@ -79,7 +79,15 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 		return utils.HTML(c, httperrors.InternalServerErrorSimple())
 	}
 
-	// first check if the course is still available
+	// first check the course exists and is active (the capacity query fails for an unknown course)
+	courseInfo := h.service.GetCourseInfo(courseId)
+
+	if courseInfo.ID == 0 {
+		log.Warn().Msg("GetCourseInfo returned empty result for course ID: " + strconv.Itoa(courseId))
+		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Požadovaný kurz nebyl nalezen. Může být již plně obsazen nebo neplatný. Zkuste prosím jiný kurz."), true, false, false))
+	}
+
+	// then check if the course is still available
 	capacityOK, err := h.service.CheckCourseCapacity(courseId)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to check course capacity")
@@ -87,13 +95,6 @@ func (h *CoursesHandler) ApplicationFormPage(c echo.Context) error {
 	}
 	if !capacityOK {
 		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Kapacita kurzu se již bohužel vyčerpala. Zkuste prosím jiný kurz."), true, false, false))
-	}
-
-	courseInfo := h.service.GetCourseInfo(courseId)
-
-	if courseInfo.ID == 0 {
-		log.Warn().Msg("GetCourseInfo returned empty result for course ID: " + strconv.Itoa(courseId))
-		return utils.HTML(c, layouts.BaseLayoutWithComponent(coursesTemplates.ApplicationFormErrorInfo("Požadovaný kurz nebyl nalezen. Může být již plně obsazen nebo neplatný. Zkuste prosím jiný kurz."), true, false, false))
 	}
 
 	applicationForm := coursesTemplates.ApplicationFormPage(id, courseInfo)

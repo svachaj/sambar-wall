@@ -85,9 +85,9 @@ test.describe('course application', () => {
   });
 
   test('an unknown course shows a friendly message', async ({ page }) => {
-    test.fail(true, 'Known bug: CheckCourseCapacity errors on a missing course, so the generic error page is shown instead of "Požadovaný kurz nebyl nalezen".');
     await page.goto('/prihlaska/999999999');
-    await expect(page.getByText('Požadovaný kurz nebyl nalezen', { exact: false })).toBeVisible({ timeout: 3_000 });
+    await expect(page.getByText('Požadovaný kurz nebyl nalezen', { exact: false })).toBeVisible();
+    await expect(page.getByLabel('Jméno (koho přihlašuji)')).toHaveCount(0);
   });
 });
 
