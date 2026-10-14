@@ -9,6 +9,24 @@ build:
 test:
 	go test -v ./... -count=1 
 
+# End-to-end tests (Playwright, see "End-to-end tests" in README.md)
+.PHONY: e2e e2e-install e2e-ui e2e-report install-hooks
+e2e-install: install-hooks
+	cd e2e && npm ci && npx playwright install chromium
+
+# runs `make e2e` before every `git push` (see .githooks/pre-push)
+install-hooks:
+	git config core.hooksPath .githooks
+
+e2e:
+	cd e2e && npx playwright test
+
+e2e-ui:
+	cd e2e && npx playwright test --ui
+
+e2e-report:
+	cd e2e && npx playwright show-report
+
 
 tailwind:
 	tailwindcss --config tailwind.config.js -i styles/input.css -o static/css/styles.css -m

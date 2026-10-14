@@ -65,3 +65,39 @@ Extension settings:
 ### 3. Run with Air
 
 `air`
+
+## End-to-end tests
+
+The `e2e/` folder holds a [Playwright](https://playwright.dev/) suite. It starts the real Go app and clicks through every flow: login (code and magic link), the wall agreement, course applications, the admin application list, attendance, wall visitors and role-based access.
+
+### Setup (once)
+
+1. Install Node.js 20 or newer.
+2. Run `make e2e-install`.
+3. Run `cp e2e/.env.example e2e/.env` and set `E2E_ALLOW_DB` to the name of the test database.
+
+`make e2e-install` also runs `make install-hooks`, which enables the [pre-push hook](.githooks/pre-push). Every `git push` then runs the suite first and stops if a test fails. Pushes that change only Markdown files skip the suite. To skip it once, use `SKIP_E2E=1 git push` (or `git push --no-verify`).
+
+### Run
+
+| Command | What it does |
+| --- | --- |
+| `make e2e` | Runs the whole suite (about 40 s) |
+| `make e2e-ui` | Runs it in Playwright's interactive UI mode |
+| `make e2e-report` | Opens the HTML report of the last run, with traces of failed tests |
+
+Playwright builds the app into `tmp/e2e-server` and starts it on port 5599, using the database from the root `.env`. It forces `APP_ENV=localhost`, so no emails are sent, and `PAYMENTS_CRON=0`, so no payment emails are read. Tests read login and agreement codes straight from `t_system_registration_code`.
+
+### Shared test database
+
+The suite writes to the database configured in `.env`, so it has some safeguards:
+
+- **Only an explicitly allowed database.** It refuses to start unless `DB_NAME` equals `E2E_ALLOW_DB`.
+- **Every created account or visitor uses the `@e2e-sambar.test` domain.**
+- **Clearly marked test courses.** The two test courses are cloned from an existing course and marked by `TimeTo = 23:59` and `ValidTo = 2099-12-31`.
+- **Automatic cleanup.** Before and after each run, everything tied to those accounts and courses is deleted. The run fails if anything is left behind.
+- **Not tested:** the bulk action "Poslat hromadně přihlášky znovu" (`POST /prihlasky-opakovat`). It would re-create applications for every "will continue" record in the database.
+
+Set `E2E_KEEP_DATA=1` to keep the test data after a run for debugging; the next run removes it. Set `E2E_SERVER_LOGS=1` to print the app's log.
+
+Tests marked `test.fail(...)` document known bugs. When a bug gets fixed, its test starts "unexpectedly passing": remove the `test.fail` line at that point.

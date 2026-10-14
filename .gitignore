@@ -19,3 +19,10 @@ sambar-wall
 static/test.html
 static/tmp/*
 db/docker/mssql/data/*
+
+# e2e (Playwright)
+e2e/node_modules/
+e2e/.auth/
+e2e/test-results/
+e2e/playwright-report/
+e2e/.env
