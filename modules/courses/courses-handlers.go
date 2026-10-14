@@ -1,6 +1,8 @@
 package courses
 
 import (
+	"bytes"
+	"html/template"
 	"net/http"
 	"strconv"
 	"time"
@@ -698,27 +700,42 @@ func (h *CoursesHandler) ExportApplicationFormsInit(c echo.Context) error {
 
 	log.Info().Msgf("ExportApplicationFormsInit search: %v, status: %v", searchText, statusFilter)
 
-	// Build hidden input fields for the form
-	hiddenInputs := ""
+	// Hand the filters to the hidden download form. html/template escapes the values for the script
+	// context and the inputs are created through the DOM, so the search text can't inject markup or code.
+	params := map[string]string{}
 	if searchText != "" {
-		hiddenInputs += `<input type="hidden" name="search" value="` + searchText + `">`
+		params["search"] = searchText
 	}
 	if statusFilter != "" {
-		hiddenInputs += `<input type="hidden" name="status" value="` + statusFilter + `">`
+		params["status"] = statusFilter
 	}
 
-	html := `
-	<script>
-		var form = document.getElementById('download-form');
-		form.innerHTML = '` + hiddenInputs + `';
-		form.submit();
-	</script>
-	`
+	var script bytes.Buffer
+	if err := exportInitScript.Execute(&script, params); err != nil {
+		log.Error().Err(err).Msg("Failed to render export init script")
+		return utils.HTML(c, httperrors.InternalServerErrorSimple())
+	}
 
 	time.Sleep(600 * time.Millisecond) // for fun :)
 
-	return c.HTML(http.StatusOK, html)
+	return c.HTML(http.StatusOK, script.String())
 }
+
+var exportInitScript = template.Must(template.New("exportInit").Parse(`<script>
+	(function () {
+		var form = document.getElementById('download-form');
+		var params = {{.}};
+		form.replaceChildren();
+		Object.keys(params).forEach(function (name) {
+			var input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = name;
+			input.value = params[name];
+			form.appendChild(input);
+		});
+		form.submit();
+	})();
+</script>`))
 
 func (h *CoursesHandler) ExportApplicationForms(c echo.Context) error {
 

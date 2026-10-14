@@ -109,6 +109,21 @@ test.describe('admin: all applications', () => {
     expect(file.subarray(0, 2).toString()).toBe('PK'); // xlsx is a zip archive
   });
 
+  test('the export does not execute script smuggled in through the search text', async ({ page }) => {
+    // the search text used to be pasted unescaped into the inline <script> of /prihlasky-export-init
+    const payload = `x'+(window.__xss=1)+'</script><script>window.__xss=2</script>`;
+    await page.goto('/prihlasky');
+    await search(page, payload);
+
+    const downloading = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export vše' }).click();
+    const download = await downloading;
+
+    expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
+    // the search still reaches the export unchanged
+    expect(new URL(download.url()).searchParams.get('search')).toBe(payload);
+  });
+
   test('exports emails that agreed to newsletters', async ({ page, seed }) => {
     await page.goto('/prihlasky');
     const downloading = page.waitForEvent('download');
