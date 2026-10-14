@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { test, expect, htmxSettled, tick, toast } from '../lib/fixtures';
-import { latestCode } from '../lib/auth';
+import { insertCode, latestCode } from '../lib/auth';
 import { E2E_DOMAIN } from '../lib/constants';
 import { queryOne } from '../lib/db';
 
@@ -68,6 +68,21 @@ test.describe('wall rules agreement', () => {
 
     await fillPersonalDetails(page, `Spatny${seed.runId}`);
     await page.getByLabel('Ověřovací kód z emailu').fill('0000');
+    await tick(page.getByLabel('Souhlasím s provozním řádem stěny'));
+    await tick(page.getByLabel('Souhlasím se zpracováním osobních údajů'));
+    await page.getByRole('button', { name: 'Dokončit' }).click();
+
+    await expect(page.getByText('Chybný ověřovací kód').first()).toBeVisible();
+    expect(await wallUser(email)).toBeUndefined();
+  });
+
+  test('a code older than 10 minutes is rejected', async ({ page, seed }) => {
+    const email = newEmail(seed.runId);
+    await startAgreement(page, email);
+    await insertCode(email, '4321', 11);
+
+    await fillPersonalDetails(page, `Stary${seed.runId}`);
+    await page.getByLabel('Ověřovací kód z emailu').fill('4321');
     await tick(page.getByLabel('Souhlasím s provozním řádem stěny'));
     await tick(page.getByLabel('Souhlasím se zpracováním osobních údajů'));
     await page.getByRole('button', { name: 'Dokončit' }).click();

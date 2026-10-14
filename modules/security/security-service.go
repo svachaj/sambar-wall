@@ -6,7 +6,6 @@ import (
 	"fmt"
 	mathRand "math/rand"
 	"strings"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/svachaj/sambar-wall/config"
@@ -50,12 +49,12 @@ func (s *SecurityService) GenerateVerificationCode() string {
 }
 
 func (s *SecurityService) SaveVerificationCode(email string, code string) error {
-	now := time.Now()
 	lowerEmail := strings.ToLower(email)
 
+	// createdate comes from the database clock, the same one FinalizeLogin compares against
 	_, err := s.db.Exec(
-		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, @p3)",
-		lowerEmail, code, now,
+		"INSERT INTO t_system_registration_code (email, code, createdate) VALUES (@p1, @p2, SYSDATETIME())",
+		lowerEmail, code,
 	)
 	return err
 }
@@ -79,11 +78,13 @@ func (s *SecurityService) SendVerificationCode(email string, code string, host s
 func (s *SecurityService) FinalizeLogin(email, confirmationCode string) (userId int, roles []string, err error) {
 	lowerEmail := strings.ToLower(email)
 
-	// check confirmation code exists and is within 10 minutes
+	// check confirmation code exists and is within 10 minutes; the limit is computed in SQL because
+	// go-mssqldb sends time.Time as datetimeoffset and comparing it with the datetime2 createdate
+	// treats createdate as UTC, which stretched the validity by the UTC offset (e.g. to 2h10m)
 	var count int
 	err = s.db.Get(&count,
-		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > @p3",
-		lowerEmail, confirmationCode, time.Now().Add(-10*time.Minute))
+		"SELECT COUNT(*) FROM t_system_registration_code WHERE email = @p1 AND code = @p2 AND createdate > DATEADD(minute, -10, SYSDATETIME())",
+		lowerEmail, confirmationCode)
 
 	if err != nil {
 		return -1, roles, err
