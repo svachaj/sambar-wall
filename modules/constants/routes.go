@@ -6,8 +6,8 @@ const (
 	ROUTE_AGREEMENT_START_PAGE         = "/souhlas-s-provoznim-radem"
 	ROUTE_AGREEMENT_CHECK_EMAIL        = "/agreement/check-email"
 	ROUTE_AGREEMENT_FINALIZE           = "/agreement/finalize"
-	ROUTE_AGREEMENT_EXPORT_EMAILS_INIT = "commercial-emails-export-init"
-	ROUTE_AGREEMENT_EXPORT_EMAILS      = "commercial-emails-export"
+	ROUTE_AGREEMENT_EXPORT_EMAILS_INIT = "/commercial-emails-export-init"
+	ROUTE_AGREEMENT_EXPORT_EMAILS      = "/commercial-emails-export"
 
 	ROUTE_LOGIN                    = "/prihlaseni"
 	ROUTE_LOGIN_STEP1              = "/sign-in-step1"

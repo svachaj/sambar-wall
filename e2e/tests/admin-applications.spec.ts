@@ -135,11 +135,12 @@ test.describe('admin: all applications', () => {
   });
 
   test('the newsletter export also works from a nested page', async ({ page, seed }) => {
-    test.fail(true, 'Known bug: the header form uses the relative hx-get "commercial-emails-export-init", which resolves to /prihlaska-edit/commercial-emails-export-init here.');
+    // the header form used a relative URL, which resolved to /prihlaska-edit/commercial-emails-export-init here
     await page.goto(`/prihlaska-edit/${seed.applications.main.id}`);
-    const downloading = page.waitForEvent('download', { timeout: 5_000 });
+    const downloading = page.waitForEvent('download');
     await page.getByTitle('Stáhnout emaily pro komerční sdělení').click();
-    await downloading;
+    const download = await downloading;
+    expect((await readDownload(download)).toString().split(';')).toContain(seed.visitor.email);
   });
 
   test('the bulk "send again" page renders (the action itself is never run against the shared DB)', async ({ page }) => {
