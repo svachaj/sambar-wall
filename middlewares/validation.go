@@ -16,20 +16,16 @@ import (
 // ValidateFormField validates a form field based on the provided rules and returns the validation result.
 func ValidateFormField(c echo.Context) error {
 
-	var body = make(map[string]interface{})
-
-	err := c.Bind(&body)
+	// read the posted form directly: binding into a map[string]interface{} yields string values
+	// since Echo v4.16 (it used to be []string), which made the type assertion here panic
+	params, err := c.FormParams()
 	if err != nil {
-		log.Error().Err(err).Msg("Error binding request body")
+		log.Error().Err(err).Msg("Error reading form params")
 		errToast := toasts.ErrorToast("Něco se pokazilo, zkuste to prosím znovu.")
 		return utils.HTMLWithStatus(c, 500, errToast)
 	} else {
 		fieldName := c.Request().Header.Get("HX-Trigger-Name")
-		fieldValue := ""
-		fieldVal := body[fieldName]
-		if fieldVal != nil {
-			fieldValue = fieldVal.([]string)[0]
-		}
+		fieldValue := params.Get(fieldName)
 
 		formId := c.Request().Header.Get("Form-Id")
 
