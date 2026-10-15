@@ -109,6 +109,21 @@ test.describe('admin: all applications', () => {
     expect(file.subarray(0, 2).toString()).toBe('PK'); // xlsx is a zip archive
   });
 
+  test('the export does not execute script smuggled in through the search text', async ({ page }) => {
+    // the search text used to be pasted unescaped into the inline <script> of /prihlasky-export-init
+    const payload = `x'+(window.__xss=1)+'</script><script>window.__xss=2</script>`;
+    await page.goto('/prihlasky');
+    await search(page, payload);
+
+    const downloading = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export vše' }).click();
+    const download = await downloading;
+
+    expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
+    // the search still reaches the export unchanged
+    expect(new URL(download.url()).searchParams.get('search')).toBe(payload);
+  });
+
   test('exports emails that agreed to newsletters', async ({ page, seed }) => {
     await page.goto('/prihlasky');
     const downloading = page.waitForEvent('download');
@@ -120,11 +135,12 @@ test.describe('admin: all applications', () => {
   });
 
   test('the newsletter export also works from a nested page', async ({ page, seed }) => {
-    test.fail(true, 'Known bug: the header form uses the relative hx-get "commercial-emails-export-init", which resolves to /prihlaska-edit/commercial-emails-export-init here.');
+    // the header form used a relative URL, which resolved to /prihlaska-edit/commercial-emails-export-init here
     await page.goto(`/prihlaska-edit/${seed.applications.main.id}`);
-    const downloading = page.waitForEvent('download', { timeout: 5_000 });
+    const downloading = page.waitForEvent('download');
     await page.getByTitle('Stáhnout emaily pro komerční sdělení').click();
-    await downloading;
+    const download = await downloading;
+    expect((await readDownload(download)).toString().split(';')).toContain(seed.visitor.email);
   });
 
   test('the bulk "send again" page renders (the action itself is never run against the shared DB)', async ({ page }) => {
