@@ -32,3 +32,7 @@ export const storageStateFor = (role: Role) => path.join(AUTH_DIR, `${role}.json
 // Marker of the e2e courses: they end at 23:59 and are valid until 2099, which no real course is.
 export const E2E_COURSE_TIME_TO = '23:59';
 export const E2E_COURSE_VALID_TO = '2099-12-31';
+
+// Deployed test site checked by `make e2e-deployed` (playwright.deployed.config.ts).
+export const DEPLOYED_URL = process.env.E2E_DEPLOYED_URL || 'https://registrace-test.stenakladno.cz';
+export const deployedStateFor = (role: Role) => path.join(AUTH_DIR, `deployed-${role}.json`);

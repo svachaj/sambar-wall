@@ -10,7 +10,7 @@ test:
 	go test -v ./... -count=1 
 
 # End-to-end tests (Playwright, see "End-to-end tests" in README.md)
-.PHONY: e2e e2e-install e2e-ui e2e-report install-hooks
+.PHONY: e2e e2e-install e2e-ui e2e-report e2e-deployed install-hooks
 e2e-install: install-hooks
 	cd e2e && npm ci && npx playwright install chromium
 
@@ -26,6 +26,10 @@ e2e-ui:
 
 e2e-report:
 	cd e2e && npx playwright show-report
+
+# smoke tests against the deployed test site (https://registrace-test.stenakladno.cz)
+e2e-deployed:
+	cd e2e && npx playwright test -c playwright.deployed.config.ts
 
 
 tailwind:
