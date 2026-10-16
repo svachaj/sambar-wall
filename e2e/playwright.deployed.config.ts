@@ -15,7 +15,6 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report-deployed' }]],
   outputDir: 'test-results-deployed',
   globalSetup: './global-setup.ts',
-  globalTeardown: './global-teardown.ts',
   use: {
     baseURL: DEPLOYED_URL,
     locale: 'cs-CZ',

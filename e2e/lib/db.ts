@@ -14,7 +14,7 @@ export function dbName(): string {
 
 // Mirrors the vendored go-mssqldb: for a named instance ("host\SQLEXPRESS") the real TCP port is
 // resolved through SQL Server Browser and DB_PORT is ignored; otherwise host:DB_PORT is used.
-function config(): sql.config {
+export function config(): sql.config {
   const [server, instanceName] = (process.env.DB_HOST ?? '').split('\\');
   return {
     server,

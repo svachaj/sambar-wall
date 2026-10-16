@@ -17,6 +17,7 @@ Go web app: Echo + templ + HTMX + Alpine + Tailwind v3, on the legacy MSSQL data
   - The deployed app sends real emails. Never add a deployed test that requests a login or agreement code, submits an application or toggles "paid".
   - Log in with `loginWithoutEmail()`, and intercept downloads.
 - **The suite runs against the shared test DB from `.env`.**
+  - Only one run at a time: `e2e/lib/lock.ts` holds the `sambar-wall-e2e` application lock from setup until cleanup is done. Keep any new setup or teardown inside `global-setup.ts`, under that lock.
   - Create data only through `e2e/lib/seed.ts`, or with `@e2e-sambar.test` emails, so `purge()` can remove it.
   - Never run `POST /prihlasky-opakovat` (it bulk-creates real applications).
 - **Selectors:**

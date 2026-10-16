@@ -96,7 +96,6 @@ The deployed site uses the same database as `.env`, so the suite seeds the same 
 
 The deployed app sends real emails, including copies to the admin inbox, so these tests never request a code, submit an application or toggle "paid". Exports are intercepted before they reach the server, so no data is downloaded.
 
-Don't run it at the same time as `make e2e`: both seed and purge the same rows.
 
 ### Shared test database
 
@@ -106,6 +105,9 @@ The suite writes to the database configured in `.env`, so it has some safeguards
 - **Every created account or visitor uses the `@e2e-sambar.test` domain.**
 - **Clearly marked test courses.** The two test courses are cloned from an existing course and marked by `TimeTo = 23:59` and `ValidTo = 2099-12-31`.
 - **Automatic cleanup.** Before and after each run, everything tied to those accounts and courses is deleted. The run fails if anything is left behind.
+- **One run at a time.** Each run takes the SQL Server application lock `sambar-wall-e2e` for its whole duration. That includes `make e2e` and `make e2e-deployed`, from any machine.
+  - A second run waits up to 5 minutes (`E2E_LOCK_WAIT_MINUTES`), then stops with a clear message.
+  - If a run crashes, SQL Server frees the lock, and the next run cleans up the leftovers.
 - **Not tested:** the bulk action "Poslat hromadně přihlášky znovu" (`POST /prihlasky-opakovat`). It would re-create applications for every "will continue" record in the database.
 
 Set `E2E_KEEP_DATA=1` to keep the test data after a run for debugging; the next run removes it. Set `E2E_SERVER_LOGS=1` to print the app's log.
