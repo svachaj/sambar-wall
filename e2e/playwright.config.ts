@@ -13,7 +13,6 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
   globalSetup: './global-setup.ts',
-  globalTeardown: './global-teardown.ts',
   use: {
     baseURL: BASE_URL,
     locale: 'cs-CZ',
