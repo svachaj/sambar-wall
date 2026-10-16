@@ -88,6 +88,16 @@ The `e2e/` folder holds a [Playwright](https://playwright.dev/) suite. It starts
 
 Playwright builds the app into `tmp/e2e-server` and starts it on port 5599, using the database from the root `.env`. It forces `APP_ENV=localhost`, so no emails are sent, and `PAYMENTS_CRON=0`, so no payment emails are read. Tests read login and agreement codes straight from `t_system_registration_code`.
 
+### Smoke tests on the deployed test site
+
+`make e2e-deployed` runs `e2e/deployed/smoke.spec.ts` against https://registrace-test.stenakladno.cz. Set `E2E_DEPLOYED_URL` to test a different site. Run it after a deploy to `test`.
+
+The deployed site uses the same database as `.env`, so the suite seeds the same test data. It logs in by writing a code to the database and submitting only step 2 of the login form.
+
+The deployed app sends real emails, including copies to the admin inbox, so these tests never request a code, submit an application or toggle "paid". Exports are intercepted before they reach the server, so no data is downloaded.
+
+Don't run it at the same time as `make e2e`: both seed and purge the same rows.
+
 ### Shared test database
 
 The suite writes to the database configured in `.env`, so it has some safeguards:

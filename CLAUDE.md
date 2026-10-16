@@ -13,6 +13,9 @@ Go web app: Echo + templ + HTMX + Alpine + Tailwind v3, on the legacy MSSQL data
 - **Every user-facing change adds or updates a spec in `e2e/tests/`.** The pre-push hook (`.githooks/pre-push`, enabled by `make install-hooks`) runs `make e2e` on every push.
   - Never bypass a failing run with `SKIP_E2E=1` or `--no-verify` unless the user asks.
   - When pushing from Claude Code, run `git push` outside the sandbox, because the hook needs the DB.
+- **Deployed smoke tests:** `make e2e-deployed` (`e2e/deployed/`) checks https://registrace-test.stenakladno.cz, which uses the same DB.
+  - The deployed app sends real emails. Never add a deployed test that requests a login or agreement code, submits an application or toggles "paid".
+  - Log in with `loginWithoutEmail()`, and intercept downloads.
 - **The suite runs against the shared test DB from `.env`.**
   - Create data only through `e2e/lib/seed.ts`, or with `@e2e-sambar.test` emails, so `purge()` can remove it.
   - Never run `POST /prihlasky-opakovat` (it bulk-creates real applications).

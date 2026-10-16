@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { expect, Page } from '@playwright/test';
+import { APIRequestContext, APIResponse, expect, Page } from '@playwright/test';
 import { query, queryOne } from './db';
 
 /** Latest code the app stored for this email (the mock email service drops the actual email). */
@@ -53,4 +53,14 @@ export async function loginAs(page: Page, email: string): Promise<void> {
   await requestCode(page, email);
   await submitCode(page, await latestCode(email));
   await page.waitForURL((url) => url.pathname !== '/prihlaseni');
+}
+
+/**
+ * Logs in without sending an email: writes a code to the DB and submits only step 2 of the login form.
+ * Used against the deployed site, which sends real emails. Returns the step-2 response.
+ */
+export async function loginWithoutEmail(request: APIRequestContext, email: string, minutesAgo = 0): Promise<APIResponse> {
+  const code = String(10000 + Math.floor(Math.random() * 90000));
+  await insertCode(email, code, minutesAgo);
+  return request.post('/sign-in-step2', { form: { email, confirmationCode: code } });
 }
